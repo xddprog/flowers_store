@@ -1,21 +1,60 @@
-from sqlalchemy import select
+from uuid import UUID
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from core.repositories.base import SqlAlchemyRepository
-from infrastructure.database.models.bouquet import Bouquet
+from app.core.repositories.base import SqlAlchemyRepository
+from app.infrastructure.database.models.bouquet import Bouquet, BouquetFlowerType
 
 
 class BouquetRepository(SqlAlchemyRepository[Bouquet]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Bouquet)
 
-    async def get_popular_bouquets(self, limit: int = 10) -> list[Bouquet]:
+    async def add_item(
+        self,
+        name: str,
+        description: str,
+        price: int,
+        bouquet_type_id: UUID,
+        flower_type_ids: list[UUID] | None = None,
+        quantity: int = 0,
+        is_active: bool = True,
+        **kwargs
+    ) -> Bouquet:
+        kwargs.pop("flower_type_ids", None)
+        
+        bouquet = Bouquet(
+            name=name,
+            description=description,
+            price=price,
+            bouquet_type_id=bouquet_type_id,
+            quantity=quantity,
+            is_active=is_active,
+            **kwargs
+        )
+        self.session.add(bouquet)
+        await self.session.flush()
+        
+        if flower_type_ids:
+            for flower_type_id in flower_type_ids:
+                bouquet_flower_type = BouquetFlowerType(
+                    bouquet_id=bouquet.id,
+                    flower_type_id=flower_type_id
+                )
+                self.session.add(bouquet_flower_type)
+        
+        await self.session.commit()
+        await self.session.refresh(bouquet)
+        return bouquet
+
+    async def get_popular_bouquets(self, limit: int, offset: int) -> list[Bouquet]:
         query = (
             select(Bouquet)
             .order_by(Bouquet.purchase_count.desc(), Bouquet.view_count.desc())
-            .limit(limit)
             .options(selectinload(Bouquet.images))
+            .limit(limit)
+            .offset(offset)
         )
         result = await self.session.execute(query)
         return list(result.scalars().all())
@@ -43,4 +82,43 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         if bouquet:
             bouquet.view_count += 1
             await self.session.commit()
+            await self.session.refresh(bouquet)
 
+    async def search_bouquets(
+        self,
+        bouquet_type_ids: list[UUID] | None = None,
+        flower_type_ids: list[UUID] | None = None,
+        price_min: int | None = None,
+        price_max: int | None = None,
+        limit: int = 20,
+        offset: int = 0
+    ) -> list[Bouquet]:
+        query = select(Bouquet).options(selectinload(Bouquet.images))
+        
+        conditions = []
+        
+        if bouquet_type_ids:
+            conditions.append(Bouquet.bouquet_type_id.in_(bouquet_type_ids))
+        
+        if price_min is not None:
+            conditions.append(Bouquet.price >= price_min)
+        
+        if price_max is not None:
+            conditions.append(Bouquet.price <= price_max)
+        
+        if flower_type_ids:
+            subquery = (
+                select(BouquetFlowerType.bouquet_id)
+                .where(BouquetFlowerType.flower_type_id.in_(flower_type_ids))
+                .distinct()
+            )
+            conditions.append(Bouquet.id.in_(subquery))
+        
+        if conditions:
+            query = query.where(and_(*conditions))
+        
+        query = query.order_by(Bouquet.purchase_count.desc(), Bouquet.view_count.desc())
+        query = query.limit(limit).offset(offset)
+        
+        result = await self.session.execute(query)
+        return list(result.scalars().all())

@@ -28,3 +28,11 @@ class BadRequestException(BaseAPIException):
         self.detail = detail
         super().__init__(status_code=self.status_code, detail=self.detail)
  
+
+class InternalServerError(BaseAPIException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Внутренняя ошибка сервера"
+    
+    def __init__(self, detail: str = detail) -> None:
+        self.detail = detail
+        super().__init__(status_code=self.status_code, detail=self.detail)

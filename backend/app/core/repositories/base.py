@@ -15,12 +15,14 @@ class SqlAlchemyRepository[ModelType](RepositoryInterface[ModelType]):
         item = await self.session.get(self.model, item_id)
         return item
 
-    async def get_all_items(self, limit: int | None = None, offset: int | None = None) -> list[ModelType]:
+    async def get_all_items(self, limit: int | None = None, offset: int | None = None, is_active: bool | None = None) -> list[ModelType]:
         query = select(self.model)
         if limit:
             query = query.limit(limit)
         if offset:
             query = query.offset(offset)
+        if is_active:
+            query = query.where(self.model.is_active == True)
         items = await self.session.execute(query)
         return items.scalars().all()
 
@@ -60,7 +62,8 @@ class SqlAlchemyRepository[ModelType](RepositoryInterface[ModelType]):
             .returning(self.model)
         )
         item: Result = await self.session.execute(query)
-        item = item.scalars().all()[0]
+        item = item.scalar_one_or_none()
         await self.session.commit()
-        await self.session.refresh(item)
+        if item:
+            await self.session.refresh(item)
         return item

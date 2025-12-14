@@ -5,7 +5,6 @@ from app.infrastructure.database.models.base import Base
 
 
 class BouquetFlowerType(Base):
-    """Промежуточная таблица для связи many-to-many между букетами и типами цветов"""
     __tablename__ = "bouquet_flower_types"
     __table_args__ = (
         UniqueConstraint("bouquet_id", "flower_type_id", name="uq_bouquet_flower_type"),
@@ -30,6 +29,7 @@ class Bouquet(Base):
     quantity: Mapped[int] = mapped_column(default=0)
     purchase_count: Mapped[int] = mapped_column(default=0)
     view_count: Mapped[int] = mapped_column(default=0)
+    is_active: Mapped[bool] = mapped_column(default=False)
     bouquet_type_id: Mapped[UUID] = mapped_column(ForeignKey("bouquet_types.id"))
 
     images: Mapped[list["BouquetImage"]] = relationship(
