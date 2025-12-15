@@ -1,6 +1,7 @@
 import { Image } from "@/shared/ui/image/image";
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
+import { Header } from "@/widgets/header";
 
 const RootPage = () => {
   return (
@@ -15,8 +16,9 @@ const RootPage = () => {
         </div>
       }
     >
-      <div className="h-screen relative">
-        <main className="w-full h-full p-4">
+      <div className="h-screen relative flex flex-col">
+        <Header />
+        <main className="w-full flex-1">
           <Outlet />
         </main>
       </div>
