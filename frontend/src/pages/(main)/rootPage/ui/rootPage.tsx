@@ -2,6 +2,7 @@ import { Image } from "@/shared/ui/image/image";
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { Header } from "@/widgets/header";
+import { Footer } from "@/widgets/footer";
 
 const RootPage = () => {
   return (
@@ -21,6 +22,7 @@ const RootPage = () => {
         <main className="w-full flex-1">
           <Outlet />
         </main>
+        <Footer />
       </div>
     </Suspense>
   );
