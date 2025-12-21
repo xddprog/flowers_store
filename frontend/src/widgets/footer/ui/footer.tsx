@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Clock, Mail, Phone } from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
 import { Image } from "@/shared/ui/image/image";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 
@@ -21,16 +21,16 @@ export const Footer = () => {
                 loading="eager"
               />
             </Link>
-            <section className="flex flex-col gap-3">
+            <section className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <MapPin size={20} className="text-white flex-shrink-0" />
-                <p className="text-white font-sans text-sm">
+                <p className="text-white font-sans text-[20px]">
                   Новочерёмушкинская 17, подъезд 4
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <Clock size={20} className="text-white flex-shrink-0" />
-                <p className="text-white font-sans text-sm">
+                <p className="text-white font-sans text-[20px]">
                   График работы: 10:00-22:00
                 </p>
               </div>
@@ -44,25 +44,25 @@ export const Footer = () => {
             <nav className="flex flex-col gap-2">
               <Link
                 to="#"
-                className="text-white font-sans text-sm hover:opacity-80 transition-opacity"
+                className="text-white font-sans text-[20px] hover:opacity-80 transition-opacity"
               >
                 Каталог
               </Link>
               <Link
                 to="#"
-                className="text-white font-sans text-sm hover:opacity-80 transition-opacity"
+                className="text-white font-sans text-[20px] hover:opacity-80 transition-opacity"
               >
                 Политика
               </Link>
               <Link
                 to="#"
-                className="text-white font-sans text-sm hover:opacity-80 transition-opacity"
+                className="text-white font-sans text-[20px] hover:opacity-80 transition-opacity"
               >
                 Возврат и обмен
               </Link>
               <Link
                 to="#"
-                className="text-white font-sans text-sm hover:opacity-80 transition-opacity"
+                className="text-white font-sans text-[20px] hover:opacity-80 transition-opacity"
               >
                 Условия доставки
               </Link>
@@ -75,19 +75,17 @@ export const Footer = () => {
             </h3>
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-2">
-                <Mail size={20} className="text-white flex-shrink-0" />
                 <a
                   href="mailto:lavka-schastyal@mail.ru"
-                  className="text-white font-sans text-sm hover:opacity-80 transition-opacity"
+                  className="text-white font-sans text-[20px] hover:opacity-80 transition-opacity"
                 >
                   lavka-schastyal@mail.ru
                 </a>
               </div>
               <div className="flex items-center gap-2">
-                <Phone size={20} className="text-white flex-shrink-0" />
                 <a
                   href="tel:+79891070703"
-                  className="text-white font-sans text-sm hover:opacity-80 transition-opacity"
+                  className="text-white font-sans text-[20px] hover:opacity-80 transition-opacity"
                 >
                   +7 (989) 107-07-03
                 </a>
