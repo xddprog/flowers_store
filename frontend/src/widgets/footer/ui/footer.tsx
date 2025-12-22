@@ -6,7 +6,7 @@ import { ERouteNames } from "@/shared/lib/routeVariables";
 export const Footer = () => {
   return (
     <footer className="w-full bg-[#FF6600] md:min-h-[380px] flex items-center">
-      <div className="container mx-auto px-10 py-8 w-full">
+      <div className="container mx-auto px-8 md:px-0 py-8 w-full">
         <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-start justify-between">
           <div className="flex flex-col gap-6">
             <Link

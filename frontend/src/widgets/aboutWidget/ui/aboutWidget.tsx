@@ -12,6 +12,7 @@ export const AboutWidget = () => {
                 alt="Букет цветов"
                 className="w-full h-full object-cover"
                 loading="lazy"
+                height={630}
               />
             </div>
           </div>

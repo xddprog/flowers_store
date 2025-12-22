@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Image } from "@/shared/ui/image/image";
+import { ERouteNames } from "@/shared/lib/routeVariables";
 
 export const HeroBlock = () => {
   return (
@@ -31,7 +32,7 @@ export const HeroBlock = () => {
         </p>
 
         <Link
-          to="#"
+          to={ERouteNames.CATALOG_ROUTE}
           className="mt-4 bg-[#FF6600] text-white font-sans font-semibold hover:bg-[#E55A00] transition-colors flex items-center justify-center w-[183px] h-[60px] py-4 px-10"
         >
           В каталог

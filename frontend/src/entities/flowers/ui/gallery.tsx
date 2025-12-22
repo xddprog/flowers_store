@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { GALLERY_CATEGORIES } from "@/entities/flowers/lib/constants";
 import { GalleryCard } from "./galleryCard";
+import { ERouteNames } from "@/shared/lib/routeVariables";
 
 export const Gallery = () => {
   return (
@@ -16,7 +17,7 @@ export const Gallery = () => {
               классических монобукетов до современных композиций
             </p>
             <Link
-              to="#"
+              to={ERouteNames.CATALOG_ROUTE}
               className="bg-[#FF6600] w-[325px] text-white font-sans font-semibold hover:bg-[#E55A00] transition-colors flex items-center justify-center h-[60px] py-4 px-10"
             >
               В каталог
