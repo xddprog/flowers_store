@@ -1,10 +1,10 @@
 from uuid import UUID
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.repositories.base import SqlAlchemyRepository
-from app.infrastructure.database.models.bouquet import Bouquet, BouquetFlowerType
+from app.infrastructure.database.models.bouquet import Bouquet, BouquetFlowerType, BouquetImage
 
 
 class BouquetRepository(SqlAlchemyRepository[Bouquet]):
@@ -122,3 +122,71 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         
         result = await self.session.execute(query)
         return list(result.scalars().all())
+
+    async def update_image_order(
+        self, 
+        bouquet_id: UUID, 
+        image_id: UUID, 
+        new_order: int
+    ) -> list[BouquetImage]:
+        images = (
+            await self.session.execute(
+                select(BouquetImage)
+                .where(
+                    BouquetImage.bouquet_id == bouquet_id
+                )
+                .order_by(BouquetImage.order)
+            )
+        ).scalars().all()
+        updated_image = next((image for image in images if image.id == image_id), None)
+        if not updated_image:
+            return []
+        
+        old_order = updated_image.order
+        new_order = max(0, min(new_order, len(images) - 1))
+        
+        if old_order == new_order:
+            return list(images)
+        
+        images_without_current = [img for img in images if img.id != image_id]
+        
+        images_without_current.insert(new_order, updated_image)
+        
+        for index, image in enumerate(images_without_current):
+            image.order = index
+        
+        await self.session.commit()
+        
+        for image in images_without_current:
+            await self.session.refresh(image)
+        
+        return images_without_current
+
+    async def add_images(
+        self,
+        bouquet_id: UUID,
+        image_paths: list[str]
+    ) -> list[BouquetImage]:
+        max_order_query = select(BouquetImage.order).where(
+            BouquetImage.bouquet_id == bouquet_id
+        ).order_by(BouquetImage.order.desc()).limit(1)
+        max_result = await self.session.execute(max_order_query)
+        max_order_row = max_result.scalar_one_or_none()
+        start_order = (max_order_row + 1) if max_order_row is not None else 0
+        
+        new_images = []
+        for index, image_path in enumerate(image_paths):
+            image = BouquetImage(
+                bouquet_id=bouquet_id,
+                image_path=image_path,
+                order=start_order + index
+            )
+            self.session.add(image)
+            new_images.append(image)
+        
+        await self.session.commit()
+        
+        for image in new_images:
+            await self.session.refresh(image)
+        
+        return new_images

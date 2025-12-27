@@ -20,3 +20,12 @@ class CustomerService:
             raise NotFoundException(f"Пользователь с email {email} не найден")
         await self.repository.delete_item(item)
 
+    async def is_blocked(self, email: str, phone: str | None = None) -> bool:
+        filters = {}
+        if email:
+            filters["email"] = email
+        if phone:
+            filters["phone"] = phone
+        item = await self.repository.get_by_filter(one_or_none=True, **filters)
+        return item is not None
+

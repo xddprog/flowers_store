@@ -1,5 +1,5 @@
 from fastapi import status
-from infrastructure.errors.base import BaseAPIException
+from app.infrastructure.errors.base import BaseAPIException
 
 class UnauthorizedException(BaseAPIException):
     status_code = status.HTTP_401_UNAUTHORIZED

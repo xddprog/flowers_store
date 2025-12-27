@@ -1,16 +1,25 @@
 from uuid import UUID
+from fastapi import UploadFile
 
-from app.core.dto.bouquet import BaseBouquetSchema, BouquetDetailSchema, BouquetFilterSchema
-from app.core.dto.bouquet import BouquetCreateSchema, BouquetUpdateSchema
+from app.core.dto.bouquet import (
+    BaseBouquetSchema, 
+    BouquetDetailSchema, 
+    BouquetFilterSchema,
+    BouquetCreateSchema, 
+    BouquetUpdateSchema,
+    BouquetImageSchema
+)
 from app.core.repositories.bouquet_repository import BouquetRepository
 from app.core.services.base import BaseDbModelService
+from app.core.services.image_service import ImageService
 from app.infrastructure.database.models.bouquet import Bouquet
 from app.infrastructure.errors.base import NotFoundException
 
 
 class BouquetService(BaseDbModelService[Bouquet]):
-    def __init__(self, repository: BouquetRepository):
+    def __init__(self, repository: BouquetRepository, image_service: ImageService):
         self.repository = repository
+        self.image_service = image_service
 
     async def get_popular_bouquets(self, limit: int, offset: int) -> list[BaseBouquetSchema]:
         bouquets = await self.repository.get_popular_bouquets(limit, offset)
@@ -77,3 +86,30 @@ class BouquetService(BaseDbModelService[Bouquet]):
         if not bouquet:
             raise NotFoundException(f"Букет с ID {bouquet_id} не найден")
         return BaseBouquetSchema.model_validate(bouquet, from_attributes=True)
+
+    async def update_image_order(
+        self, 
+        bouquet_id: UUID, 
+        image_id: UUID, 
+        order: int
+    ) -> list[BouquetImageSchema]:
+        images = await self.repository.update_image_order(bouquet_id, image_id, order)
+        
+        if not images:
+            raise NotFoundException(f"Изображение с ID {image_id} не найдено в букете {bouquet_id}")
+        
+        return [BouquetImageSchema.model_validate(image, from_attributes=True) for image in images]
+
+    async def upload_images(
+        self,
+        bouquet_id: UUID,
+        files: list[UploadFile]
+    ) -> list[BouquetImageSchema]:
+        bouquet = await self.repository.get_item(str(bouquet_id))
+        if not bouquet:
+            raise NotFoundException(f"Букет с ID {bouquet_id} не найден")
+        
+        image_paths = await self.image_service.upload_multiple(files, subfolder="bouquets")
+        images = await self.repository.add_images(bouquet_id, image_paths)
+        
+        return [BouquetImageSchema.model_validate(image, from_attributes=True) for image in images]

@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
-
-
-class RegisterSchema(BaseModel):
-    email: EmailStr
-    password: str = Field(..., min_length=6, description="Пароль должен быть не менее 6 символов")
-    username: str = Field(..., min_length=1)
+from pydantic import BaseModel, Field
 
 
 class LoginSchema(BaseModel):
-    email: EmailStr
-    password: str = Field(..., min_length=6)
+    username: str = Field(..., min_length=1)
+    password: str = Field(..., min_length=5)
 
 
 class RefreshTokenSchema(BaseModel):

@@ -1,23 +1,20 @@
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import select
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from core.dto.auth import LoginSchema, RegisterSchema, TokenSchema
-from core.dto.user import BaseUserSchema
-from core.services.base import BaseDbModelService
-from infrastructure.database.models.user import User
-from infrastructure.errors.auth_errors import ForbiddenException, InvalidCredentials
-from infrastructure.errors.base import BadRequestException
-from infrastructure.config.config import JWT_CONFIG
+from app.core.dto.auth import LoginSchema, TokenSchema
+from app.core.dto.admin import BaseAdminSchema
+from app.core.repositories.admin_repository import AdminRepository
+from app.infrastructure.database.models.admin import Admin
+from app.infrastructure.errors.auth_errors import ForbiddenException, InvalidCredentials
+from app.infrastructure.config.config import JWT_CONFIG
 
 import jwt
 from passlib.context import CryptContext
 
 
-class AuthService(BaseDbModelService[User]):
-    def __init__(self, session: AsyncSession):
-        super().__init__(session)
+class AuthService:
+    def __init__(self, repository: AdminRepository):
+        self.repository = repository
         self.pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
     def _hash_password(self, password: str) -> str:
@@ -26,30 +23,26 @@ class AuthService(BaseDbModelService[User]):
     def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def _create_access_token(self, user: User) -> str:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_CONFIG.JWT_ACCESS_TOKEN_TIME)
-        to_encode = {"sub": str(user.id), "exp": expire}
-        encoded_jwt = jwt.encode(to_encode, JWT_CONFIG.JWT_SECRET, algorithm=JWT_CONFIG.JWT_ALGORITHM)
+    def _create_access_token(self, admin: Admin) -> str:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_CONFIG.ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode = {"sub": str(admin.id), "exp": expire}
+        encoded_jwt = jwt.encode(to_encode, JWT_CONFIG.SECRET_KEY, algorithm=JWT_CONFIG.ALGORITHM)
         return encoded_jwt
 
-    def _create_refresh_token(self, user: User) -> str:
-        expire = datetime.now(timezone.utc) + timedelta(days=JWT_CONFIG.JWT_REFRESH_TOKEN_TIME)
-        to_encode = {"sub": str(user.id), "exp": expire}
-        encoded_jwt = jwt.encode(to_encode, JWT_CONFIG.JWT_SECRET, algorithm=JWT_CONFIG.JWT_ALGORITHM)
+    def _create_refresh_token(self, admin: Admin) -> str:
+        expire = datetime.now(timezone.utc) + timedelta(days=JWT_CONFIG.REFRESH_TOKEN_EXPIRE_DAYS)
+        to_encode = {"sub": str(admin.id), "exp": expire}
+        encoded_jwt = jwt.encode(to_encode, JWT_CONFIG.SECRET_KEY, algorithm=JWT_CONFIG.ALGORITHM)
         return encoded_jwt
 
     async def login_user(self, form: LoginSchema) -> TokenSchema:
-        user = (
-            await self.session.execute(
-                select(User).where(User.email == form.email)
-            )
-        ).scalar_one_or_none()
+        admin = await self.repository.get_by_filter(one_or_none=True, username=form.username)
         
-        if not user or not self._verify_password(form.password, user.password_hash):
+        if not admin or not self._verify_password(form.password, admin.password_hash):
             raise InvalidCredentials()
 
-        access_token = self._create_access_token(user)
-        refresh_token = self._create_refresh_token(user)
+        access_token = self._create_access_token(admin)
+        refresh_token = self._create_refresh_token(admin)
         return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
     async def verify_token(self, token: str | None) -> dict:
@@ -57,68 +50,34 @@ class AuthService(BaseDbModelService[User]):
             raise ForbiddenException()
 
         try:
-            payload = jwt.decode(token, JWT_CONFIG.JWT_SECRET, algorithms=[JWT_CONFIG.JWT_ALGORITHM])
+            payload = jwt.decode(token, JWT_CONFIG.SECRET_KEY, algorithms=[JWT_CONFIG.ALGORITHM])
             return payload
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
             raise InvalidCredentials()
 
-    async def check_user_exist(self, token_data: dict) -> BaseUserSchema:
+    async def check_user_exist(self, token_data: dict) -> BaseAdminSchema:
         try:
-            user_id = UUID(token_data.get("sub"))
+            admin_id = UUID(token_data.get("sub"))
         except (ValueError, TypeError):
             raise InvalidCredentials()
 
-        user = (
-            await self.session.execute(
-                select(User)
-                .where(User.id == user_id)
-            )
-        ).scalar_one_or_none()
-        if not user:
+        admin = await self.repository.get_by_filter(one_or_none=True, id=admin_id)
+        if not admin:
             raise ForbiddenException()
-        return BaseUserSchema.model_validate(user, from_attributes=True)
-        
-    async def register_user(self, form: RegisterSchema) -> BaseUserSchema:
-        existing_user = (
-            await self.session.execute(
-                select(User).where(User.email == form.email)
-            )
-        ).scalar_one_or_none()
-        
-        if existing_user:
-            raise BadRequestException("Пользователь с таким email уже существует.")
-        
-        password_hash = self._hash_password(form.password)
-        new_user = User(
-            email=form.email,
-            username=form.username,
-            password_hash=password_hash,
-        )
-        
-        self.session.add(new_user)
-        await self.session.commit()
-        await self.session.refresh(new_user)
-        
-        access_token = self._create_access_token(new_user)
-        refresh_token = self._create_refresh_token(new_user)
-        return TokenSchema(access_token=access_token, refresh_token=refresh_token)
+        return BaseAdminSchema.model_validate(admin, from_attributes=True)
 
     async def refresh_token(self, refresh_token: str) -> TokenSchema:
         try:
             payload = await self.verify_token(refresh_token)
-            user_id = UUID(payload.get("sub"))
+            admin_id = UUID(payload.get("sub"))
             
-            user = (
-                await self.session.execute(
-                    select(User).where(User.id == user_id)
-                )
-            ).scalar_one_or_none()
+            admin = await self.repository.get_by_filter(id=admin_id, one_or_none=True)
             
-            if not user:
+            if not admin:
                 raise InvalidCredentials()
                 
-            access_token = self._create_access_token(user)
-            new_refresh_token = self._create_refresh_token(user)
+            access_token = self._create_access_token(admin)
+            new_refresh_token = self._create_refresh_token(admin)
             
             return TokenSchema(access_token=access_token, refresh_token=new_refresh_token)
             

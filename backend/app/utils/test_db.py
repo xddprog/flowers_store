@@ -2,7 +2,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.infrastructure.database.models.bouquet import Bouquet, BouquetType, FlowerType, BouquetImage, BouquetFlowerType
+from app.infrastructure.database.models.admin import Admin
 from app.infrastructure.logging.logger import get_logger
+from passlib.context import CryptContext
 
 
 logger = get_logger(__name__)
@@ -191,6 +193,14 @@ async def init_test_db(session: AsyncSession) -> None:
                    flower_types_count=len(FLOWER_TYPES),
                    bouquet_types_count=len(BOUQUET_TYPES),
                    bouquets_count=len(test_bouquets))
+
+        pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+        admin = Admin(
+            username="admin",
+            password_hash=pwd_context.hash("admin")
+        )
+        session.add(admin)
+        await session.commit()
     except Exception as e:
         await session.rollback()
         logger.error("test_data_initialization_failed", error=str(e), exc_info=True)

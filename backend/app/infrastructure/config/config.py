@@ -34,7 +34,6 @@ class DatabaseConfig(Config):
 
 
 class JWTConfig(Config):
-    
     SECRET_KEY: str = Field(default="change-me-in-production")
     ALGORITHM: str = Field(default="HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
@@ -44,8 +43,8 @@ class JWTConfig(Config):
 class AppConfig(Config):
     APP_NAME: str = Field(default="4roads API")
     DEBUG: bool = Field(default=False)
-    STATIC_URL: str = Field(default="http://localhost:8000/static")
     
+    BASE_URL: str = Field(default="http://localhost:8000")
     STATIC_DIR: str = Field(default="static")
     IMAGES_DIR: str = Field(default="static/images")
     
@@ -59,15 +58,29 @@ class AppConfig(Config):
     SITEMAP_PASSWORD: str = Field(default="change-me-sitemap-secret")
 
 
+class SMTPConfig(Config):
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    SMTP_PORT: int
+    SMTP_HOST: str
+
+
+class TelegramConfig(Config):
+    BOT_TOKEN: str = Field(default="")
+    ADMIN_CHAT_ID: str = Field(default="", description="ID чата для уведомлений администратора")
+
+
 class Settings(Config):
-    
+    smtp: SMTPConfig = Field(default_factory=SMTPConfig)
+    telegram: TelegramConfig = Field(default_factory=TelegramConfig)
     database: DatabaseConfig = Field(default_factory=DatabaseConfig)
     jwt: JWTConfig = Field(default_factory=JWTConfig)
     app: AppConfig = Field(default_factory=AppConfig)
 
-
 settings = Settings()
 
+SMTP_CONFIG = settings.smtp
+TELEGRAM_CONFIG = settings.telegram
 DB_CONFIG = settings.database
 JWT_CONFIG = settings.jwt
 APP_CONFIG = settings.app

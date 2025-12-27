@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from uuid import UUID
 
 
-class BaseUserSchema(BaseModel):
+class BaseAdminSchema(BaseModel):
     id: UUID
-    email: str
     username: str
+

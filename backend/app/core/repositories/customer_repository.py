@@ -8,7 +8,7 @@ from app.infrastructure.database.models.blocked_customer import BlockedCustomer
 
 class CustomerRepository(SqlAlchemyRepository[BlockedCustomer]):
     def __init__(self, session: AsyncSession):
-        self.session = session
+        super().__init__(session, BlockedCustomer)
 
     async def get_all_items(self, limit: int, offset: int) -> list[dict]:
         blocked_exists = (

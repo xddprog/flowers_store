@@ -1,11 +1,17 @@
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+from app.utils.url_helper import get_absolute_url
 
 
 class BouquetImageSchema(BaseModel):
     id: UUID
     image_path: str
     order: int
+
+    @field_validator("image_path", mode="before")
+    def validate_image_path(cls, v: str) -> str:
+        return get_absolute_url(v)
 
 
 class FlowerTypeSchema(BaseModel):
@@ -62,3 +68,6 @@ class BouquetUpdateSchema(BaseModel):
     bouquet_type_id: UUID | None = None
     flower_type_ids: list[UUID] | None = None
 
+
+class ImageOrderUpdateSchema(BaseModel):
+    order: int = Field(..., ge=0, description="Новый порядок изображения")
