@@ -1,6 +1,28 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+::-webkit-scrollbar {
+  width: 2px;
+  height: 5px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF6600;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF6600;
+}
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
