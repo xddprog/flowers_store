@@ -1,11 +1,21 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { FiltersSidebar } from "@/widgets/catalogFilters";
 import { ProductGrid } from "@/entities/product";
 import { POPULAR_BOUQUETS } from "@/entities/flowers/lib/constants";
 import { ERouteNames } from "@/shared/lib/routeVariables";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select/select";
 
 const CatalogPage = () => {
+  const [sortBy, setSortBy] = useState("popularity");
+
   const products = [
     ...POPULAR_BOUQUETS,
     ...POPULAR_BOUQUETS,
@@ -27,13 +37,20 @@ const CatalogPage = () => {
             <h1 className="text-3xl md:text-[56px] font-sans text-[#181818]">
               Каталог
             </h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <span className="text-base font-sans text-[#181818]">
                 Сортировать по
               </span>
-              <button>
-                <ChevronDown size={20} className="text-[#181818]" />
-              </button>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="border-0 shadow-none p-0 h-auto w-auto gap-1 focus:ring-0 focus-visible:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent text-base font-sans text-[#181818] [&_svg]:opacity-100 [&_svg]:text-[#181818]">
+                  <SelectValue placeholder="По популярности" />
+                </SelectTrigger>
+                <SelectContent side="bottom" align="end" position="popper">
+                  <SelectItem value="popularity">популярности</SelectItem>
+                  <SelectItem value="price-low">наименьшей цене</SelectItem>
+                  <SelectItem value="price-high">наибольшей цене</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

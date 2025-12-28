@@ -44,19 +44,19 @@ export const Header = () => {
               </button>
             </nav>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <button
                 className="text-white hover:opacity-80 transition-opacity"
                 aria-label="Поиск"
               >
-                <Search size={20} />
+                <Search size={32} />
               </button>
               <button
                 onClick={() => setIsBasketOpen(true)}
                 className="text-white hover:opacity-80 transition-opacity"
                 aria-label="Корзина"
               >
-                <ShoppingBag size={20} />
+                <ShoppingBag size={32} />
               </button>
             </div>
           </div>
