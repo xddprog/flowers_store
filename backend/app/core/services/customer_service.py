@@ -26,6 +26,6 @@ class CustomerService:
             filters["email"] = email
         if phone:
             filters["phone"] = phone
-        item = await self.repository.get_by_filter(one_or_none=True, **filters)
-        return item is not None
+        items = await self.repository.get_by_filter(**filters)
+        return items is not None
 

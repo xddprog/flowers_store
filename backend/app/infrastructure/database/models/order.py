@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 from datetime import datetime
-from sqlalchemy import ForeignKey, Enum as SQLEnum
+from sqlalchemy import DateTime, ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.infrastructure.database.models.base import Base
 
-from app.utils.enums import DeliveryMethod, OrderStatus, PaymentMethod, PaymentStatus
+from app.utils.enums import DeliveryMethod, OrderStatus, PaymentStatus
 
 
 if TYPE_CHECKING:
@@ -20,14 +20,14 @@ class Order(Base):
     customer_email: Mapped[str]
     is_pickup_by_customer: Mapped[bool] = mapped_column(default=False)
     
-    recipient_name: Mapped[str]
-    recipient_phone: Mapped[str]
+    recipient_name: Mapped[str] = mapped_column(nullable=True)
+    recipient_phone: Mapped[str] = mapped_column(nullable=True)
     greeting_card_text: Mapped[str | None] = mapped_column(default=None)
     
     delivery_method: Mapped[DeliveryMethod] = mapped_column(SQLEnum(DeliveryMethod))
-    delivery_date: Mapped[datetime]
-    delivery_time_from: Mapped[datetime]
-    delivery_time_to: Mapped[datetime]
+    delivery_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    delivery_time_from: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    delivery_time_to: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     
     delivery_city: Mapped[str | None] = mapped_column(default=None)
     delivery_street: Mapped[str | None] = mapped_column(default=None)
@@ -44,7 +44,7 @@ class Order(Base):
         back_populates="order",
         cascade="all, delete-orphan"
     )
-    payments: Mapped[list["Payment"]] = relationship(
+    payment: Mapped["Payment"] = relationship(
         back_populates="order",
         cascade="all, delete-orphan"
     )
@@ -70,10 +70,9 @@ class Payment(Base):
     order_id: Mapped[UUID] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
     
     amount: Mapped[int]
-    payment_method: Mapped[PaymentMethod] = mapped_column(SQLEnum(PaymentMethod))
     status: Mapped[PaymentStatus] = mapped_column(SQLEnum(PaymentStatus), default=PaymentStatus.PENDING)
     transaction_id: Mapped[str | None] = mapped_column(default=None)
     payment_date: Mapped[datetime | None] = mapped_column(default=None)
     
-    order: Mapped["Order"] = relationship(back_populates="payments")
+    order: Mapped["Order"] = relationship(back_populates="payment")
 

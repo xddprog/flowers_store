@@ -4,6 +4,8 @@ from app.infrastructure.config.config import DB_CONFIG
 from app.infrastructure.database.models.base import Base
 from app.utils.test_db import init_test_db
 
+import app.infrastructure.database.events.is_active
+
 
 class DatabaseConnection:
     def __init__(self):

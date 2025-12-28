@@ -32,6 +32,10 @@ async def get_telegram_client() -> clients.TelegramClient:
     return clients.TelegramClient()
 
 
+async def get_yandex_pay_client() -> clients.YandexPayClient:
+    return clients.YandexPayClient()
+
+
 async def get_image_service() -> services.ImageService:
     return services.ImageService()
 
@@ -70,10 +74,12 @@ async def get_current_user(
 async def get_order_service(
     session=Depends(get_db_session),
     smtp_client=Depends(get_smtp_client),
-    telegram_client=Depends(get_telegram_client)
+    telegram_client=Depends(get_telegram_client),
+    yandex_pay_client=Depends(get_yandex_pay_client)
 ) -> services.OrderService:
     return services.OrderService(
         repository=repositories.OrderRepository(session=session),
         smtp_client=smtp_client,
-        telegram_client=telegram_client
+        telegram_client=telegram_client,
+        yandex_pay_client=yandex_pay_client
     )

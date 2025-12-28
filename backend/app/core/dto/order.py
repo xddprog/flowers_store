@@ -1,11 +1,12 @@
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel, Field
-from app.utils.enums import DeliveryMethod, OrderStatus, PaymentMethod
+from app.utils.enums import DeliveryMethod, OrderStatus
 
 
 class OrderItemCreateSchema(BaseModel):
     bouquet_id: UUID
+    title: str
     quantity: int = Field(ge=1)
     price: int = Field(ge=0)
 
@@ -16,8 +17,8 @@ class OrderCreateSchema(BaseModel):
     customer_email: str
     is_pickup_by_customer: bool = False
     
-    recipient_name: str
-    recipient_phone: str
+    recipient_name: str | None = None
+    recipient_phone: str | None = None
     greeting_card_text: str | None = None
     
     delivery_method: DeliveryMethod
@@ -34,10 +35,12 @@ class OrderCreateSchema(BaseModel):
     comment: str | None = None
     
     items: list[OrderItemCreateSchema] = Field(min_length=1)
-    
-    payment_method: PaymentMethod
+
     payment_amount: int = Field(ge=0)
 
+
+class OrderCreateResponseSchema(BaseModel):
+    payment_url: str
 
 class OrderResponseSchema(BaseModel):
     id: UUID
@@ -46,6 +49,7 @@ class OrderResponseSchema(BaseModel):
     customer_email: str
     total_amount: int
     status: str
+
 
 class OrderAdminSchema(BaseModel):
     id: UUID

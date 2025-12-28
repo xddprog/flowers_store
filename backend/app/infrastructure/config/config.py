@@ -40,6 +40,17 @@ class JWTConfig(Config):
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=3)
 
 
+class YandexPayConfig(Config):
+    API_URL: str = Field(default="https://sandbox.pay.yandex.ru/api")
+    ON_ERROR_REDIRECT_URL: str = Field(default="")
+    ON_SUCCESS_REDIRECT_URL: str = Field(default="")
+    ON_ABORT_REDIRECT_URL: str = Field(default="")
+    CALLBACK_URL: str = Field(default="http://localhost:8000/api/v1/order/callback")
+    REQUEST_TIMEOUT: int = Field(default=10)
+    MAX_RETRIES: int = Field(default=3)
+    API_KEY: str = Field(default="")
+    
+
 class AppConfig(Config):
     APP_NAME: str = Field(default="4roads API")
     DEBUG: bool = Field(default=False)
@@ -54,8 +65,7 @@ class AppConfig(Config):
     SLOW_REQUEST_THRESHOLD: float = Field(default=1.0, description="Порог медленных запросов в секундах")
 
     CORS_ALLOWED_ORIGINS: str = Field(default="http://localhost:3000,http://localhost:5173")
-    
-    SITEMAP_PASSWORD: str = Field(default="change-me-sitemap-secret")
+
 
 
 class SMTPConfig(Config):
@@ -76,6 +86,7 @@ class Settings(Config):
     database: DatabaseConfig = Field(default_factory=DatabaseConfig)
     jwt: JWTConfig = Field(default_factory=JWTConfig)
     app: AppConfig = Field(default_factory=AppConfig)
+    yandex_pay: YandexPayConfig = Field(default_factory=YandexPayConfig)
 
 settings = Settings()
 
@@ -84,3 +95,4 @@ TELEGRAM_CONFIG = settings.telegram
 DB_CONFIG = settings.database
 JWT_CONFIG = settings.jwt
 APP_CONFIG = settings.app
+YANDEX_PAY_CONFIG = settings.yandex_pay

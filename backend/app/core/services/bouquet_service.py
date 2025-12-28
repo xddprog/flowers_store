@@ -14,6 +14,8 @@ from app.core.services.base import BaseDbModelService
 from app.core.services.image_service import ImageService
 from app.infrastructure.database.models.bouquet import Bouquet
 from app.infrastructure.errors.base import NotFoundException
+from app.core.dto.order import OrderItemCreateSchema
+from app.core.dto.yandex_pay import CartItem, CartItemQuantity
 
 
 class BouquetService(BaseDbModelService[Bouquet]):
@@ -113,3 +115,31 @@ class BouquetService(BaseDbModelService[Bouquet]):
         images = await self.repository.add_images(bouquet_id, image_paths)
         
         return [BouquetImageSchema.model_validate(image, from_attributes=True) for image in images]
+
+    async def get_bouquets_to_order(self, bouquets: list[OrderItemCreateSchema]) -> list[CartItem]:
+        db_bouquets = await self.repository.get_by_ids([item.bouquet_id for item in bouquets])
+        db_bouquets_map = {bouquet.id: bouquet for bouquet in db_bouquets}
+
+        items = []
+        for bouquet in bouquets:
+            db_bouquet = db_bouquets_map.get(bouquet.bouquet_id)
+
+            if db_bouquet is None:
+                raise NotFoundException(f"Букет {bouquet.title} не найден")
+            if db_bouquet.quantity < bouquet.quantity:
+                raise NotFoundException(f"Недостаточно {bouquet.title} на складе, уменьшите количество")
+
+            items.append(
+                CartItem(
+                    product_id=str(db_bouquet.id),
+                    quantity=CartItemQuantity(
+                        count=bouquet.quantity,
+                        available=db_bouquet.quantity
+                    ),
+                    title=db_bouquet.name,
+                    total=db_bouquet.price,
+                    description=db_bouquet.description
+                )
+            )
+        
+        return items

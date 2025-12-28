@@ -1,12 +1,6 @@
 from enum import Enum
 
 
-class PaymentMethod(str, Enum):
-    CARD = "card"
-    CASH = "cash"
-    ONLINE = "online"
-
-
 class PaymentStatus(str, Enum):
     PENDING = "pending"
     PAID = "paid"
@@ -20,7 +14,9 @@ class DeliveryMethod(str, Enum):
 
 
 class OrderStatus(str, Enum):
+    PENDING = "pending"
     PAID = "paid"
+    FAILED = "failed"
     PROCESSING = "processing"
     COMPLETED = "completed"
     CANCELLED = "cancelled"

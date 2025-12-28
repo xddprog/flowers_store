@@ -7,10 +7,20 @@ from app.infrastructure.database.models.order import Order
 logger = get_logger(__name__)
 
 
+
+
 class TelegramClient:
     def __init__(self):
         self.bot_token = TELEGRAM_CONFIG.BOT_TOKEN
         self.admin_chat_id = TELEGRAM_CONFIG.ADMIN_CHAT_ID
+        self.status_messages = {
+            "pending": "Ожидание оплаты",
+            "paid": "Оплачен",
+            "failed": "Ошибка",
+            "processing": "Обрабатывается",
+            "completed": "Выполнен",
+            "cancelled": "Отменен",
+        }
 
     async def send_message(
         self, 
@@ -63,10 +73,10 @@ class TelegramClient:
             logger.warning("ADMIN_CHAT_ID not configured, skipping payment notification")
             return
 
-        payment = order.payments[0] if order.payments else None
+        payment = order.payment
         if not payment:
             logger.warning("payment_not_found_for_notification", order_id=str(order.id))
-            return
+            return  
 
         delivery_info = ""
         if order.is_pickup_by_customer:
@@ -106,8 +116,7 @@ class TelegramClient:
             f"{delivery_info}\n\n"
             f"🛍️ <b>Состав заказа:</b>\n{items_text}\n\n"
             f"💰 <b>Сумма:</b> {payment.amount} ₽\n"
-            f"💳 <b>Способ оплаты:</b> {payment.payment_method.value}\n"
-            f"📊 <b>Статус платежа:</b> {payment.status.value}\n"
+            f"📊 <b>Статус платежа:</b> {self.status_messages.get(payment.status)}\n"
         )
 
         if payment.transaction_id:
@@ -140,8 +149,8 @@ class TelegramClient:
             f"👤 <b>Покупатель:</b> {order.customer_name}\n"
             f"📧 <b>Email:</b> {order.customer_email}\n"
             f"📞 <b>Телефон:</b> {order.customer_phone}\n\n"
-            f"📊 <b>Предыдущий статус:</b> {old_status}\n"
-            f"📊 <b>Новый статус:</b> {order.status.value}\n"
+            f"📊 <b>Предыдущий статус:</b> {self.status_messages.get(old_status)}\n"
+            f"📊 <b>Новый статус:</b> {self.status_messages.get(order.status.value)}\n"
         )
 
         success = await self.send_message(

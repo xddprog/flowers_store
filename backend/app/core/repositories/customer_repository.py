@@ -14,8 +14,10 @@ class CustomerRepository(SqlAlchemyRepository[BlockedCustomer]):
         blocked_exists = (
             select(1)
             .where(
-                BlockedCustomer.email == Order.customer_email,
-                BlockedCustomer.phone == Order.customer_phone
+                or_(
+                    BlockedCustomer.email == Order.customer_email,
+                    BlockedCustomer.phone == Order.customer_phone
+                )
             )
             .exists()
         )

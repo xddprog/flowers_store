@@ -55,7 +55,6 @@ class SMTPClients:
                 items_html += f"<li>{bouquet_name} x{item.quantity} - {item.price * item.quantity} ₽</li>"
             items_html += "</ul>"
 
-            payment_method = order.payments[0].payment_method.value if order.payments else 'Не указан'
 
             email_body = f"""
             <html>
@@ -73,7 +72,6 @@ class SMTPClients:
                 {items_html}
                 
                 <p><strong>Общая сумма:</strong> {order.total_amount} ₽</p>
-                <p><strong>Способ оплаты:</strong> {payment_method}</p>
                 <p><strong>Статус заказа:</strong> {order.status.value}</p>
             """
 
@@ -116,8 +114,11 @@ class SMTPClients:
                 "paid": "Ваш заказ оплачен",
                 "processing": "Ваш заказ обрабатывается",
                 "completed": "Ваш заказ выполнен",
-                "cancelled": "Ваш заказ отменен"
+                "cancelled": "Ваш заказ отменен",
+                "failed": "Ошибка заказа",
+                "pending": "Ваш заказ ожидает оплаты"
             }
+            
 
             status_message = status_messages.get(order.status.value, "Статус вашего заказа изменен")
 

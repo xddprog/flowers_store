@@ -11,6 +11,11 @@ class SqlAlchemyRepository[ModelType](RepositoryInterface[ModelType]):
         self.session = session
         self.model = model
 
+    async def get_by_ids(self, ids: list[str]) -> list[ModelType]:
+        query = select(self.model).where(self.model.id.in_(ids))
+        items = await self.session.execute(query)
+        return items.scalars().all()
+
     async def get_item(self, item_id: str) -> ModelType | None:
         item = await self.session.get(self.model, item_id)
         return item

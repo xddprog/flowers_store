@@ -1,8 +1,9 @@
-﻿fastapi
+fastapi
 uvicorn[standard]
 sqlalchemy[asyncio]
 asyncpg
 passlib[argon2]
+python-jose[cryptography]
 pyjwt
 pydantic
 pydantic-settings
