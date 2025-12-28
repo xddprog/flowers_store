@@ -13,9 +13,9 @@ const CatalogPage = () => {
   ];
 
   return (
-    <div className="w-full my-12 mt-24">
+    <div className="w-full my-12 mt-16">
       <div className="container mx-auto">
-        <div className="mb-12 gap-3 flex flex-col">
+        <div className="mb-10 gap-3 flex flex-col">
           <Link
             to={ERouteNames.DEFAULT_ROUTE}
             className="flex items-center gap-2 text-base font-sans text-[#181818] hover:opacity-80 transition-opacity mb-4"
@@ -24,7 +24,7 @@ const CatalogPage = () => {
             <span>Главная</span>
           </Link>
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl md:text-4xl font-sans font-semibold text-[#181818]">
+            <h1 className="text-3xl md:text-[56px] font-sans font-semibold text-[#181818]">
               Каталог
             </h1>
             <div className="flex items-center gap-2">

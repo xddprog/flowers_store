@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface FilterSectionProps {
   title: string;
@@ -24,9 +25,10 @@ export const FilterSection = ({
       {showMore && (
         <button
           onClick={onShowMore}
-          className="mt-3 text-sm font-sans text-[#FF6600] hover:opacity-80 transition-opacity"
+          className="mt-3 flex items-center gap-2 text-sm font-sans text-[#3F3F3F] hover:opacity-80 transition-opacity"
         >
           Еще
+          <ChevronDown size={16} className="text-[#3F3F3F]" />
         </button>
       )}
       {border && <div className="mt-6 border-b border-gray-300" />}

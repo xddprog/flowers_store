@@ -1,3 +1,5 @@
+import { Checkbox } from "@/shared/ui/checkbox/checkbox";
+
 interface CheckboxFilterProps {
   id: string;
   label: string;
@@ -13,15 +15,13 @@ export const CheckboxFilter = ({
 }: CheckboxFilterProps) => {
   return (
     <label className="flex items-center gap-3 cursor-pointer">
-      <input
-        type="checkbox"
+      <Checkbox
         id={id}
         checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="w-5 h-5 rounded border-gray-300 text-[#FF6600] focus:ring-[#FF6600] cursor-pointer"
+        onCheckedChange={(checked) => onChange(checked === true)}
+        className="w-6 h-6 data-[state=checked]:bg-[#FF6600] data-[state=checked]:border-[#FF6600] border-gray-300"
       />
       <span className="text-base font-sans text-[#181818]">{label}</span>
     </label>
   );
 };
-

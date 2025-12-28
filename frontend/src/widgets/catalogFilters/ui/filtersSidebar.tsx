@@ -64,7 +64,7 @@ export const FiltersSidebar = () => {
           </h2>
           <button
             onClick={handleReset}
-            className="text-sm font-sans text-[#FF6600] hover:opacity-80 transition-opacity"
+            className="text-[20px] font-sans text-[#838383] cursor-pointer hover:opacity-80 transition-opacity"
           >
             Сбросить
           </button>

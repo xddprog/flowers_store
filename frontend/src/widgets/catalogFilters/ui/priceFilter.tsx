@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Slider } from "@/shared/ui/slider/slider";
 
 interface PriceFilterProps {
   minPrice: number;
@@ -20,46 +21,24 @@ export const PriceFilter = ({
 
   return (
     <div>
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-base font-sans text-[#181818]">От</span>
-          <input
-            type="number"
-            value={min}
-            onChange={(e) => setMin(Number(e.target.value))}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded text-base font-sans text-[#181818] focus:outline-none focus:ring-2 focus:ring-[#FF6600]"
-            placeholder="1000"
-          />
-          <span className="text-base font-sans text-[#181818]">Р</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-base font-sans text-[#181818]">До</span>
-          <input
-            type="number"
-            value={max}
-            onChange={(e) => setMax(Number(e.target.value))}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded text-base font-sans text-[#181818] focus:outline-none focus:ring-2 focus:ring-[#FF6600]"
-            placeholder="10000"
-          />
-          <span className="text-base font-sans text-[#181818]">Р</span>
-        </div>
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-base font-sans text-[#181818]">
+          От {min.toLocaleString("ru-RU")} ₽
+        </span>
+        <span className="text-base font-sans text-[#181818]">
+          До {max.toLocaleString("ru-RU")} ₽
+        </span>
       </div>
       <div className="mb-4">
-        <input
-          type="range"
+        <Slider
           min={minPrice}
           max={maxPrice}
-          value={min}
-          onChange={(e) => setMin(Number(e.target.value))}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#FF6600]"
-        />
-        <input
-          type="range"
-          min={minPrice}
-          max={maxPrice}
-          value={max}
-          onChange={(e) => setMax(Number(e.target.value))}
-          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#FF6600] mt-2"
+          value={[min, max]}
+          onValueChange={(values) => {
+            setMin(values[0]);
+            setMax(values[1]);
+          }}
+          className="w-full [&_[data-slot=slider-track]]:bg-gray-200 [&_[data-slot=slider-range]]:bg-[#FF6600] [&_[data-slot=slider-thumb]]:border-[#FF6600]"
         />
       </div>
       <button
@@ -71,4 +50,3 @@ export const PriceFilter = ({
     </div>
   );
 };
-
