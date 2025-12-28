@@ -26,19 +26,19 @@ export const Header = () => {
             <nav className="flex items-center gap-8">
               <Link
                 to={ERouteNames.DEFAULT_ROUTE}
-                className="text-white font-sans font-semibold text-base hover:opacity-80 transition-opacity"
+                className="text-white font-sans text-xl hover:opacity-80 transition-opacity"
               >
                 Главная
               </Link>
               <Link
-                to="#"
-                className="text-white font-sans text-base font-semibold hover:opacity-80 transition-opacity"
+                to={`/${ERouteNames.DASHBOARD_ROUTE}/${ERouteNames.CATALOG_ROUTE}`}
+                className="text-white font-sans text-xl hover:opacity-80 transition-opacity"
               >
                 Каталог
               </Link>
               <button
                 onClick={() => setIsBasketOpen(true)}
-                className="text-white font-sans text-base font-semibold hover:opacity-80 transition-opacity"
+                className="text-white cursor-pointer font-sans text-xl hover:opacity-80 transition-opacity"
               >
                 Корзина
               </button>
