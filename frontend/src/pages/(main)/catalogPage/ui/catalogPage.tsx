@@ -24,7 +24,7 @@ const CatalogPage = () => {
             <span>Главная</span>
           </Link>
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl md:text-[56px] font-sans font-semibold text-[#181818]">
+            <h1 className="text-3xl md:text-[56px] font-sans text-[#181818]">
               Каталог
             </h1>
             <div className="flex items-center gap-2">

@@ -33,11 +33,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             <div className="w-full h-full bg-gray-200" />
           )}
         </div>
-        <h3 className="text-base font-sans text-[#181818] mb-2">
+        <h3 className="text-[32px] font-sans text-black font-medium leading-10">
           {product.name}
         </h3>
-        <p className="text-base font-sans text-[#181818] font-semibold">
-          {product.price} Р
+        <p className="font-sans text-[#FF6600] text-[24px] font-medium">
+          {product.price} ₽
         </p>
       </div>
 
