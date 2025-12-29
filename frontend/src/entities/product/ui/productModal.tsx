@@ -76,7 +76,7 @@ export const ProductModal = ({
             </p>
 
             <div className="flex items-center gap-4">
-              <div className="flex items-center bg-[#FF6600] rounded h-[60px] w-[197px] justify-center">
+              <div className="flex items-center bg-[#FF6600] h-[60px] w-[197px] justify-center">
                 <button
                   onClick={handleDecrease}
                   className="px-4 h-full text-white cursor-pointer font-sans text-lg hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
@@ -97,7 +97,7 @@ export const ProductModal = ({
 
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-[#FF6600] text-white cursor-pointer min-w-[209px] font-sans text-lg font-medium h-[60px] px-6 rounded hover:opacity-90 transition-opacity"
+                className="flex-1 bg-[#FF6600] text-white cursor-pointer min-w-[209px] font-sans text-lg font-medium h-[60px] px-6 hover:opacity-90 transition-opacity"
               >
                 В корзину
               </button>

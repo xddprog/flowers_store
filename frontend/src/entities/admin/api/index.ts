@@ -1,0 +1,2 @@
+export { adminService } from "./adminService";
+

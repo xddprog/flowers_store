@@ -1,0 +1,16 @@
+export const LOGIN_MUTATION = "adminLogin";
+export const GET_CURRENT_USER_QUERY = "getCurrentUser";
+export const REFRESH_TOKEN_MUTATION = "refreshToken";
+export const GET_ADMIN_BOUQUETS_QUERY = "getAdminBouquets";
+export const GET_ADMIN_BOUQUET_DETAIL_QUERY = "getAdminBouquetDetail";
+export const CREATE_BOUQUET_MUTATION = "createBouquet";
+export const UPDATE_BOUQUET_MUTATION = "updateBouquet";
+export const DELETE_BOUQUET_MUTATION = "deleteBouquet";
+export const ARCHIVE_BOUQUET_MUTATION = "archiveBouquet";
+export const UPLOAD_BOUQUET_IMAGES_MUTATION = "uploadBouquetImages";
+export const UPDATE_IMAGE_ORDER_MUTATION = "updateImageOrder";
+export const GET_ADMIN_ORDERS_QUERY = "getAdminOrders";
+export const UPDATE_ORDER_STATUS_MUTATION = "updateOrderStatus";
+export const DELETE_ORDER_MUTATION = "deleteOrder";
+export const ARCHIVE_ORDER_MUTATION = "archiveOrder";
+

@@ -43,7 +43,7 @@ export const PriceFilter = ({
       </div>
       <button
         onClick={handleApply}
-        className="w-full bg-[#FF6600] text-white font-sans font-semibold py-3 px-4 rounded hover:bg-[#E55A00] transition-colors"
+        className="w-full bg-[#FF6600] text-white font-sans font-semibold py-3 px-4 hover:bg-[#E55A00] transition-colors"
       >
         Применить
       </button>

@@ -10,3 +10,5 @@ export interface GalleryCategory {
   name: string;
   image?: string;
 }
+
+export * from "./apiTypes";
