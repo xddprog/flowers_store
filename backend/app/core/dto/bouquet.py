@@ -14,7 +14,7 @@ class BouquetImageSchema(BaseModel):
         return get_absolute_url(v)
 
 
-class FlowerTypeSchema(BaseModel):
+class BouquetFlowerTypeSchema(BaseModel):
     id: UUID
     name: str
 
@@ -22,6 +22,12 @@ class FlowerTypeSchema(BaseModel):
 class BouquetTypeSchema(BaseModel):
     id: UUID
     name: str
+
+
+class AdminBouquetTypeSchema(BaseModel):
+    id: UUID
+    name: str
+    bouquets_count: int
 
 
 class BaseBouquetSchema(BaseModel):
@@ -40,7 +46,7 @@ class BouquetDetailSchema(BaseModel):
     purchase_count: int
     view_count: int
     bouquet_type: BouquetTypeSchema
-    flower_types: list[FlowerTypeSchema]
+    flower_types: list[BouquetFlowerTypeSchema]
     images: list[BouquetImageSchema]
 
 

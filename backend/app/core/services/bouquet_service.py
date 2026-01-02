@@ -5,9 +5,10 @@ from app.core.dto.bouquet import (
     BaseBouquetSchema, 
     BouquetDetailSchema, 
     BouquetFilterSchema,
-    BouquetCreateSchema, 
+    BouquetCreateSchema,
+    AdminBouquetTypeSchema,
     BouquetUpdateSchema,
-    BouquetImageSchema
+    BouquetImageSchema,
 )
 from app.core.repositories.bouquet_repository import BouquetRepository
 from app.core.services.base import BaseDbModelService
@@ -16,12 +17,17 @@ from app.infrastructure.database.models.bouquet import Bouquet
 from app.infrastructure.errors.base import NotFoundException
 from app.core.dto.order import OrderItemCreateSchema
 from app.core.dto.yandex_pay import CartItem, CartItemQuantity
+from app.core.dto.flower import FlowerTypeSchema
 
 
 class BouquetService(BaseDbModelService[Bouquet]):
     def __init__(self, repository: BouquetRepository, image_service: ImageService):
         self.repository = repository
         self.image_service = image_service
+
+    async def get_bouquet_types(self) -> list[AdminBouquetTypeSchema]:
+        bouquet_types = await self.repository.get_bouquet_types()
+        return [AdminBouquetTypeSchema.model_validate(bouquet_type, from_attributes=True) for bouquet_type in bouquet_types]
 
     async def get_popular_bouquets(self, limit: int, offset: int) -> list[BaseBouquetSchema]:
         bouquets = await self.repository.get_popular_bouquets(limit, offset)
@@ -66,6 +72,10 @@ class BouquetService(BaseDbModelService[Bouquet]):
         return [BaseBouquetSchema.model_validate(b, from_attributes=True) for b in bouquets]
 
     async def create_bouquet(self, data: BouquetCreateSchema) -> BaseBouquetSchema:
+        bouquet_type = await self.repository.get_bouquet_type(data.bouquet_type_id)
+        if not bouquet_type:
+            raise NotFoundException(f"Тип букета с ID {data.bouquet_type_id} не найден")
+            
         bouquet = await self.repository.add_item(**data.model_dump())
         return BaseBouquetSchema.model_validate(bouquet, from_attributes=True)
 

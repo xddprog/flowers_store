@@ -2,10 +2,11 @@ from typing import Annotated
 from uuid import UUID
 from fastapi import APIRouter, Depends, File, UploadFile
 
-from app.api.v1.dependencies import get_bouquet_service
+from app.api.v1.dependencies import get_bouquet_service, get_flower_service
 from app.core.dto.bouquet import (
     BouquetCreateSchema,
-    BouquetDetailSchema, 
+    BouquetDetailSchema,
+    AdminBouquetTypeSchema, 
     BouquetUpdateSchema, 
     BaseBouquetSchema,
     ImageOrderUpdateSchema,
@@ -21,9 +22,17 @@ from app.infrastructure.errors.image_errors import (
     ImageProcessingError
 )
 from app.utils.error_extra import error_response
+from app.core.services.flower_service import FlowerService
 
 
 router = APIRouter()
+
+
+@router.get("/types", responses={**error_response(NotFoundException)})
+async def get_all_bouquet_types(
+    service: Annotated[BouquetService, Depends(get_bouquet_service)]
+) -> list[AdminBouquetTypeSchema]:
+    return await service.get_bouquet_types()
 
 
 @router.get("/")
@@ -38,8 +47,10 @@ async def get_all_bouquets(
 @router.post("/")
 async def create_bouquet(
     data: BouquetCreateSchema,
-    service: Annotated[BouquetService, Depends(get_bouquet_service)]
+    service: Annotated[BouquetService, Depends(get_bouquet_service)],
+    flower_service: Annotated[FlowerService, Depends(get_flower_service)],
 ) -> BaseBouquetSchema:
+    await flower_service.validate_flower_types(data.flower_type_ids)
     return await service.create_bouquet(data)
 
 
@@ -106,4 +117,3 @@ async def update_image_order(
     service: Annotated[BouquetService, Depends(get_bouquet_service)]
 ) -> list[BouquetImageSchema]:
     return await service.update_image_order(bouquet_id, image_id, data.order)
-

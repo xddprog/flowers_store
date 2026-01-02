@@ -2,3 +2,4 @@ from app.core.repositories.bouquet_repository import BouquetRepository
 from app.core.repositories.order_repository import OrderRepository
 from app.core.repositories.customer_repository import CustomerRepository
 from app.core.repositories.admin_repository import AdminRepository
+from app.core.repositories.flower_repository import FlowerRepository

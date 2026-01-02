@@ -62,6 +62,12 @@ async def get_auth_service(session=Depends(get_db_session)) -> services.AuthServ
     )
 
 
+async def get_flower_service(session=Depends(get_db_session)) -> services.FlowerService:
+    return services.FlowerService(
+        repository=repositories.FlowerRepository(session=session)
+    )
+
+
 async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(token_scheme)],
     auth_service: Annotated[services.AuthService, Depends(get_auth_service)],

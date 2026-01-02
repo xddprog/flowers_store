@@ -1,15 +1,34 @@
 from uuid import UUID
-from sqlalchemy import select, and_, update
+from sqlalchemy import select, and_, update, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.repositories.base import SqlAlchemyRepository
-from app.infrastructure.database.models.bouquet import Bouquet, BouquetFlowerType, BouquetImage
+from app.infrastructure.database.models.bouquet import Bouquet, BouquetFlowerType, BouquetImage, BouquetType, FlowerType
 
 
 class BouquetRepository(SqlAlchemyRepository[Bouquet]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Bouquet)
+
+    async def get_bouquet_types(self) -> list[tuple[BouquetType, int]]:
+        query = (
+            select(
+                BouquetType,
+                func.count(Bouquet.id).label("bouquets_count")
+            )
+            .outerjoin(Bouquet, BouquetType.id == Bouquet.bouquet_type_id)
+            .group_by(BouquetType.id)
+        )
+        result = await self.session.execute(query)
+        bouquet_types = []
+        for bouquet_type, count in result.all():
+            bouquet_type.bouquets_count = count or 0
+            bouquet_types.append(bouquet_type)
+        return bouquet_types
+
+    async def get_bouquet_type(self, bouquet_type_id: UUID) -> None:
+        return await self.session.get(BouquetType, bouquet_type_id)
 
     async def add_item(
         self,
@@ -190,3 +209,5 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
             await self.session.refresh(image)
         
         return new_images
+
+    
