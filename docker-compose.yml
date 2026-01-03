@@ -40,7 +40,6 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./static:/var/www/static
     ports:
-      - "80:80"
       - "443:443"
     depends_on:
       - app
@@ -89,9 +88,6 @@ services:
       - "8000:8000"
     volumes:
       - ./static:/app/static
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
 networks:
   app-network:
