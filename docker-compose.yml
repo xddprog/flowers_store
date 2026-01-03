@@ -36,7 +36,7 @@ services:
     image: nginx:latest
     container_name: nginx-proxy
     volumes:
-      - /etc/nginx/sites-available/fasttaski.ru:/etc/nginx/conf.d/fasttaski.conf
+      - /etc/nginx/sites-available/lascovo.ru:/etc/nginx/conf.d/lascovo.ru.conf
       - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - "80:80"
