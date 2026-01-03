@@ -38,6 +38,7 @@ services:
     volumes:
       - /etc/nginx/sites-available/lascovo.ru:/etc/nginx/conf.d/lascovo.ru.conf
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./static:/var/www/static
     ports:
       - "80:80"
       - "443:443"
