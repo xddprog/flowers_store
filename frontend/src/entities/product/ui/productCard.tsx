@@ -33,20 +33,21 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             <div className="w-full h-full bg-gray-200" />
           )}
         </div>
-        <h3 className="text-[32px] font-sans text-black font-medium leading-10">
+        <h3 className="text-xl md:text-2xl mb-2 2xl:text-[32px] font-sans text-black font-medium leading-tight lg:leading-7">
           {product.name}
         </h3>
-        <p className="font-sans text-[#FF6600] text-[24px] font-medium">
-          {product.price} ₽
+        <p className="font-sans text-[#FF6600] text-lg md:text-xl lg:text-[20px] xl:text-[24px] font-medium">
+          {product.price.toLocaleString("ru-RU")} ₽
         </p>
       </div>
-
-      <ProductModal
-        product={product}
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onAddToCart={handleAddToCart}
-      />
+      {isModalOpen && (
+        <ProductModal
+          product={product}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          onAddToCart={handleAddToCart}
+        />
+      )}
     </>
   );
 };

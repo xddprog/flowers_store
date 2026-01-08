@@ -5,6 +5,8 @@ import {
   BouquetDetail,
   BouquetSearchParams,
   PopularBouquetsParams,
+  BouquetType,
+  FlowerType,
 } from "../types/apiTypes";
 
 class BouquetService {
@@ -56,6 +58,18 @@ class BouquetService {
     const { data } = await axiosNoAuth.get<BouquetDetail>(
       `/api/v1/bouquet/${bouquetId}`
     );
+    return data;
+  }
+
+  public async getBouquetTypes(): Promise<BouquetType[]> {
+    const { data } = await axiosNoAuth.get<BouquetType[]>(
+      "/api/v1/bouquet/types"
+    );
+    return data;
+  }
+
+  public async getFlowerTypes(): Promise<FlowerType[]> {
+    const { data } = await axiosNoAuth.get<FlowerType[]>("/api/v1/flower/");
     return data;
   }
 }

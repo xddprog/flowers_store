@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface FilterSectionProps {
   title: string;
@@ -7,6 +7,7 @@ interface FilterSectionProps {
   showMore?: boolean;
   border?: boolean;
   onShowMore?: () => void;
+  isExpanded?: boolean;
 }
 
 export const FilterSection = ({
@@ -15,6 +16,7 @@ export const FilterSection = ({
   showMore = false,
   onShowMore,
   border = true,
+  isExpanded = false,
 }: FilterSectionProps) => {
   return (
     <div className="mb-6">
@@ -22,13 +24,17 @@ export const FilterSection = ({
         {title}
       </h3>
       <div className="flex flex-col gap-3">{children}</div>
-      {showMore && (
+      {showMore && onShowMore && (
         <button
           onClick={onShowMore}
           className="mt-3 flex items-center gap-2 text-sm font-sans text-[#3F3F3F] hover:opacity-80 transition-opacity"
         >
-          Еще
-          <ChevronDown size={16} className="text-[#3F3F3F]" />
+          {isExpanded ? "Свернуть" : "Еще"}
+          {isExpanded ? (
+            <ChevronUp size={16} className="text-[#3F3F3F]" />
+          ) : (
+            <ChevronDown size={16} className="text-[#3F3F3F]" />
+          )}
         </button>
       )}
       {border && <div className="mt-6 border-b border-gray-300" />}

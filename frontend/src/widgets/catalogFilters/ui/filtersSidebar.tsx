@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { FilterSection } from "./filterSection";
 import { CheckboxFilter } from "./checkboxFilter";
 import { PriceFilter } from "./priceFilter";
 import { ActiveFilters } from "./activeFilters";
 import { CatalogFilters } from "@/pages/(main)/catalogPage/ui/catalogPage";
+import { BouquetType, FlowerType } from "@/entities/flowers/types/apiTypes";
 
 interface ActiveFilter {
   id: string;
@@ -13,40 +14,43 @@ interface ActiveFilter {
 interface FiltersSidebarProps {
   filters: CatalogFilters;
   onFiltersChange: (filters: CatalogFilters) => void;
+  bouquetTypes: BouquetType[];
+  flowerTypes: FlowerType[];
 }
 
 export const FiltersSidebar = ({
   filters,
   onFiltersChange,
+  bouquetTypes,
+  flowerTypes,
 }: FiltersSidebarProps) => {
+  const [isBouquetTypesExpanded, setIsBouquetTypesExpanded] = useState(false);
+  const [isFlowerTypesExpanded, setIsFlowerTypesExpanded] = useState(false);
+
+  const displayedBouquetTypes = useMemo(() => {
+    return isBouquetTypesExpanded ? bouquetTypes : bouquetTypes.slice(0, 4);
+  }, [bouquetTypes, isBouquetTypesExpanded]);
+
+  const displayedFlowerTypes = useMemo(() => {
+    return isFlowerTypesExpanded ? flowerTypes : flowerTypes.slice(0, 4);
+  }, [flowerTypes, isFlowerTypesExpanded]);
+
   const activeFilters = useMemo<ActiveFilter[]>(() => {
     const filtersList: ActiveFilter[] = [];
 
-    if (filters.typeFilters.flowers) {
-      filtersList.push({ id: "type-flowers", label: "Цветы" });
-    }
-    if (filters.typeFilters.monobouquet) {
-      filtersList.push({ id: "type-monobouquet", label: "Монобукет" });
-    }
-    if (filters.typeFilters.composition) {
-      filtersList.push({ id: "type-composition", label: "Композиция" });
-    }
-    if (filters.typeFilters.author) {
-      filtersList.push({ id: "type-author", label: "Авторский букет" });
-    }
+    filters.selectedBouquetTypeIds.forEach((typeId) => {
+      const type = bouquetTypes.find((t) => t.id === typeId);
+      if (type) {
+        filtersList.push({ id: `type-${typeId}`, label: type.name });
+      }
+    });
 
-    if (filters.flowerFilters.roses) {
-      filtersList.push({ id: "flower-roses", label: "Розы" });
-    }
-    if (filters.flowerFilters.chrysanthemums) {
-      filtersList.push({ id: "flower-chrysanthemums", label: "Хризантемы" });
-    }
-    if (filters.flowerFilters.carnation) {
-      filtersList.push({ id: "flower-carnation", label: "Гвоздика" });
-    }
-    if (filters.flowerFilters.gypsophila) {
-      filtersList.push({ id: "flower-gypsophila", label: "Гипсофилы" });
-    }
+    filters.selectedFlowerTypeIds.forEach((typeId) => {
+      const type = flowerTypes.find((t) => t.id === typeId);
+      if (type) {
+        filtersList.push({ id: `flower-${typeId}`, label: type.name });
+      }
+    });
 
     if (filters.priceRange.min !== null) {
       filtersList.push({
@@ -62,29 +66,19 @@ export const FiltersSidebar = ({
     }
 
     return filtersList;
-  }, [filters]);
+  }, [filters, bouquetTypes, flowerTypes]);
 
   const handleRemoveFilter = (id: string) => {
     const newFilters = { ...filters };
 
     if (id.startsWith("type-")) {
-      const typeKey = id.replace(
-        "type-",
-        ""
-      ) as keyof typeof filters.typeFilters;
-      newFilters.typeFilters = {
-        ...newFilters.typeFilters,
-        [typeKey]: false,
-      };
+      const typeId = id.replace("type-", "");
+      newFilters.selectedBouquetTypeIds =
+        newFilters.selectedBouquetTypeIds.filter((tid) => tid !== typeId);
     } else if (id.startsWith("flower-")) {
-      const flowerKey = id.replace(
-        "flower-",
-        ""
-      ) as keyof typeof filters.flowerFilters;
-      newFilters.flowerFilters = {
-        ...newFilters.flowerFilters,
-        [flowerKey]: false,
-      };
+      const flowerId = id.replace("flower-", "");
+      newFilters.selectedFlowerTypeIds =
+        newFilters.selectedFlowerTypeIds.filter((fid) => fid !== flowerId);
     } else if (id === "price-min") {
       newFilters.priceRange = {
         ...newFilters.priceRange,
@@ -102,18 +96,8 @@ export const FiltersSidebar = ({
 
   const handleReset = () => {
     onFiltersChange({
-      typeFilters: {
-        flowers: false,
-        monobouquet: false,
-        composition: false,
-        author: false,
-      },
-      flowerFilters: {
-        roses: false,
-        chrysanthemums: false,
-        carnation: false,
-        gypsophila: false,
-      },
+      selectedBouquetTypeIds: [],
+      selectedFlowerTypeIds: [],
       priceRange: {
         min: null,
         max: null,
@@ -149,122 +133,73 @@ export const FiltersSidebar = ({
         <ActiveFilters filters={activeFilters} onRemove={handleRemoveFilter} />
         <div className="mb-6 border-b border-gray-300" />
 
-        <FilterSection title="Тип" showMore>
-          <CheckboxFilter
-            id="flowers"
-            label="Цветы"
-            checked={filters.typeFilters.flowers}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                typeFilters: {
-                  ...filters.typeFilters,
-                  flowers: checked,
-                },
-              })
-            }
-          />
-          <CheckboxFilter
-            id="monobouquet"
-            label="Монобукет"
-            checked={filters.typeFilters.monobouquet}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                typeFilters: {
-                  ...filters.typeFilters,
-                  monobouquet: checked,
-                },
-              })
-            }
-          />
-          <CheckboxFilter
-            id="composition"
-            label="Композиция"
-            checked={filters.typeFilters.composition}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                typeFilters: {
-                  ...filters.typeFilters,
-                  composition: checked,
-                },
-              })
-            }
-          />
-          <CheckboxFilter
-            id="author"
-            label="Авторский букет"
-            checked={filters.typeFilters.author}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                typeFilters: {
-                  ...filters.typeFilters,
-                  author: checked,
-                },
-              })
-            }
-          />
+        <FilterSection
+          title="Тип"
+          showMore={bouquetTypes.length > 4}
+          onShowMore={() => setIsBouquetTypesExpanded(!isBouquetTypesExpanded)}
+          isExpanded={isBouquetTypesExpanded}
+        >
+          {displayedBouquetTypes.map((type) => (
+            <CheckboxFilter
+              key={type.id}
+              id={type.id}
+              label={type.name}
+              checked={filters.selectedBouquetTypeIds.includes(type.id)}
+              onChange={(checked) => {
+                if (checked) {
+                  onFiltersChange({
+                    ...filters,
+                    selectedBouquetTypeIds: [
+                      ...filters.selectedBouquetTypeIds,
+                      type.id,
+                    ],
+                  });
+                } else {
+                  onFiltersChange({
+                    ...filters,
+                    selectedBouquetTypeIds:
+                      filters.selectedBouquetTypeIds.filter(
+                        (id) => id !== type.id
+                      ),
+                  });
+                }
+              }}
+            />
+          ))}
         </FilterSection>
 
-        <FilterSection title="Цветы" showMore>
-          <CheckboxFilter
-            id="roses"
-            label="Розы"
-            checked={filters.flowerFilters.roses}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                flowerFilters: {
-                  ...filters.flowerFilters,
-                  roses: checked,
-                },
-              })
-            }
-          />
-          <CheckboxFilter
-            id="chrysanthemums"
-            label="Хризантемы"
-            checked={filters.flowerFilters.chrysanthemums}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                flowerFilters: {
-                  ...filters.flowerFilters,
-                  chrysanthemums: checked,
-                },
-              })
-            }
-          />
-          <CheckboxFilter
-            id="carnation"
-            label="Гвоздика"
-            checked={filters.flowerFilters.carnation}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                flowerFilters: {
-                  ...filters.flowerFilters,
-                  carnation: checked,
-                },
-              })
-            }
-          />
-          <CheckboxFilter
-            id="gypsophila"
-            label="Гипсофилы"
-            checked={filters.flowerFilters.gypsophila}
-            onChange={(checked) =>
-              onFiltersChange({
-                ...filters,
-                flowerFilters: {
-                  ...filters.flowerFilters,
-                  gypsophila: checked,
-                },
-              })
-            }
-          />
+        <FilterSection
+          title="Цветы"
+          showMore={flowerTypes.length > 4}
+          onShowMore={() => setIsFlowerTypesExpanded(!isFlowerTypesExpanded)}
+          isExpanded={isFlowerTypesExpanded}
+        >
+          {displayedFlowerTypes.map((type) => (
+            <CheckboxFilter
+              key={type.id}
+              id={type.id}
+              label={type.name}
+              checked={filters.selectedFlowerTypeIds.includes(type.id)}
+              onChange={(checked) => {
+                if (checked) {
+                  onFiltersChange({
+                    ...filters,
+                    selectedFlowerTypeIds: [
+                      ...filters.selectedFlowerTypeIds,
+                      type.id,
+                    ],
+                  });
+                } else {
+                  onFiltersChange({
+                    ...filters,
+                    selectedFlowerTypeIds: filters.selectedFlowerTypeIds.filter(
+                      (id) => id !== type.id
+                    ),
+                  });
+                }
+              }}
+            />
+          ))}
         </FilterSection>
 
         <FilterSection title="Цена" border={false}>
