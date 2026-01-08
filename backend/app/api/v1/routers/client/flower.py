@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.v1.dependencies import get_flower_service
 from app.core.services.flower_service import FlowerService
-from backend.app.core.dto.bouquet import BouquetFlowerTypeSchema
+from app.core.dto.bouquet import BouquetFlowerTypeSchema
 
 
 router = APIRouter()
