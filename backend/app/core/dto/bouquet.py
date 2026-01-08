@@ -2,6 +2,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field, field_validator
 
 from app.utils.url_helper import get_absolute_url
+from app.utils.enums import BouquetSort
 
 
 class BouquetImageSchema(BaseModel):
@@ -57,6 +58,7 @@ class BouquetFilterSchema(BaseModel):
     price_max: int | None = Field(default=None, ge=0, description="Максимальная цена")
     limit: int = Field(default=20, ge=1, le=100, description="Количество результатов")
     offset: int = Field(default=0, ge=0, description="Смещение для пагинации")
+    sort: BouquetSort = Field(default=BouquetSort.POPULAR, description="Сортировка: popular - по популярности, price_asc - по возрастанию цены, price_desc - по убыванию цены")
 
 
 class BouquetCreateSchema(BaseModel):

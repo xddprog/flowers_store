@@ -1,10 +1,11 @@
 from uuid import UUID
-from sqlalchemy import select, and_, update, func
+from sqlalchemy import select, and_, update, func, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.repositories.base import SqlAlchemyRepository
 from app.infrastructure.database.models.bouquet import Bouquet, BouquetFlowerType, BouquetImage, BouquetType, FlowerType
+from app.utils.enums import BouquetSort
 
 
 class BouquetRepository(SqlAlchemyRepository[Bouquet]):
@@ -115,7 +116,8 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         price_min: int | None = None,
         price_max: int | None = None,
         limit: int = 20,
-        offset: int = 0
+        offset: int = 0,
+        sort: BouquetSort = BouquetSort.POPULAR
     ) -> list[Bouquet]:
         query = select(Bouquet).options(selectinload(Bouquet.images))
         
@@ -141,7 +143,13 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         if conditions:
             query = query.where(and_(*conditions))
         
-        query = query.order_by(Bouquet.purchase_count.desc(), Bouquet.view_count.desc())
+        if sort == BouquetSort.POPULAR:
+            query = query.order_by(desc(Bouquet.purchase_count), desc(Bouquet.view_count))
+        elif sort == BouquetSort.PRICE_ASC:
+            query = query.order_by(asc(Bouquet.price))
+        elif sort == BouquetSort.PRICE_DESC:
+            query = query.order_by(desc(Bouquet.price))
+        
         query = query.limit(limit).offset(offset)
         
         result = await self.session.execute(query)

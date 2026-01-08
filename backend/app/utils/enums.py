@@ -20,3 +20,9 @@ class OrderStatus(str, Enum):
     PROCESSING = "processing"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+
+class BouquetSort(str, Enum):
+    POPULAR = "popular"
+    PRICE_ASC = "price_asc"
+    PRICE_DESC = "price_desc"
