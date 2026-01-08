@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 
 from app.api.v1.dependencies import get_bouquet_service
-from app.core.dto.bouquet import BaseBouquetSchema, BouquetDetailSchema, BouquetFilterSchema
+from app.core.dto.bouquet import BaseBouquetSchema, BouquetDetailSchema, BouquetFilterSchema, BouquetTypeSchema
 from app.core.services.bouquet_service import BouquetService
 from app.infrastructure.errors.base import NotFoundException
 from app.utils.error_extra import error_response
@@ -18,6 +18,13 @@ async def search_bouquets(
     filters: BouquetFilterSchema = Query(),
 ) -> list[BaseBouquetSchema]:
     return await bouquet_service.search_bouquets(filters)
+
+
+@router.get("/types", responses={**error_response(NotFoundException)})
+async def get_all_bouquet_types(
+    service: Annotated[BouquetService, Depends(get_bouquet_service)]
+) -> list[BouquetTypeSchema]:
+    return await service.get_bouquet_types_from_client()
 
 
 @router.get("/popular")

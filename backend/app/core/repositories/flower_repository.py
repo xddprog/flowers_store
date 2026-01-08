@@ -11,7 +11,7 @@ class FlowerRepository(SqlAlchemyRepository[FlowerType]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, FlowerType)
         
-    async def get_all(self) -> list[FlowerType]:
+    async def get_all_with_bouquet_count(self) -> list[FlowerType]:
         query = (
             select(
                 FlowerType,

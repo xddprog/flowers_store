@@ -4,6 +4,7 @@ from app.core.services.base import BaseDbModelService
 from app.core.dto.flower import FlowerTypeSchema
 from app.infrastructure.database.models.bouquet import FlowerType
 from app.infrastructure.errors.base import NotFoundException
+from app.core.dto.bouquet import BouquetFlowerTypeSchema
 
 
 class FlowerService(BaseDbModelService[FlowerType]):
@@ -11,8 +12,12 @@ class FlowerService(BaseDbModelService[FlowerType]):
         self.repository = repository
 
     async def get_all(self) -> list[FlowerTypeSchema]:
-        flower_types = await self.repository.get_all()
+        flower_types = await self.repository.get_all_with_bouquet_count()
         return [FlowerTypeSchema.model_validate(flower_type, from_attributes=True) for flower_type in flower_types]
+
+    async def get_all_from_client(self) -> list[FlowerTypeSchema]:
+        flower_types = await self.repository.get_all_items()
+        return [BouquetFlowerTypeSchema.model_validate(flower_type, from_attributes=True) for flower_type in flower_types]
 
     async def validate_flower_types(self, flower_type_ids: list[UUID]) -> None:
         flower_types = await self.repository.get_by_ids(flower_type_ids)

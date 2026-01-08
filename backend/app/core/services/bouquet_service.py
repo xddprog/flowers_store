@@ -18,6 +18,7 @@ from app.infrastructure.errors.base import NotFoundException
 from app.core.dto.order import OrderItemCreateSchema
 from app.core.dto.yandex_pay import CartItem, CartItemQuantity
 from app.core.dto.flower import FlowerTypeSchema
+from app.core.dto.bouquet import BouquetTypeSchema
 
 
 class BouquetService(BaseDbModelService[Bouquet]):
@@ -26,8 +27,12 @@ class BouquetService(BaseDbModelService[Bouquet]):
         self.image_service = image_service
 
     async def get_bouquet_types(self) -> list[AdminBouquetTypeSchema]:
-        bouquet_types = await self.repository.get_bouquet_types()
+        bouquet_types = await self.repository.get_bouquet_types_with_bouquet_count()
         return [AdminBouquetTypeSchema.model_validate(bouquet_type, from_attributes=True) for bouquet_type in bouquet_types]
+
+    async def get_bouquet_types_from_client(self) -> list[BouquetTypeSchema]:
+        bouquet_types = await self.repository.get_bouquet_types()
+        return [BouquetTypeSchema.model_validate(bouquet_type, from_attributes=True) for bouquet_type in bouquet_types]
 
     async def get_popular_bouquets(self, limit: int, offset: int) -> list[BaseBouquetSchema]:
         bouquets = await self.repository.get_popular_bouquets(limit, offset)

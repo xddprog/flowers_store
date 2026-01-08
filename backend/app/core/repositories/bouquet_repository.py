@@ -11,7 +11,7 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Bouquet)
 
-    async def get_bouquet_types(self) -> list[tuple[BouquetType, int]]:
+    async def get_bouquet_types_with_bouquet_count(self) -> list[tuple[BouquetType, int]]:
         query = (
             select(
                 BouquetType,
@@ -26,6 +26,11 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
             bouquet_type.bouquets_count = count or 0
             bouquet_types.append(bouquet_type)
         return bouquet_types
+
+    async def get_bouquet_types(self) -> list[BouquetType]:
+        query = select(BouquetType)
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
 
     async def get_bouquet_type(self, bouquet_type_id: UUID) -> None:
         return await self.session.get(BouquetType, bouquet_type_id)
