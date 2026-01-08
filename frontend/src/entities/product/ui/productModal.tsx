@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Image } from "@/shared/ui/image/image";
 import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
-import { Bouquet } from "@/entities/flowers/types/types";
+import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
+import { useBouquetDetail } from "@/entities/flowers/hooks";
 
 interface ProductModalProps {
-  product: Bouquet;
+  product: BaseBouquet;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAddToCart: (product: Bouquet, quantity: number) => void;
@@ -17,6 +18,7 @@ export const ProductModal = ({
   onAddToCart,
 }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
+  const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
 
   const handleDecrease = () => {
     if (quantity > 1) {
@@ -41,9 +43,9 @@ export const ProductModal = ({
       >
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-1/2 bg-gray-200 flex items-center justify-center aspect-square md:aspect-auto min-h-[400px]">
-            {product.image ? (
+            {product.main_image ? (
               <Image
-                src={product.image}
+                src={product.main_image.image_path}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -65,11 +67,20 @@ export const ProductModal = ({
               </button>
             </div>
 
-            <p className="text-base font-sans text-[#181818] mb-6 flex-1 leading-relaxed">
-              Описание товара описание товара описание товара описание товара
-              описание товара описание товара описание товара описание товара
-              описание товара описание товара описание товара описание товара
-            </p>
+            <div className="mb-6 flex-1">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="relative w-12 h-12">
+                    <div className="absolute top-0 left-0 w-full h-full border-4 border-[#FF6600]/20 rounded-full"></div>
+                    <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-[#FF6600] rounded-full animate-spin"></div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-base font-sans text-[#181818] leading-relaxed">
+                  {bouquetDetail?.description || "Описание отсутствует"}
+                </p>
+              )}
+            </div>
 
             <p className="text-2xl font-sans font-semibold text-[#FF6600] mb-6">
               {product.price}₽

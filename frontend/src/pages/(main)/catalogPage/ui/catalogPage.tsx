@@ -92,7 +92,12 @@ const CatalogPage = () => {
     };
   }, [filters]);
 
-  const { data: bouquets } = useBouquetsSearch(searchParams);
+  const {
+    data: bouquets,
+    isLoading,
+    isError,
+  } = useBouquetsSearch(searchParams);
+
   return (
     <div className="w-full my-12 mt-16">
       <div className="container mx-auto">
@@ -130,7 +135,28 @@ const CatalogPage = () => {
           <FiltersSidebar filters={filters} onFiltersChange={setFilters} />
 
           <div className="flex-1">
-            <ProductGrid products={bouquets ?? []} />
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="relative w-16 h-16">
+                  <div className="absolute top-0 left-0 w-full h-full border-4 border-[#FF6600]/20 rounded-full"></div>
+                  <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-[#FF6600] rounded-full animate-spin"></div>
+                </div>
+              </div>
+            ) : isError ? (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-base font-sans text-gray-500">
+                  Не удалось загрузить продукты. Попробуйте обновить страницу.
+                </p>
+              </div>
+            ) : bouquets && bouquets.length > 0 ? (
+              <ProductGrid products={bouquets} />
+            ) : (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-base font-sans text-gray-500">
+                  Продукты не найдены
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
