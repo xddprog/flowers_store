@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Slider } from "@/shared/ui/slider/slider";
 
 interface PriceFilterProps {
@@ -14,6 +14,11 @@ export const PriceFilter = ({
 }: PriceFilterProps) => {
   const [min, setMin] = useState(minPrice);
   const [max, setMax] = useState(maxPrice);
+
+  useEffect(() => {
+    setMin(minPrice);
+    setMax(maxPrice);
+  }, [minPrice, maxPrice]);
 
   const handleApply = () => {
     onApply(min, max);

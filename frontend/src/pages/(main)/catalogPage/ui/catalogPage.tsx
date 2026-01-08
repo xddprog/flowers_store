@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { FiltersSidebar } from "@/widgets/catalogFilters";
 import { ProductGrid } from "@/entities/product";
-import { POPULAR_BOUQUETS } from "@/entities/flowers/lib/constants";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import {
   Select,
@@ -12,16 +11,88 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select/select";
+import { useBouquetsSearch } from "@/entities/flowers/hooks";
+import { BouquetSearchParams } from "@/entities/flowers/types/apiTypes";
+
+export interface CatalogFilters {
+  typeFilters: {
+    flowers: boolean;
+    monobouquet: boolean;
+    composition: boolean;
+    author: boolean;
+  };
+  flowerFilters: {
+    roses: boolean;
+    chrysanthemums: boolean;
+    carnation: boolean;
+    gypsophila: boolean;
+  };
+  priceRange: {
+    min: number | null;
+    max: number | null;
+  };
+}
 
 const CatalogPage = () => {
   const [sortBy, setSortBy] = useState("popularity");
+  const [filters, setFilters] = useState<CatalogFilters>({
+    typeFilters: {
+      flowers: false,
+      monobouquet: false,
+      composition: false,
+      author: false,
+    },
+    flowerFilters: {
+      roses: false,
+      chrysanthemums: false,
+      carnation: false,
+      gypsophila: false,
+    },
+    priceRange: {
+      min: null,
+      max: null,
+    },
+  });
 
-  const products = [
-    ...POPULAR_BOUQUETS,
-    ...POPULAR_BOUQUETS,
-    ...POPULAR_BOUQUETS,
-  ];
+  const bouquetTypeMap: Record<string, string> = {
+    flowers: "flowers",
+    monobouquet: "monobouquet",
+    composition: "composition",
+    author: "author",
+  };
 
+  const flowerTypeMap: Record<string, string> = {
+    roses: "roses",
+    chrysanthemums: "chrysanthemums",
+    carnation: "carnation",
+    gypsophila: "gypsophila",
+  };
+
+  const searchParams = useMemo<BouquetSearchParams>(() => {
+    const bouquetTypeIds: string[] = [];
+    const flowerTypeIds: string[] = [];
+
+    Object.entries(filters.typeFilters).forEach(([key, checked]) => {
+      if (checked && bouquetTypeMap[key]) {
+        bouquetTypeIds.push(bouquetTypeMap[key]);
+      }
+    });
+
+    Object.entries(filters.flowerFilters).forEach(([key, checked]) => {
+      if (checked && flowerTypeMap[key]) {
+        flowerTypeIds.push(flowerTypeMap[key]);
+      }
+    });
+
+    return {
+      bouquet_type_ids: bouquetTypeIds.length > 0 ? bouquetTypeIds : null,
+      flower_type_ids: flowerTypeIds.length > 0 ? flowerTypeIds : null,
+      price_min: filters.priceRange.min,
+      price_max: filters.priceRange.max,
+    };
+  }, [filters]);
+
+  const { data: bouquets } = useBouquetsSearch(searchParams);
   return (
     <div className="w-full my-12 mt-16">
       <div className="container mx-auto">
@@ -56,10 +127,10 @@ const CatalogPage = () => {
         </div>
 
         <div className="flex flex-col md:flex-row gap-8">
-          <FiltersSidebar />
+          <FiltersSidebar filters={filters} onFiltersChange={setFilters} />
 
           <div className="flex-1">
-            <ProductGrid products={products} />
+            <ProductGrid products={bouquets ?? []} />
           </div>
         </div>
       </div>

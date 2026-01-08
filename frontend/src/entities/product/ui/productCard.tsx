@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Image } from "@/shared/ui/image/image";
-import { Bouquet } from "@/entities/flowers/types/types";
+import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
 import { ProductModal } from "./productModal";
 import { basketService } from "../lib/basketService";
 
 interface ProductCardProps {
-  product: Bouquet;
+  product: BaseBouquet;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
@@ -22,9 +22,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         onClick={() => setIsModalOpen(true)}
       >
         <div className="w-full bg-gray-200 mb-4 flex items-center justify-center aspect-square">
-          {product.image ? (
+          {product.main_image ? (
             <Image
-              src={product.image}
+              src={product.main_image.image_path}
               alt={product.name}
               className="w-full h-full object-cover"
               loading="lazy"

@@ -1,8 +1,8 @@
-import { Bouquet } from "@/entities/flowers/types/types";
+import { BaseBouquet } from "@/entities/flowers/types/types";
 import { ProductCard } from "./productCard";
 
 interface ProductGridProps {
-  products: Bouquet[];
+  products: BaseBouquet[];
 }
 
 export const ProductGrid = ({ products }: ProductGridProps) => {
