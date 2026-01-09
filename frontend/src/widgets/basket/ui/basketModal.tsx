@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select/select";
+import { cn } from "@/shared/lib/mergeClass";
 
 interface BasketModalProps {
   open: boolean;
@@ -224,16 +225,20 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                             <FormField
                               control={form.control}
                               name="customerName"
-                              render={({ field }) => (
+                              render={({ field, fieldState }) => (
                                 <FormItem>
                                   <FormControl>
                                     <Input
                                       placeholder="Имя"
-                                      className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                      className={cn(
+                                        "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                        fieldState.error
+                                          ? "border-red-500"
+                                          : "border-black"
+                                      )}
                                       {...field}
                                     />
                                   </FormControl>
-                                  <FormMessage className="text-red-500 text-sm" />
                                 </FormItem>
                               )}
                             />
@@ -241,13 +246,18 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                               <FormField
                                 control={form.control}
                                 name="customerPhone"
-                                render={({ field }) => (
+                                render={({ field, fieldState }) => (
                                   <FormItem className="flex-1">
                                     <FormControl>
                                       <Input
                                         type="tel"
                                         placeholder="+7 (999) 999-99-99"
-                                        className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                        className={cn(
+                                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                          fieldState.error
+                                            ? "border-red-500"
+                                            : "border-black"
+                                        )}
                                         {...field}
                                         onChange={(e) => {
                                           const formatted = formatPhoneNumber(
@@ -257,24 +267,27 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                         }}
                                       />
                                     </FormControl>
-                                    <FormMessage className="text-red-500 text-sm" />
                                   </FormItem>
                                 )}
                               />
                               <FormField
                                 control={form.control}
                                 name="customerEmail"
-                                render={({ field }) => (
+                                render={({ field, fieldState }) => (
                                   <FormItem className="flex-1">
                                     <FormControl>
                                       <Input
                                         type="email"
                                         placeholder="Почта"
-                                        className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                        className={cn(
+                                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                          fieldState.error
+                                            ? "border-red-500"
+                                            : "border-black"
+                                        )}
                                         {...field}
                                       />
                                     </FormControl>
-                                    <FormMessage className="text-red-500 text-sm" />
                                   </FormItem>
                                 )}
                               />
@@ -327,16 +340,20 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                               <FormField
                                 control={form.control}
                                 name="recipientName"
-                                render={({ field }) => (
+                                render={({ field, fieldState }) => (
                                   <FormItem>
                                     <FormControl>
                                       <Input
                                         placeholder="Имя получателя"
-                                        className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                        className={cn(
+                                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                          fieldState.error
+                                            ? "border-red-500"
+                                            : "border-black"
+                                        )}
                                         {...field}
                                       />
                                     </FormControl>
-                                    <FormMessage className="text-red-500 text-sm" />
                                   </FormItem>
                                 )}
                               />
@@ -344,13 +361,18 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                 <FormField
                                   control={form.control}
                                   name="recipientPhone"
-                                  render={({ field }) => (
+                                  render={({ field, fieldState }) => (
                                     <FormItem className="flex-1">
                                       <FormControl>
                                         <Input
                                           type="tel"
                                           placeholder="+7 (999) 999-99-99"
-                                          className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                          className={cn(
+                                            "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                            fieldState.error
+                                              ? "border-red-500"
+                                              : "border-black"
+                                          )}
                                           {...field}
                                           onChange={(e) => {
                                             const formatted = formatPhoneNumber(
@@ -360,7 +382,6 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           }}
                                         />
                                       </FormControl>
-                                      <FormMessage className="text-red-500 text-sm" />
                                     </FormItem>
                                   )}
                                 />
@@ -376,7 +397,6 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           {...field}
                                         />
                                       </FormControl>
-                                      <FormMessage className="text-red-500 text-sm" />
                                     </FormItem>
                                   )}
                                 />
@@ -467,12 +487,14 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           side="bottom"
                                           align="start"
                                           position="popper"
+                                          className="border border-black rounded-none"
                                         >
                                           {getDeliveryDateOptions().map(
                                             (option) => (
                                               <SelectItem
                                                 key={option.value}
                                                 value={option.value}
+                                                className="rounded-none py-3"
                                               >
                                                 {option.label}
                                               </SelectItem>
@@ -480,7 +502,6 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           )}
                                         </SelectContent>
                                       </Select>
-                                      <FormMessage className="text-red-500 text-sm" />
                                     </FormItem>
                                   )}
                                 />
@@ -522,18 +543,19 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                             side="bottom"
                                             align="start"
                                             position="popper"
+                                            className="border border-black rounded-none"
                                           >
                                             {timeSlots.map((slot) => (
                                               <SelectItem
                                                 key={slot.value}
                                                 value={slot.value}
+                                                className="rounded-none py-3"
                                               >
                                                 {slot.label}
                                               </SelectItem>
                                             ))}
                                           </SelectContent>
                                         </Select>
-                                        <FormMessage className="text-red-500 text-sm" />
                                       </FormItem>
                                     );
                                   }}
@@ -564,34 +586,39 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           side="bottom"
                                           align="start"
                                           position="popper"
+                                          className="border border-black rounded-none"
                                         >
                                           {cities.map((city) => (
                                             <SelectItem
                                               key={city.value}
                                               value={city.value}
+                                              className="rounded-none py-3"
                                             >
                                               {city.label}
                                             </SelectItem>
                                           ))}
                                         </SelectContent>
                                       </Select>
-                                      <FormMessage className="text-red-500 text-sm" />
                                     </FormItem>
                                   )}
                                 />
                                 <FormField
                                   control={form.control}
                                   name="deliveryStreet"
-                                  render={({ field }) => (
+                                  render={({ field, fieldState }) => (
                                     <FormItem>
                                       <FormControl>
                                         <Input
                                           placeholder="Улица"
-                                          className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                          className={cn(
+                                            "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                            fieldState.error
+                                              ? "border-red-500"
+                                              : "border-black"
+                                          )}
                                           {...field}
                                         />
                                       </FormControl>
-                                      <FormMessage className="text-red-500 text-sm" />
                                     </FormItem>
                                   )}
                                 />
@@ -599,48 +626,60 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                   <FormField
                                     control={form.control}
                                     name="deliveryHouse"
-                                    render={({ field }) => (
+                                    render={({ field, fieldState }) => (
                                       <FormItem className="flex-1">
                                         <FormControl>
                                           <Input
                                             placeholder="Дом"
-                                            className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                            className={cn(
+                                              "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                              fieldState.error
+                                                ? "border-red-500"
+                                                : "border-black"
+                                            )}
                                             {...field}
                                           />
                                         </FormControl>
-                                        <FormMessage className="text-red-500 text-sm" />
                                       </FormItem>
                                     )}
                                   />
                                   <FormField
                                     control={form.control}
                                     name="deliveryApartment"
-                                    render={({ field }) => (
+                                    render={({ field, fieldState }) => (
                                       <FormItem className="flex-1">
                                         <FormControl>
                                           <Input
                                             placeholder="Квартира"
-                                            className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                            className={cn(
+                                              "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                              fieldState.error
+                                                ? "border-red-500"
+                                                : "border-black"
+                                            )}
                                             {...field}
                                           />
                                         </FormControl>
-                                        <FormMessage className="text-red-500 text-sm" />
                                       </FormItem>
                                     )}
                                   />
                                   <FormField
                                     control={form.control}
                                     name="deliveryFloor"
-                                    render={({ field }) => (
+                                    render={({ field, fieldState }) => (
                                       <FormItem className="flex-1">
                                         <FormControl>
                                           <Input
                                             placeholder="Этаж"
-                                            className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                            className={cn(
+                                              "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                              fieldState.error
+                                                ? "border-red-500"
+                                                : "border-black"
+                                            )}
                                             {...field}
                                           />
                                         </FormControl>
-                                        <FormMessage className="text-red-500 text-sm" />
                                       </FormItem>
                                     )}
                                   />
