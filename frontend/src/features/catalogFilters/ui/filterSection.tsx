@@ -27,7 +27,7 @@ export const FilterSection = ({
       {showMore && onShowMore && (
         <button
           onClick={onShowMore}
-          className="mt-3 flex items-center gap-2 text-sm font-sans text-[#3F3F3F] hover:opacity-80 transition-opacity"
+          className="mt-3 flex items-center cursor-pointer gap-2 text-sm font-sans text-[#3F3F3F] hover:opacity-80 transition-opacity"
         >
           {isExpanded ? "Свернуть" : "Еще"}
           {isExpanded ? (
@@ -37,7 +37,7 @@ export const FilterSection = ({
           )}
         </button>
       )}
-      {border && <div className="mt-6 border-b border-gray-300" />}
+      {border && <div className="mt-6 border-b border-[#C8C8C8]" />}
     </div>
   );
 };

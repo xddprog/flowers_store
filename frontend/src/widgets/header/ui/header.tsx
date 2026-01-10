@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { Search, ShoppingBag } from "lucide-react";
 import { Image } from "@/shared/ui/image/image";
 import { ERouteNames } from "@/shared/lib/routeVariables";
-import { BasketModal } from "@/widgets/basket";
+import { BasketModal } from "@/features/basket";
 
 export const Header = () => {
   const [isBasketOpen, setIsBasketOpen] = useState(false);
+
+  const handleOpenModal = () => setIsBasketOpen(true);
 
   return (
     <>
@@ -37,7 +39,7 @@ export const Header = () => {
                 Каталог
               </Link>
               <button
-                onClick={() => setIsBasketOpen(true)}
+                onClick={handleOpenModal}
                 className="text-white cursor-pointer font-sans text-xl hover:opacity-80 transition-opacity"
               >
                 Корзина
@@ -52,7 +54,7 @@ export const Header = () => {
                 <Search size={32} />
               </button>
               <button
-                onClick={() => setIsBasketOpen(true)}
+                onClick={handleOpenModal}
                 className="text-white hover:opacity-80 transition-opacity"
                 aria-label="Корзина"
               >

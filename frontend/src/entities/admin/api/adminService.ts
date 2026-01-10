@@ -1,5 +1,5 @@
 import queryString from "query-string";
-import { axiosAuth } from "@/shared/api/baseQueryInstance";
+import { axiosAuth, axiosNoAuth } from "@/shared/api/baseQueryInstance";
 import {
   BaseBouquet,
   BouquetDetail,
@@ -22,7 +22,7 @@ import {
 
 class AdminService {
   public async login(loginData: LoginDto): Promise<LoginResponse> {
-    const { data } = await axiosAuth.post<LoginResponse>(
+    const { data } = await axiosNoAuth.post<LoginResponse>(
       "/admin/auth/login",
       loginData as unknown as Record<string, unknown>
     );

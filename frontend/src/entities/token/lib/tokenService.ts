@@ -12,7 +12,31 @@ class TokenService {
   public getAccessToken() {
     return localStorage.getItem(ELocalStorageKeys.ACCESS_TOKEN_KEY);
   }
+
+  public setRefreshToken(refreshToken: string) {
+    localStorage.setItem(ELocalStorageKeys.REFRESH_TOKEN_KEY, refreshToken);
+  }
+
+  public deleteRefreshToken() {
+    localStorage.removeItem(ELocalStorageKeys.REFRESH_TOKEN_KEY);
+  }
+
+  public getRefreshToken() {
+    return localStorage.getItem(ELocalStorageKeys.REFRESH_TOKEN_KEY);
+  }
+
+  public clearTokens() {
+    this.deleteAccessToken();
+    this.deleteRefreshToken();
+  }
 }
 
-export const { deleteAccessToken, getAccessToken, setAccessToken } =
-  new TokenService();
+export const {
+  deleteAccessToken,
+  getAccessToken,
+  setAccessToken,
+  setRefreshToken,
+  deleteRefreshToken,
+  getRefreshToken,
+  clearTokens,
+} = new TokenService();

@@ -1,0 +1,2 @@
+export { OrderDetailModal } from "./orderDetailModal";
+

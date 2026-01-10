@@ -3,6 +3,11 @@ import { Image } from "@/shared/ui/image/image";
 import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
 import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
 import { useBouquetDetail } from "@/entities/flowers/hooks";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/shared/ui/carousel/carousel";
 
 interface ProductModalProps {
   product: BaseBouquet;
@@ -38,12 +43,46 @@ export const ProductModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-5xl w-full p-12 gap-0 border-0 rounded-none sm:rounded-lg"
+        className="max-w-5xl w-full p-12 gap-0 border-0 rounded-none"
         showCloseButton={false}
       >
         <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-1/2 bg-gray-200 flex items-center justify-center aspect-square md:aspect-auto min-h-[400px]">
-            {product.main_image ? (
+          <div className="w-full md:w-1/2 bg-gray-200 aspect-square md:aspect-auto min-h-[400px] relative overflow-hidden">
+            {isLoading ? (
+              <div className="flex items-center justify-center w-full h-full absolute inset-0">
+                <div className="relative w-12 h-12">
+                  <div className="absolute top-0 left-0 w-full h-full border-4 border-[#FF6600]/20 rounded-full"></div>
+                  <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-[#FF6600] rounded-full animate-spin"></div>
+                </div>
+              </div>
+            ) : bouquetDetail &&
+              bouquetDetail.images &&
+              bouquetDetail.images.length > 0 ? (
+              <Carousel
+                className="w-full h-full"
+                opts={{
+                  align: "start",
+                  loop: bouquetDetail.images.length > 1,
+                }}
+              >
+                <CarouselContent className="-ml-0">
+                  {[...bouquetDetail.images]
+                    .sort((a, b) => a.order - b.order)
+                    .map((image, index) => (
+                      <CarouselItem key={image.id} className="pl-0 basis-full">
+                        <div className="relative aspect-square md:aspect-auto min-h-[400px] overflow-hidden bg-gray-200">
+                          <Image
+                            src={image.image_path}
+                            alt={`${product.name} - изображение ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            loading={index === 0 ? "eager" : "lazy"}
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                </CarouselContent>
+              </Carousel>
+            ) : product.main_image ? (
               <Image
                 src={product.main_image.image_path}
                 alt={product.name}

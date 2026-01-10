@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { FiltersSidebar } from "@/widgets/catalogFilters";
 import { ProductGrid } from "@/entities/product";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import {
@@ -17,6 +16,7 @@ import {
   useFlowerTypes,
 } from "@/entities/flowers/hooks";
 import { BouquetSearchParams } from "@/entities/flowers/types/apiTypes";
+import { FiltersSidebar } from "@/features/catalogFilters";
 
 export interface CatalogFilters {
   selectedBouquetTypeIds: string[];

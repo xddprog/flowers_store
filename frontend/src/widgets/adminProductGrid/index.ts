@@ -1,0 +1,2 @@
+export { AdminProductGrid } from "./adminProductGrid";
+

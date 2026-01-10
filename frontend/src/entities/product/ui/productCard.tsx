@@ -21,7 +21,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         className="flex flex-col cursor-pointer hover:opacity-90 transition-opacity"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="w-full bg-gray-200 mb-4 flex items-center justify-center aspect-square">
+        <div
+          className="w-full bg-gray-200 mb-4 flex items-center justify-center"
+          style={{ aspectRatio: "0.780051" }}
+        >
           {product.main_image ? (
             <Image
               src={product.main_image.image_path}

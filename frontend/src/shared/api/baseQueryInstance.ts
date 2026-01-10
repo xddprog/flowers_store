@@ -5,7 +5,14 @@ import axios, {
   AxiosResponse,
 } from "axios";
 import { RequestOptions } from "https";
-import { deleteAccessToken, getAccessToken } from "@/entities/token";
+import {
+  deleteAccessToken,
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+} from "@/entities/token";
+import { adminService } from "@/entities/admin/api";
 
 export class AxiosClient {
   private baseQueryV1Instance: AxiosInstance;
@@ -23,6 +30,7 @@ export class AxiosClient {
 
     if (withAuth) {
       this.addAuthInterceptor();
+      this.addAuthResponseInterceptor();
     }
   }
 
@@ -41,6 +49,57 @@ export class AxiosClient {
 
       return config;
     });
+  }
+
+  private redirectToAuth() {
+    // window.location.href = `/${ERouteNames.AUTH_ROUTE}`;
+  }
+
+  public addAuthResponseInterceptor() {
+    let isRefreshing = false;
+    this.baseQueryV1Instance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          if (isRefreshing) {
+            await new Promise((resolve) => {
+              const interval = setInterval(() => {
+                if (!isRefreshing) {
+                  clearInterval(interval);
+                  resolve("");
+                }
+              }, 100);
+            });
+          }
+
+          isRefreshing = true;
+
+          try {
+            const tokens = await adminService.refreshToken({
+              refresh_token: getRefreshToken() ?? "",
+            });
+            setRefreshToken(tokens.refresh_token);
+            setAccessToken(tokens.access_token);
+
+            isRefreshing = false;
+            return this.baseQueryV1Instance(originalRequest);
+          } catch (error) {
+            isRefreshing = false;
+            this.redirectToAuth();
+            return Promise.reject(error);
+          }
+        }
+
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          this.redirectToAuth();
+        }
+
+        return Promise.reject(error);
+      }
+    );
   }
 
   private handleResponse<T>(response: AxiosResponse<T>): AxiosResponse<T> {
@@ -124,5 +183,5 @@ export class AxiosClient {
   }
 }
 
-export const axiosNoAuth = new AxiosClient("http://localhost:8000/");
-export const axiosAuth = new AxiosClient("http://localhost:8000/", true);
+export const axiosNoAuth = new AxiosClient("https://api.lascovo.ru/");
+export const axiosAuth = new AxiosClient("https://api.lascovo.ru/", true);
