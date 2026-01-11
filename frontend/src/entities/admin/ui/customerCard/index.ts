@@ -1,0 +1,2 @@
+export { CustomerCard } from "./customerCard";
+

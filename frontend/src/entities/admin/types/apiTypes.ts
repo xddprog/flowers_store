@@ -73,3 +73,15 @@ export interface UpdateOrderStatusDto {
   status: string;
 }
 
+export interface AdminCustomerListParams {
+  limit?: number;
+  offset?: number;
+}
+
+export interface AdminCustomer {
+  email: string;
+  phone: string;
+  name: string;
+  is_blocked: boolean;
+}
+

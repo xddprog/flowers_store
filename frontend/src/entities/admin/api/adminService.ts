@@ -18,6 +18,8 @@ import {
   AdminOrderListParams,
   AdminOrder,
   UpdateOrderStatusDto,
+  AdminCustomerListParams,
+  AdminCustomer,
 } from "../types/apiTypes";
 
 class AdminService {
@@ -173,6 +175,33 @@ class AdminService {
       `/admin/order/${orderId}/archive`
     );
     return data;
+  }
+
+  public async getCustomers(
+    params?: AdminCustomerListParams
+  ): Promise<AdminCustomer[]> {
+    const queryParams = queryString.stringify(
+      {
+        limit: params?.limit ?? 10,
+        offset: params?.offset ?? 0,
+      },
+      {
+        skipNull: true,
+        skipEmptyString: true,
+      }
+    );
+
+    const url = `/admin/customer/${queryParams ? `?${queryParams}` : ""}`;
+    const { data } = await axiosAuth.get<AdminCustomer[]>(url);
+    return data;
+  }
+
+  public async blockCustomer(email: string): Promise<void> {
+    await axiosAuth.post(`/admin/customer/${email}/block`);
+  }
+
+  public async unblockCustomer(email: string): Promise<void> {
+    await axiosAuth.post(`/admin/customer/${email}/unblock`);
   }
 }
 

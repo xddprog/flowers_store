@@ -13,4 +13,7 @@ export const GET_ADMIN_ORDERS_QUERY = "getAdminOrders";
 export const UPDATE_ORDER_STATUS_MUTATION = "updateOrderStatus";
 export const DELETE_ORDER_MUTATION = "deleteOrder";
 export const ARCHIVE_ORDER_MUTATION = "archiveOrder";
+export const GET_ADMIN_CUSTOMERS_QUERY = "getAdminCustomers";
+export const BLOCK_CUSTOMER_MUTATION = "blockCustomer";
+export const UNBLOCK_CUSTOMER_MUTATION = "unblockCustomer";
 

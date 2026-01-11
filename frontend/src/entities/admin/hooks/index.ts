@@ -13,4 +13,7 @@ export { useGetAdminOrders } from "./useGetAdminOrders";
 export { useUpdateOrderStatus } from "./useUpdateOrderStatus";
 export { useDeleteOrder } from "./useDeleteOrder";
 export { useArchiveOrder } from "./useArchiveOrder";
+export { useGetAdminCustomers } from "./useGetAdminCustomers";
+export { useBlockCustomer } from "./useBlockCustomer";
+export { useUnblockCustomer } from "./useUnblockCustomer";
 
