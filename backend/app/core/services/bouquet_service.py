@@ -85,7 +85,14 @@ class BouquetService(BaseDbModelService[Bouquet]):
         return BaseBouquetSchema.model_validate(bouquet, from_attributes=True)
 
     async def update_bouquet(self, bouquet_id: UUID, data: BouquetUpdateSchema) -> BaseBouquetSchema:
-        bouquet = await self.repository.update_item(str(bouquet_id), **data.model_dump(exclude_none=True))
+        update_data = data.model_dump(exclude_none=True)
+        flower_type_ids = update_data.pop("flower_type_ids", None)
+        
+        bouquet = await self.repository.update_item(
+            str(bouquet_id),
+            flower_type_ids=flower_type_ids,
+            **update_data
+        )
         
         if not bouquet:
             raise NotFoundException(f"Букет с ID {bouquet_id} не найден")
