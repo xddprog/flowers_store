@@ -47,7 +47,6 @@ class YandexPayClient:
                         json=data, 
                         headers=headers
                     ) as response:
-                        logger.info(f"data create: {data}")
                         response_data = await response.json()
                         if response.status != 200:
                             logger.error(f"Failed to create order request: {response.status} {response_data}")
@@ -64,10 +63,11 @@ class YandexPayClient:
             try:
                 async with ClientSession() as session:
                     async with session.post(f"{YANDEX_PAY_CONFIG.API_URL}/api/jwks") as response:
+                        response_data = await response.json()
                         if response.status != 200:
-                            logger.error(f"Failed to get jwks: {response.status}")
+                            logger.error(f"Failed to get jwks: {response.status} {response_data}")
                             continue
-                        return await response.json()
+                        return response_data
             except Exception as e:
                 if i == YANDEX_PAY_CONFIG.MAX_RETRIES - 1:
                     logger.error(f"Failed to create order exception: {e}")

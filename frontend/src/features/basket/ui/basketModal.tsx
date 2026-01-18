@@ -135,9 +135,9 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
         setApiError("");
         form.reset();
 
-        // Открываем ссылку на оплату
+        // Открываем ссылку на оплату в новом окне
         if (response.payment_url) {
-          window.location.href = response.payment_url;
+          window.open(response.payment_url, "_blank");
         }
       },
       onError: (error: unknown) => {
