@@ -81,10 +81,12 @@ const AdminOrdersPage = () => {
     isDragging: boolean;
     startTime: number | null;
     orderId: string | null;
+    sourceColumnId: string | null;
   }>({
     isDragging: false,
     startTime: null,
     orderId: null,
+    sourceColumnId: null,
   });
 
   useEffect(() => {
@@ -95,21 +97,75 @@ const AdminOrdersPage = () => {
   }, [ordersByStatus, orders.length]);
 
   const handleDragStart = (event: DragStartEvent) => {
+    const orderId =
+      typeof event.active.id === "string" ? event.active.id : null;
+    const order = orderId ? orders.find((o) => o.id === orderId) : null;
+
     dragInfoRef.current = {
       isDragging: true,
       startTime: Date.now(),
-      orderId: typeof event.active.id === "string" ? event.active.id : null,
+      orderId,
+      sourceColumnId: order?.status || null,
     };
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const getColumnByItemId = (
+    itemId: string,
+    value: Record<UniqueIdentifier, AdminOrder[]>
+  ): string | null => {
+    if (itemId in value) {
+      return itemId;
+    }
+
+    for (const [columnId, items] of Object.entries(value)) {
+      if (items.some((item) => item.id === itemId)) {
+        return columnId;
+      }
+    }
+
+    return null;
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
     const dragInfo = dragInfoRef.current;
-    const wasRealDrag = event.over && event.over.id !== event.active.id;
     const dragDuration = dragInfo.startTime
       ? Date.now() - dragInfo.startTime
       : 0;
 
-    if (!wasRealDrag && dragDuration < 200 && dragInfo.orderId) {
+    if (!event.over || !event.active.id) return;
+
+    const orderId =
+      typeof event.active.id === "string" ? event.active.id : null;
+    const overId = typeof event.over.id === "string" ? event.over.id : null;
+
+    if (!orderId || !overId) return;
+
+    const targetColumnId = getColumnByItemId(overId, kanbanValue);
+    const sourceColumnId = dragInfoRef.current.sourceColumnId;
+    const isRealDrag =
+      targetColumnId && sourceColumnId && targetColumnId !== sourceColumnId;
+
+    if (isRealDrag && targetColumnId) {
+      const originalOrder = orders.find((o) => o.id === orderId);
+      if (originalOrder && originalOrder.status !== targetColumnId) {
+        isUpdatingRef.current = true;
+
+        try {
+          await updateOrderStatus.mutateAsync({
+            orderId,
+            statusData: { status: targetColumnId },
+          });
+          queryClient.invalidateQueries({
+            queryKey: [GET_ADMIN_ORDERS_QUERY],
+          });
+        } catch (error) {
+          console.error("Ошибка при изменении статуса заказа:", error);
+          setKanbanValue(previousValueRef.current);
+        } finally {
+          isUpdatingRef.current = false;
+        }
+      }
+    } else if (!isRealDrag && dragDuration < 200 && dragInfo.orderId) {
       const clickedOrder = orders.find((o) => o.id === dragInfo.orderId);
       if (clickedOrder) {
         setTimeout(() => {
@@ -124,6 +180,7 @@ const AdminOrdersPage = () => {
         isDragging: false,
         startTime: null,
         orderId: null,
+        sourceColumnId: null,
       };
     }, 100);
   };
@@ -133,6 +190,7 @@ const AdminOrdersPage = () => {
       isDragging: false,
       startTime: null,
       orderId: null,
+      sourceColumnId: null,
     };
   };
 
@@ -154,56 +212,11 @@ const AdminOrdersPage = () => {
     }
   };
 
-  const handleValueChange = async (
+  const handleValueChange = (
     newValue: Record<UniqueIdentifier, AdminOrder[]>
   ) => {
-    const previousValue = previousValueRef.current;
-
-    setKanbanValue(newValue);
-
-    let movedOrder: AdminOrder | null = null;
-    let targetColumnId: string | null = null;
-
-    for (const columnId of COLUMNS.map((col) => col.id)) {
-      const previousOrders = previousValue[columnId] || [];
-      const newOrders = newValue[columnId] || [];
-      const previousIds = new Set(previousOrders.map((o) => o.id));
-
-      for (const order of newOrders) {
-        if (!previousIds.has(order.id)) {
-          movedOrder = order;
-          targetColumnId = columnId;
-          break;
-        }
-      }
-      if (movedOrder) break;
-    }
-
-    if (movedOrder && targetColumnId) {
-      const originalOrder = orders.find((o) => o.id === movedOrder!.id);
-      if (originalOrder && originalOrder.status !== targetColumnId) {
-        isUpdatingRef.current = true;
-        previousValueRef.current = newValue;
-
-        try {
-          await updateOrderStatus.mutateAsync({
-            orderId: movedOrder.id,
-            statusData: { status: targetColumnId },
-          });
-          queryClient.invalidateQueries({
-            queryKey: [GET_ADMIN_ORDERS_QUERY],
-          });
-        } catch (error) {
-          console.error("Ошибка при изменении статуса заказа:", error);
-          setKanbanValue(previousValue);
-          previousValueRef.current = previousValue;
-        } finally {
-          isUpdatingRef.current = false;
-        }
-      } else {
-        previousValueRef.current = newValue;
-      }
-    } else {
+    if (!isUpdatingRef.current) {
+      setKanbanValue(newValue);
       previousValueRef.current = newValue;
     }
   };
