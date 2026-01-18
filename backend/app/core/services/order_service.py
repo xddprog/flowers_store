@@ -2,6 +2,7 @@ from uuid import UUID
 from fastapi import BackgroundTasks, HTTPException, Request
 
 from jose import jwt
+from jose.exceptions import ExpiredSignatureError, JWTError
 
 
 from app.core.dto.order import OrderCreateResponseSchema, OrderCreateSchema, OrderResponseSchema
@@ -39,9 +40,9 @@ class OrderService(BaseDbModelService[Order]):
 
             payload = jwt.decode(jwt_token, jwks, algorithms=["ES256"])
             return payload
-        except jwt.ExpiredSignatureError as e:
-            logger.warning(f"Exoired jwt: {str(e)}")
-        except jwt.InvalidTokenError as e:
+        except ExpiredSignatureError as e:
+            logger.warning(f"Expired jwt: {str(e)}")
+        except JWTError as e:
             logger.warning(f"Invalid jwt: {str(e)}")
         except Exception as e:
             logger.error(f"Jwt check error: {str(e)}")
@@ -52,8 +53,8 @@ class OrderService(BaseDbModelService[Order]):
         order_data: OrderCreateSchema,
         cart_items: list[CartItem],
         background_tasks: BackgroundTasks
-    ) -> OrderResponseSchema:
-        total_amount = sum(float(item.total) * int(item.quantity.count) for item in cart_items)
+    ) -> OrderCreateResponseSchema:
+        total_amount = sum(float(item.total) for item in cart_items)
         
         order = await self.repository.create_order_with_items(
             order_data.model_dump(exclude={"items", "payment_amount"}), 
@@ -82,7 +83,7 @@ class OrderService(BaseDbModelService[Order]):
         return [OrderAdminSchema.model_validate(o, from_attributes=True) for o in orders]
 
     async def update_order_status_webhook(self, request: Request, background_tasks: BackgroundTasks):
-        # payload = await self._validate_token(request)
+        payload = await self._validate_token(request)
         webhook_data = YandexPayWebhookDTO(
             event="ORDER_STATUS_UPDATED",
             eventTime="",
@@ -120,9 +121,9 @@ class OrderService(BaseDbModelService[Order]):
                 logger.warning(f"Process empty order: order_id={webhook_data.order.id}, status={webhook_data.order.payment_status}")
                 return
 
-            # if old_order_status == new_order_status and new_payment_status == old_payment_status:
-            #     logger.warning(f"Process duplicate order: order_id={webhook_data.order.id}, status={webhook_data.order.payment_status}")
-            #     return
+            if old_order_status == new_order_status and new_payment_status == old_payment_status:
+                logger.warning(f"Process duplicate order: order_id={webhook_data.order.id}, status={webhook_data.order.payment_status}")
+                return
                 
             order_with_relations = await self.repository.get_order_with_relations(webhook_data.order.id)
             if new_order_status == OrderStatus.PAID:

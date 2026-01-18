@@ -18,17 +18,17 @@ services:
     networks:
       - app-network
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #   container_name: frontend-store
-  #   ports:
-  #     - "5173:80"
-  #   depends_on:
-  #     - app 
-  #   restart: always
-  #   networks:
-  #     - app-network
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend-store
+    ports:
+      - "5173:80"
+    depends_on:
+      - app 
+    restart: always
+    networks:
+      - app-network
 
   nginx:
     image: nginx:latest

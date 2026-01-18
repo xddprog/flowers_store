@@ -9,6 +9,7 @@ export const DELETE_BOUQUET_MUTATION = "deleteBouquet";
 export const ARCHIVE_BOUQUET_MUTATION = "archiveBouquet";
 export const UPLOAD_BOUQUET_IMAGES_MUTATION = "uploadBouquetImages";
 export const UPDATE_IMAGE_ORDER_MUTATION = "updateImageOrder";
+export const DELETE_BOUQUET_IMAGE_MUTATION = "deleteBouquetImage";
 export const GET_ADMIN_ORDERS_QUERY = "getAdminOrders";
 export const UPDATE_ORDER_STATUS_MUTATION = "updateOrderStatus";
 export const DELETE_ORDER_MUTATION = "deleteOrder";

@@ -28,6 +28,7 @@ export interface BouquetDetail {
   price: number;
   quantity: number;
   purchase_count: number;
+  is_active: boolean;
   view_count: number;
   bouquet_type: BouquetType;
   flower_types: FlowerType[];
@@ -39,6 +40,7 @@ export interface BouquetSearchParams {
   flower_type_ids?: string[] | null;
   price_min?: number | null;
   price_max?: number | null;
+  sort?: "popular" | "price_asc" | "price_desc";
   limit?: number;
   offset?: number;
 }

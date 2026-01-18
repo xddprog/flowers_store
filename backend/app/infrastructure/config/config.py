@@ -41,14 +41,14 @@ class JWTConfig(Config):
 
 
 class YandexPayConfig(Config):
-    API_URL: str = Field(default="https://sandbox.pay.yandex.ru/api")
+    API_URL: str = Field(default="https://sandbox.pay.yandex.ru")
     ON_ERROR_REDIRECT_URL: str = Field(default="")
     ON_SUCCESS_REDIRECT_URL: str = Field(default="")
     ON_ABORT_REDIRECT_URL: str = Field(default="")
     CALLBACK_URL: str = Field(default="http://localhost:8000/api/v1/order/callback")
     REQUEST_TIMEOUT: int = Field(default=10)
     MAX_RETRIES: int = Field(default=3)
-    API_KEY: str = Field(default="")
+    API_KEY: str = Field(default="Mmgo3pWsvqso7PfoOKVdYw7MDNuP7zHPYTwT7px90vYoXvDlHc5dxRt31oeVvJ2QKzcu1g4dSyPNBiai")
     
 
 class AppConfig(Config):

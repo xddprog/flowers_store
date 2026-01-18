@@ -28,11 +28,6 @@ export interface CreateOrderDto {
 }
 
 export interface CreateOrderResponse {
-  id: string;
-  customer_name: string;
-  customer_phone: string;
-  customer_email: string;
-  total_amount: number;
-  status: string;
+  payment_url: string;
 }
 

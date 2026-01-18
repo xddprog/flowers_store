@@ -1,24 +1,24 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-import { ArrowLeft } from "lucide-react";
 import {
-  useGetAdminBouquetDetail,
-  useDeleteBouquet,
   useArchiveBouquet,
+  useDeleteBouquet,
+  useGetAdminBouquetDetail,
   useUploadBouquetImages,
 } from "@/entities/admin/hooks";
-import { EditBouquetModal } from "@/entities/admin/ui/editBouquetModal";
-import { Image } from "@/shared/ui/image/image";
-import { ERouteNames } from "@/shared/lib/routeVariables";
-import { useQueryClient } from "@tanstack/react-query";
 import { GET_ADMIN_BOUQUETS_QUERY } from "@/entities/admin/lib/queryKeys";
+import { EditBouquetModal } from "@/entities/admin/ui/editBouquetModal";
+import { ERouteNames } from "@/shared/lib/routeVariables";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselPrevious,
   CarouselNext,
+  CarouselPrevious,
 } from "@/shared/ui/carousel/carousel";
+import { Image } from "@/shared/ui/image/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
+import { useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AdminProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -186,6 +186,17 @@ const AdminProductDetailPage = () => {
                     {product.purchase_count}
                   </p>
                 </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Статус</p>
+                  <span
+                    className={`inline-block px-3 py-1 text-sm font-medium rounded ${product.is_active
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-600"
+                      }`}
+                  >
+                    {product.is_active ? "Активен" : "Неактивен"}
+                  </span>
+                </div>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Тип букета</p>
@@ -234,6 +245,9 @@ const AdminProductDetailPage = () => {
                               className="w-full h-full object-cover"
                               loading={index === 0 ? "eager" : "lazy"}
                             />
+                            <div className="absolute top-2 left-2 bg-black/70 text-white px-3 py-1 rounded text-sm font-semibold">
+                              №{image.order + 1}
+                            </div>
                           </div>
                         </CarouselItem>
                       ))}

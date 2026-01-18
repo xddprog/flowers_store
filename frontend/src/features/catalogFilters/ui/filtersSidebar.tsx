@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
-import { FilterSection } from "./filterSection";
-import { CheckboxFilter } from "./checkboxFilter";
-import { PriceFilter } from "./priceFilter";
-import { ActiveFilters } from "./activeFilters";
-import { CatalogFilters } from "@/pages/(main)/catalogPage/ui/catalogPage";
 import { BouquetType, FlowerType } from "@/entities/flowers/types/apiTypes";
+import { CatalogFilters } from "@/pages/(main)/catalogPage/ui/catalogPage";
+import { useMemo, useState } from "react";
+import { ActiveFilters } from "./activeFilters";
+import { CheckboxFilter } from "./checkboxFilter";
+import { FilterSection } from "./filterSection";
+import { PriceFilter } from "./priceFilter";
 
 interface ActiveFilter {
   id: string;
@@ -16,6 +16,10 @@ interface FiltersSidebarProps {
   onFiltersChange: (filters: CatalogFilters) => void;
   bouquetTypes: BouquetType[];
   flowerTypes: FlowerType[];
+  priceBounds: {
+    min: number;
+    max: number;
+  };
 }
 
 export const FiltersSidebar = ({
@@ -23,6 +27,7 @@ export const FiltersSidebar = ({
   onFiltersChange,
   bouquetTypes,
   flowerTypes,
+  priceBounds,
 }: FiltersSidebarProps) => {
   const [isBouquetTypesExpanded, setIsBouquetTypesExpanded] = useState(false);
   const [isFlowerTypesExpanded, setIsFlowerTypesExpanded] = useState(false);
@@ -204,8 +209,10 @@ export const FiltersSidebar = ({
 
         <FilterSection title="Цена" border={false}>
           <PriceFilter
-            minPrice={filters.priceRange.min ?? 1000}
-            maxPrice={filters.priceRange.max ?? 10000}
+            minPrice={priceBounds.min}
+            maxPrice={priceBounds.max}
+            initialMin={filters.priceRange.min}
+            initialMax={filters.priceRange.max}
             onApply={handlePriceApply}
           />
         </FilterSection>

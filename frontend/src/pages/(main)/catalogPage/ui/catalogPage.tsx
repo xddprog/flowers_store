@@ -1,7 +1,12 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import {
+  useBouquetsSearch,
+  useBouquetTypes,
+  useFlowerTypes,
+  usePriceRange,
+} from "@/entities/flowers/hooks";
+import { BouquetSearchParams } from "@/entities/flowers/types/apiTypes";
 import { ProductGrid } from "@/entities/product";
+import { FiltersSidebar } from "@/features/catalogFilters";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import {
   Select,
@@ -10,13 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select/select";
-import {
-  useBouquetsSearch,
-  useBouquetTypes,
-  useFlowerTypes,
-} from "@/entities/flowers/hooks";
-import { BouquetSearchParams } from "@/entities/flowers/types/apiTypes";
-import { FiltersSidebar } from "@/features/catalogFilters";
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 export interface CatalogFilters {
   selectedBouquetTypeIds: string[];
@@ -28,18 +29,49 @@ export interface CatalogFilters {
 }
 
 const CatalogPage = () => {
+  const [urlSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState("popularity");
-  const [filters, setFilters] = useState<CatalogFilters>({
-    selectedBouquetTypeIds: [],
-    selectedFlowerTypeIds: [],
-    priceRange: {
-      min: null,
-      max: null,
-    },
-  });
+
+  // Инициализация фильтров из URL параметров
+  const getInitialFilters = (): CatalogFilters => {
+    const bouquetTypeId = urlSearchParams.get("bouquet_type_id");
+    return {
+      selectedBouquetTypeIds: bouquetTypeId ? [bouquetTypeId] : [],
+      selectedFlowerTypeIds: [],
+      priceRange: {
+        min: null,
+        max: null,
+      },
+    };
+  };
+
+  const [filters, setFilters] = useState<CatalogFilters>(() => getInitialFilters());
 
   const { data: bouquetTypes } = useBouquetTypes();
   const { data: flowerTypes } = useFlowerTypes();
+  const { data: priceRange } = usePriceRange();
+
+  // Обновление фильтров при изменении URL параметров
+  useEffect(() => {
+    const bouquetTypeId = urlSearchParams.get("bouquet_type_id");
+    setFilters((prev) => ({
+      ...prev,
+      selectedBouquetTypeIds: bouquetTypeId ? [bouquetTypeId] : [],
+    }));
+  }, [urlSearchParams]);
+
+  // Конвертируем значения сортировки из UI в значения API
+  const getSortValue = (sortBy: string): "popular" | "price_asc" | "price_desc" => {
+    switch (sortBy) {
+      case "price-low":
+        return "price_asc";
+      case "price-high":
+        return "price_desc";
+      case "popularity":
+      default:
+        return "popular";
+    }
+  };
 
   const searchParams = useMemo<BouquetSearchParams>(() => {
     return {
@@ -53,8 +85,9 @@ const CatalogPage = () => {
           : null,
       price_min: filters.priceRange.min,
       price_max: filters.priceRange.max,
+      sort: getSortValue(sortBy),
     };
-  }, [filters]);
+  }, [filters, sortBy]);
 
   const {
     data: bouquets,
@@ -121,6 +154,10 @@ const CatalogPage = () => {
             onFiltersChange={setFilters}
             bouquetTypes={bouquetTypes ?? []}
             flowerTypes={flowerTypes ?? []}
+            priceBounds={{
+              min: priceRange?.min_price ?? 1000,
+              max: priceRange?.max_price ?? 10000,
+            }}
           />
 
           <div className="flex-1">

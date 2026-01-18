@@ -1,4 +1,5 @@
 from uuid import UUID
+from fastapi import Form, UploadFile
 from pydantic import BaseModel, Field, field_validator
 
 from app.utils.url_helper import get_absolute_url
@@ -36,6 +37,7 @@ class BaseBouquetSchema(BaseModel):
     name: str
     price: int
     main_image: BouquetImageSchema | None = None
+    is_active: bool
 
 
 class BouquetDetailSchema(BaseModel):
@@ -45,6 +47,7 @@ class BouquetDetailSchema(BaseModel):
     price: int
     quantity: int
     purchase_count: int
+    is_active: bool
     view_count: int
     bouquet_type: BouquetTypeSchema
     flower_types: list[BouquetFlowerTypeSchema]
@@ -65,17 +68,25 @@ class BouquetCreateSchema(BaseModel):
     name: str
     description: str
     price: int
+    quantity: int = 0
     bouquet_type_id: UUID
     flower_type_ids: list[UUID] | None = None
+    images: list[UploadFile] | None = None
 
 
 class BouquetUpdateSchema(BaseModel):
     name: str | None = None
     description: str | None = None
     price: int | None = None
+    quantity: int | None = None
     bouquet_type_id: UUID | None = None
     flower_type_ids: list[UUID] | None = None
 
 
 class ImageOrderUpdateSchema(BaseModel):
     order: int = Field(..., ge=0, description="Новый порядок изображения")
+
+
+class PriceRangeSchema(BaseModel):
+    min_price: int
+    max_price: int

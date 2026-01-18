@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
-import { Image } from "@/shared/ui/image/image";
-import { Dialog, DialogContent } from "@/shared/ui/dialog/dialog";
+import { useCreateOrder } from "@/entities/order/hooks/useCreateOrder";
 import { basketService } from "@/entities/product/lib/basketService";
 import type { BasketItem } from "@/entities/product/types/types";
+import { cn } from "@/shared/lib/mergeClass";
+import { Dialog, DialogContent } from "@/shared/ui/dialog/dialog";
 import {
   Form,
   FormControl,
@@ -13,18 +10,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/shared/ui/form/form";
+import { Image } from "@/shared/ui/image/image";
 import { Input } from "@/shared/ui/input/input";
-import { Textarea } from "@/shared/ui/textarea/textarea";
-import { useCreateOrder } from "@/entities/order/hooks/useCreateOrder";
-import { orderFormSchema, type OrderFormData } from "../lib/orderFormSchema";
-import { buildOrderDto } from "../lib/buildOrderDto";
-import { formatPhoneNumber } from "../lib/formatPhoneNumber";
-import {
-  getDeliveryDateOptions,
-  getDeliveryTimeSlots,
-  cities,
-  parseTimeSlot,
-} from "../lib/deliveryOptions";
 import {
   Select,
   SelectContent,
@@ -32,7 +19,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select/select";
-import { cn } from "@/shared/lib/mergeClass";
+import { Textarea } from "@/shared/ui/textarea/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { buildOrderDto } from "../lib/buildOrderDto";
+import {
+  cities,
+  getDeliveryDateOptions,
+  getDeliveryTimeSlots,
+  parseTimeSlot,
+} from "../lib/deliveryOptions";
+import { formatPhoneNumber } from "../lib/formatPhoneNumber";
+import { orderFormSchema, type OrderFormData } from "../lib/orderFormSchema";
 
 interface BasketModalProps {
   open: boolean;
@@ -128,12 +128,17 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
     const orderDto = buildOrderDto(data, items, totalPrice);
 
     createOrder(orderDto, {
-      onSuccess: () => {
+      onSuccess: (response) => {
         basketService.clearBasket();
         setItems([]);
         onOpenChange(false);
         setApiError("");
         form.reset();
+
+        // Открываем ссылку на оплату в новом окне
+        if (response.payment_url) {
+          window.open(response.payment_url, "_blank");
+        }
       },
       onError: (error: unknown) => {
         if (error instanceof AxiosError) {
@@ -180,33 +185,30 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                 <button
                   type="button"
                   onClick={() => setActiveTab("contacts")}
-                  className={`pb-3 font-sans w-full text-start text-xl cursor-pointer text-black relative ${
-                    activeTab === "contacts"
+                  className={`pb-3 font-sans w-full text-start text-xl cursor-pointer text-black relative ${activeTab === "contacts"
                       ? "border-b-2 border-[#FF6600]"
                       : "border-b border-gray-200"
-                  }`}
+                    }`}
                 >
                   Контакты
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("delivery")}
-                  className={`pb-3 font-sans w-full text-start text-xl cursor-pointer text-black relative ${
-                    activeTab === "delivery"
+                  className={`pb-3 font-sans w-full text-start text-xl cursor-pointer text-black relative ${activeTab === "delivery"
                       ? "border-b-2 border-[#FF6600]"
                       : "border-b border-gray-200"
-                  }`}
+                    }`}
                 >
                   Получение
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("payment")}
-                  className={`pb-3 font-sans text-start text-xl w-full cursor-pointer text-black relative ${
-                    activeTab === "payment"
+                  className={`pb-3 font-sans text-start text-xl w-full cursor-pointer text-black relative ${activeTab === "payment"
                       ? "border-b-2 border-[#FF6600]"
                       : "border-b border-gray-200"
-                  }`}
+                    }`}
                 >
                   Оплата
                 </button>
@@ -512,9 +514,9 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                     const timeSlots = getDeliveryTimeSlots();
                                     const currentSlot = field.value
                                       ? timeSlots.find(
-                                          (slot) =>
-                                            slot.timeFrom === field.value
-                                        )
+                                        (slot) =>
+                                          slot.timeFrom === field.value
+                                      )
                                       : undefined;
 
                                     return (

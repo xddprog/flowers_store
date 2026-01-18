@@ -1,12 +1,12 @@
-import queryString from "query-string";
 import { axiosNoAuth } from "@/shared/api/baseQueryInstance";
+import queryString from "query-string";
 import {
   BaseBouquet,
   BouquetDetail,
   BouquetSearchParams,
-  PopularBouquetsParams,
   BouquetType,
   FlowerType,
+  PopularBouquetsParams,
 } from "../types/apiTypes";
 
 class BouquetService {
@@ -19,6 +19,7 @@ class BouquetService {
         flower_type_ids: params.flower_type_ids,
         price_min: params.price_min,
         price_max: params.price_max,
+        sort: params.sort ?? "popular",
         limit: params.limit ?? 20,
         offset: params.offset ?? 0,
       },
@@ -47,9 +48,8 @@ class BouquetService {
       }
     );
 
-    const url = `/api/v1/bouquet/popular${
-      queryParams ? `?${queryParams}` : ""
-    }`;
+    const url = `/api/v1/bouquet/popular${queryParams ? `?${queryParams}` : ""
+      }`;
     const { data } = await axiosNoAuth.get<BaseBouquet[]>(url);
     return data;
   }
@@ -70,6 +70,13 @@ class BouquetService {
 
   public async getFlowerTypes(): Promise<FlowerType[]> {
     const { data } = await axiosNoAuth.get<FlowerType[]>("/api/v1/flower/");
+    return data;
+  }
+
+  public async getPriceRange(): Promise<{ min_price: number; max_price: number }> {
+    const { data } = await axiosNoAuth.get<{ min_price: number; max_price: number }>(
+      "/api/v1/bouquet/price-range"
+    );
     return data;
   }
 }

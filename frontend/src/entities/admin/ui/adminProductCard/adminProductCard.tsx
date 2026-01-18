@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
-import { Image } from "@/shared/ui/image/image";
 import { BaseBouquet } from "@/entities/flowers/types/apiTypes";
 import { ERouteNames } from "@/shared/lib/routeVariables";
+import { Image } from "@/shared/ui/image/image";
+import { Link } from "react-router-dom";
 
 interface AdminProductCardProps {
   product: BaseBouquet;
