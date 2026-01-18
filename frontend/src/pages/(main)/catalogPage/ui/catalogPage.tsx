@@ -60,6 +60,19 @@ const CatalogPage = () => {
     }));
   }, [urlSearchParams]);
 
+  // Конвертируем значения сортировки из UI в значения API
+  const getSortValue = (sortBy: string): "popular" | "price_asc" | "price_desc" => {
+    switch (sortBy) {
+      case "price-low":
+        return "price_asc";
+      case "price-high":
+        return "price_desc";
+      case "popularity":
+      default:
+        return "popular";
+    }
+  };
+
   const searchParams = useMemo<BouquetSearchParams>(() => {
     return {
       bouquet_type_ids:
@@ -72,8 +85,9 @@ const CatalogPage = () => {
           : null,
       price_min: filters.priceRange.min,
       price_max: filters.priceRange.max,
+      sort: getSortValue(sortBy),
     };
-  }, [filters]);
+  }, [filters, sortBy]);
 
   const {
     data: bouquets,

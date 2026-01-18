@@ -40,6 +40,7 @@ export interface BouquetSearchParams {
   flower_type_ids?: string[] | null;
   price_min?: number | null;
   price_max?: number | null;
+  sort?: "popular" | "price_asc" | "price_desc";
   limit?: number;
   offset?: number;
 }

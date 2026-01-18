@@ -19,6 +19,7 @@ class BouquetService {
         flower_type_ids: params.flower_type_ids,
         price_min: params.price_min,
         price_max: params.price_max,
+        sort: params.sort ?? "popular",
         limit: params.limit ?? 20,
         offset: params.offset ?? 0,
       },
