@@ -62,7 +62,7 @@ class YandexPayClient:
         for i in range(YANDEX_PAY_CONFIG.MAX_RETRIES):
             try:
                 async with ClientSession() as session:
-                    async with session.post(f"{YANDEX_PAY_CONFIG.API_URL}/api/jwks") as response:
+                    async with session.get(f"{YANDEX_PAY_CONFIG.API_URL}/api/jwks") as response:
                         response_data = await response.json()
                         if response.status != 200:
                             logger.error(f"Failed to get jwks: {response.status} {response_data}")
@@ -70,5 +70,5 @@ class YandexPayClient:
                         return response_data
             except Exception as e:
                 if i == YANDEX_PAY_CONFIG.MAX_RETRIES - 1:
-                    logger.error(f"Failed to create order exception: {e}")
-                    raise BadRequestException(f"Не удалось создать заказ, попробуйте позже")
+                    logger.error(f"Failed to get jwks exception: {e}")
+                    raise BadRequestException(f"Не удалось получить jwks, попробуйте позже")
