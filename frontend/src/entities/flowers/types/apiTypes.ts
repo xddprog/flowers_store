@@ -28,6 +28,7 @@ export interface BouquetDetail {
   price: number;
   quantity: number;
   purchase_count: number;
+  is_active: boolean;
   view_count: number;
   bouquet_type: BouquetType;
   flower_types: FlowerType[];
