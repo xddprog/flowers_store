@@ -26,11 +26,12 @@ class OrderRepository(SqlAlchemyRepository[Order]):
         await self.session.flush()
         
         for item_data in items_data:
+            price_per_unit = float(item_data.total) / int(item_data.quantity.count)
             order_item = OrderItem(
                 order_id=order.id,
                 bouquet_id=item_data.product_id,
                 quantity=int(item_data.quantity.count),
-                price=float(item_data.total)
+                price=int(price_per_unit)
             )
             self.session.add(order_item)
         

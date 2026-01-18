@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 
 from app.api.v1.dependencies import get_bouquet_service
-from app.core.dto.bouquet import BaseBouquetSchema, BouquetDetailSchema, BouquetFilterSchema, BouquetTypeSchema
+from app.core.dto.bouquet import BaseBouquetSchema, BouquetDetailSchema, BouquetFilterSchema, BouquetTypeSchema, PriceRangeSchema
 from app.core.services.bouquet_service import BouquetService
 from app.infrastructure.errors.base import NotFoundException
 from app.utils.error_extra import error_response
@@ -34,6 +34,13 @@ async def get_popular_bouquets(
     offset: int = 0,
 ) -> list[BaseBouquetSchema]:
     return await bouquet_service.get_popular_bouquets(limit, offset)
+
+
+@router.get("/price-range")
+async def get_price_range(
+    bouquet_service: Annotated[BouquetService, Depends(get_bouquet_service)]
+) -> PriceRangeSchema:
+    return await bouquet_service.get_price_range()
 
 
 @router.get(

@@ -45,4 +45,3 @@ async def archive_order(
     service: Annotated[OrderService, Depends(get_order_service)],
 ) -> OrderAdminSchema:
     return await service.archive_order(order_id)
-

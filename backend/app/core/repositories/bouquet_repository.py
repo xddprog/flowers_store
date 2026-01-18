@@ -76,6 +76,7 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
     async def get_popular_bouquets(self, limit: int, offset: int) -> list[Bouquet]:
         query = (
             select(Bouquet)
+            .where(Bouquet.is_active == True)
             .order_by(Bouquet.purchase_count.desc(), Bouquet.view_count.desc())
             .options(selectinload(Bouquet.images))
             .limit(limit)
@@ -119,7 +120,11 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         offset: int = 0,
         sort: BouquetSort = BouquetSort.POPULAR
     ) -> list[Bouquet]:
-        query = select(Bouquet).options(selectinload(Bouquet.images))
+        query = (
+            select(Bouquet)
+            .where(Bouquet.is_active == True)
+            .options(selectinload(Bouquet.images))
+        )
         
         conditions = []
         
@@ -222,5 +227,65 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
             await self.session.refresh(image)
         
         return new_images
+
+    async def delete_image(
+        self,
+        bouquet_id: UUID,
+        image_id: UUID
+    ) -> str | None:
+        image = await self.session.get(BouquetImage, image_id)
+        if not image or image.bouquet_id != bouquet_id:
+            return None
+        
+        image_path = image.image_path
+        await self.session.delete(image)
+        await self.session.commit()
+        
+        return image_path
+
+    async def update_flower_types(
+        self,
+        bouquet_id: UUID,
+        flower_type_ids: list[UUID]
+    ) -> None:
+        delete_query = select(BouquetFlowerType).where(
+            BouquetFlowerType.bouquet_id == bouquet_id
+        )
+        result = await self.session.execute(delete_query)
+        old_relations = result.scalars().all()
+        
+        for relation in old_relations:
+            await self.session.delete(relation)
+        
+        # Flush для применения удаления перед добавлением новых
+        await self.session.flush()
+        
+        # Создаем новые связи (только уникальные)
+        unique_flower_type_ids = list(set(flower_type_ids))
+        for flower_type_id in unique_flower_type_ids:
+            bouquet_flower_type = BouquetFlowerType(
+                bouquet_id=bouquet_id,
+                flower_type_id=flower_type_id
+            )
+            self.session.add(bouquet_flower_type)
+        
+        await self.session.commit()
+
+    async def get_price_range(self) -> dict[str, int | None]:
+        query = select(
+            func.min(Bouquet.price).label("min_price"),
+            func.max(Bouquet.price).label("max_price")
+        ).where(Bouquet.is_active == True)
+        
+        result = await self.session.execute(query)
+        row = result.first()
+        
+        if row:
+            return {
+                "min_price": row.min_price if row.min_price is not None else 0,
+                "max_price": row.max_price if row.max_price is not None else 0
+            }
+        
+        return {"min_price": 0, "max_price": 10000}
 
     

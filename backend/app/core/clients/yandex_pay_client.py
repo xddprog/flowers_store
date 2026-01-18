@@ -19,16 +19,17 @@ class YandexPayClient:
         customer_email: str
     ) -> dict:
         for i in range(YANDEX_PAY_CONFIG.MAX_RETRIES):
+            logger.info("create order request", order_id=str(order_id), retry_number=i)
             headers = {
                 "X-Request-ID": str(uuid.uuid4()),
-                "X-Request-Timeout": YANDEX_PAY_CONFIG.REQUEST_TIMEOUT,
-                "X-Request-Attempt": i,
-                "Authorization": f"Api-Key {YANDEX_PAY_CONFIG.API_KEY}"
+                "X-Request-Timeout": str(YANDEX_PAY_CONFIG.REQUEST_TIMEOUT),
+                "X-Request-Attempt": str(i),
+                "Authorization": f"Api-Key 1a89262e-d19e-418f-8049-baaad98fbc32"
             }
             data = {
                 "currencyCode": "RUB",
-                "orderId": order_id,
-                "cart": cart.model_dump(),
+                "orderId": str(order_id),
+                "cart": cart.model_dump(mode='json', by_alias=True),
                 "availablePaymentMethods": ["CARD"],
                 "billingPhone": customer_phone,
                 "fiscalContact": customer_email,
@@ -46,22 +47,25 @@ class YandexPayClient:
                         json=data, 
                         headers=headers
                     ) as response:
+                        logger.info(f"data create: {data}")
+                        response_data = await response.json()
                         if response.status != 200:
-                            logger.error(f"Failed to create order request: {response.status_code}")
+                            logger.error(f"Failed to create order request: {response.status} {response_data}")
+                            if i == YANDEX_PAY_CONFIG.MAX_RETRIES - 1:
+                                raise
                             continue
-                        return await response.json()["data"]["paymentUrl"]
+                        return response_data["data"]["paymentUrl"]
             except Exception as e:
-                if i == YANDEX_PAY_CONFIG.MAX_RETRIES - 1:
-                    logger.error(f"Failed to create order exception: {e}")
-                    return BadRequestException(f"Не удалось создать заказ, попробуйте позже")
+                logger.error(f"Failed to create order exception: {e}")
+                return BadRequestException(f"Не удалось создать заказ, попробуйте позже")
                 
     async def get_jwks(self):
         for i in range(YANDEX_PAY_CONFIG.MAX_RETRIES):
             try:
                 async with ClientSession() as session:
-                    async with session.post("{YANDEX_PAY_CONFIG.API_URL}/api/jwks") as response:
+                    async with session.post(f"{YANDEX_PAY_CONFIG.API_URL}/api/jwks") as response:
                         if response.status != 200:
-                            logger.error(f"Failed to create order request: {response.status_code}")
+                            logger.error(f"Failed to get jwks: {response.status}")
                             continue
                         return await response.json()
             except Exception as e:

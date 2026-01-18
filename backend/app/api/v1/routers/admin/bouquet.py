@@ -1,6 +1,7 @@
+import json
 from typing import Annotated
 from uuid import UUID
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from app.api.v1.dependencies import get_bouquet_service, get_flower_service
 from app.core.dto.bouquet import (
@@ -44,13 +45,40 @@ async def get_all_bouquets(
     return await service.get_all_bouquets(limit, offset)
 
 
-@router.post("/")
+@router.post(
+    "/",
+    responses={
+        **error_response(InvalidImageType),
+        **error_response(InvalidImageFormat),
+        **error_response(ImageTooLarge),
+        **error_response(EmptyImageFile),
+        **error_response(ImageProcessingError),
+    }
+)
 async def create_bouquet(
-    data: BouquetCreateSchema,
     service: Annotated[BouquetService, Depends(get_bouquet_service)],
     flower_service: Annotated[FlowerService, Depends(get_flower_service)],
+    name: str = Form(),
+    description: str = Form(),
+    price: int = Form(),
+    quantity: int = Form(0),
+    bouquet_type_id: UUID = Form(),
+    flower_type_ids: str | None = Form(None),
+    images: Annotated[list[UploadFile] | None, File()] = None,
 ) -> BaseBouquetSchema:
-    await flower_service.validate_flower_types(data.flower_type_ids)
+    if flower_type_ids and flower_type_ids.strip():
+        flower_type_ids = [UUID(id) for id in json.loads(flower_type_ids)]
+    
+    await flower_service.validate_flower_types(flower_type_ids)
+    data = BouquetCreateSchema(
+        name=name,
+        description=description,
+        price=price,
+        quantity=quantity,
+        bouquet_type_id=bouquet_type_id,
+        flower_type_ids=flower_type_ids,
+        images=images,
+    )
     return await service.create_bouquet(data)
 
 
@@ -117,3 +145,15 @@ async def update_image_order(
     service: Annotated[BouquetService, Depends(get_bouquet_service)]
 ) -> list[BouquetImageSchema]:
     return await service.update_image_order(bouquet_id, image_id, data.order)
+
+
+@router.delete(
+    "/{bouquet_id}/images/{image_id}",
+    responses={**error_response(NotFoundException)}
+)
+async def delete_image(
+    bouquet_id: UUID,
+    image_id: UUID,
+    service: Annotated[BouquetService, Depends(get_bouquet_service)]
+) -> None:
+    await service.delete_image(bouquet_id, image_id)

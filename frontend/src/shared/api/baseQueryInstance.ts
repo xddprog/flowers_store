@@ -106,8 +106,11 @@ export class AxiosClient {
     return response;
   }
 
-  private handleError(error: AxiosError<{ message?: string }>): never {
-    const message = error.response?.data?.message || error.message || "Error";
+  private handleError(error: AxiosError<{ message?: string; detail?: string }>): never {
+    const message = error.response?.data?.detail || 
+                   error.response?.data?.message || 
+                   error.message || 
+                   "Error";
     throw new Error(message);
   }
 

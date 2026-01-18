@@ -128,3 +128,10 @@ class ImageService:
             for file in files
         ]
         return await asyncio.gather(*tasks)
+
+    async def delete_multiple(self, image_paths: list[str]) -> None:
+        tasks = [
+            self.delete_image(image_path)
+            for image_path in image_paths
+        ]
+        await asyncio.gather(*tasks)

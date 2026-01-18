@@ -9,6 +9,7 @@ from app.core.dto.bouquet import (
     AdminBouquetTypeSchema,
     BouquetUpdateSchema,
     BouquetImageSchema,
+    PriceRangeSchema,
 )
 from app.core.repositories.bouquet_repository import BouquetRepository
 from app.core.services.base import BaseDbModelService
@@ -81,14 +82,27 @@ class BouquetService(BaseDbModelService[Bouquet]):
         if not bouquet_type:
             raise NotFoundException(f"Тип букета с ID {data.bouquet_type_id} не найден")
             
-        bouquet = await self.repository.add_item(**data.model_dump())
+        bouquet = await self.repository.add_item(**data.model_dump(exclude={"images"}))
+        if data.images:
+            image_paths = await self.image_service.upload_multiple(data.images, subfolder="bouquets")
+            await self.repository.add_images(bouquet.id, image_paths)
+            await self.repository.session.refresh(bouquet)
+        
         return BaseBouquetSchema.model_validate(bouquet, from_attributes=True)
 
     async def update_bouquet(self, bouquet_id: UUID, data: BouquetUpdateSchema) -> BaseBouquetSchema:
-        bouquet = await self.repository.update_item(str(bouquet_id), **data.model_dump(exclude_none=True))
+        update_data = data.model_dump(exclude_none=True)
+        flower_type_ids = update_data.pop("flower_type_ids", None)
+        
+        bouquet = await self.repository.update_item(str(bouquet_id), **update_data)
         
         if not bouquet:
             raise NotFoundException(f"Букет с ID {bouquet_id} не найден")
+        
+        # Обновляем связи flower_types если они переданы
+        if flower_type_ids is not None:
+            await self.repository.update_flower_types(bouquet_id, flower_type_ids)
+            await self.repository.session.refresh(bouquet)
         
         return BaseBouquetSchema.model_validate(bouquet, from_attributes=True)
 
@@ -96,6 +110,8 @@ class BouquetService(BaseDbModelService[Bouquet]):
         bouquet = await self.repository.get_item(str(bouquet_id))
         if not bouquet:
             raise NotFoundException(f"Букет с ID {bouquet_id} не найден")
+        if bouquet.images:
+            await self.image_service.delete_multiple([image.image_path for image in bouquet.images])
         await self.repository.delete_item(bouquet)
 
     async def archive_bouquet(self, bouquet_id: UUID) -> BaseBouquetSchema:
@@ -131,6 +147,17 @@ class BouquetService(BaseDbModelService[Bouquet]):
         
         return [BouquetImageSchema.model_validate(image, from_attributes=True) for image in images]
 
+    async def delete_image(
+        self,
+        bouquet_id: UUID,
+        image_id: UUID
+    ) -> None:
+        image_path = await self.repository.delete_image(bouquet_id, image_id)
+        if not image_path:
+            raise NotFoundException(f"Изображение с ID {image_id} не найдено в букете {bouquet_id}")
+        
+        await self.image_service.delete_image(image_path)
+
     async def get_bouquets_to_order(self, bouquets: list[OrderItemCreateSchema]) -> list[CartItem]:
         db_bouquets = await self.repository.get_by_ids([item.bouquet_id for item in bouquets])
         db_bouquets_map = {bouquet.id: bouquet for bouquet in db_bouquets}
@@ -152,9 +179,13 @@ class BouquetService(BaseDbModelService[Bouquet]):
                         available=db_bouquet.quantity
                     ),
                     title=db_bouquet.name,
-                    total=db_bouquet.price,
+                    total=db_bouquet.price * bouquet.quantity,
                     description=db_bouquet.description
                 )
             )
         
         return items
+
+    async def get_price_range(self) -> PriceRangeSchema:
+        price_range = await self.repository.get_price_range()
+        return PriceRangeSchema(**price_range)

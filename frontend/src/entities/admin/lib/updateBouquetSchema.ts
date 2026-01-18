@@ -4,6 +4,7 @@ export const updateBouquetSchema = z.object({
   name: z.string().min(1, "Название обязательно для заполнения"),
   description: z.string().min(1, "Описание обязательно для заполнения"),
   price: z.number().min(0, "Цена должна быть больше или равна 0"),
+  quantity: z.number().min(0, "Количество должно быть больше или равно 0"),
   bouquet_type_id: z.string().uuid("Выберите тип букета"),
   flower_type_ids: z
     .array(z.string().uuid())

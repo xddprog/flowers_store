@@ -1,25 +1,25 @@
-import queryString from "query-string";
-import { axiosAuth, axiosNoAuth } from "@/shared/api/baseQueryInstance";
 import {
   BaseBouquet,
   BouquetDetail,
   BouquetImage,
 } from "@/entities/flowers/types/apiTypes";
+import { axiosAuth, axiosNoAuth } from "@/shared/api/baseQueryInstance";
+import queryString from "query-string";
 import {
+  AdminBouquetListParams,
+  AdminCustomer,
+  AdminCustomerListParams,
+  AdminOrder,
+  AdminOrderListParams,
+  CreateBouquetDto,
+  CurrentUserResponse,
   LoginDto,
   LoginResponse,
-  CurrentUserResponse,
   RefreshTokenDto,
   RefreshTokenResponse,
-  AdminBouquetListParams,
-  CreateBouquetDto,
   UpdateBouquetDto,
   UpdateImageOrderDto,
-  AdminOrderListParams,
-  AdminOrder,
   UpdateOrderStatusDto,
-  AdminCustomerListParams,
-  AdminCustomer,
 } from "../types/apiTypes";
 
 class AdminService {
@@ -75,11 +75,34 @@ class AdminService {
   }
 
   public async createBouquet(
-    bouquetData: CreateBouquetDto
+    bouquetData: CreateBouquetDto,
+    files?: File[]
   ): Promise<BaseBouquet> {
+    const formData = new FormData();
+    formData.append("name", bouquetData.name);
+    formData.append("description", bouquetData.description);
+    formData.append("price", bouquetData.price.toString());
+    formData.append("quantity", bouquetData.quantity.toString());
+    formData.append("bouquet_type_id", bouquetData.bouquet_type_id);
+
+    if (bouquetData.flower_type_ids && bouquetData.flower_type_ids.length > 0) {
+      formData.append("flower_type_ids", JSON.stringify(bouquetData.flower_type_ids));
+    }
+
+    if (files && files.length > 0) {
+      files.forEach((file) => {
+        formData.append("images", file);
+      });
+    }
+
     const { data } = await axiosAuth.post<BaseBouquet>(
       "/admin/bouquet/",
-      bouquetData as unknown as Record<string, unknown>
+      formData as unknown as Record<string, unknown>,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     return data;
   }
@@ -135,6 +158,13 @@ class AdminService {
       orderData as unknown as Record<string, unknown>
     );
     return data;
+  }
+
+  public async deleteBouquetImage(
+    bouquetId: string,
+    imageId: string
+  ): Promise<void> {
+    await axiosAuth.delete(`/admin/bouquet/${bouquetId}/images/${imageId}`);
   }
 
   public async getOrders(params?: AdminOrderListParams): Promise<AdminOrder[]> {

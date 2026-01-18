@@ -20,10 +20,8 @@ class CartItem(BaseModel):
     description: str = Field(serialization_alias="description")
 
     @model_validator(mode="after")
-    def validate_count(self) -> str:
-        price_per_one = float(self.total) / int(self.quantity.count)
-        price_per_one_round = round(price_per_one, 2)
-        self.total = str(price_per_one_round * int(self.quantity.count))
+    def validate_total(self):
+        self.total = f"{float(self.total):.2f}"
         return self
 
 

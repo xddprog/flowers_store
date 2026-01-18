@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
 import { GALLERY_CATEGORIES } from "@/entities/flowers/lib/constants";
-import { GalleryCard } from "./galleryCard";
 import { ERouteNames } from "@/shared/lib/routeVariables";
+import { Link } from "react-router-dom";
+import { useBouquetTypes } from "../hooks";
+import { GalleryCard } from "./galleryCard";
 
 export const Gallery = () => {
+  const { data: bouquetTypes } = useBouquetTypes();
   return (
     <section className="w-full bg-[#FFFAF6] py-12 px-4">
       <div className="container mx-auto">
@@ -27,11 +29,16 @@ export const Gallery = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
           {GALLERY_CATEGORIES.map((category, index) => {
             const height = index === 1 ? 306 : 465;
+            const bouquetType = category.bouquetTypeName
+              ? bouquetTypes?.find((type) => type.name === category.bouquetTypeName)
+              : undefined;
+
             return (
               <GalleryCard
                 key={category.id}
                 category={category}
                 height={height}
+                bouquetTypeId={bouquetType?.id}
               />
             );
           })}
