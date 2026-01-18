@@ -2,6 +2,7 @@ from uuid import UUID
 from fastapi import BackgroundTasks, HTTPException, Request
 
 from jose import jwt
+from jose.exceptions import ExpiredSignatureError, JWTError
 
 
 from app.core.dto.order import OrderCreateResponseSchema, OrderCreateSchema, OrderResponseSchema
@@ -39,9 +40,9 @@ class OrderService(BaseDbModelService[Order]):
 
             payload = jwt.decode(jwt_token, jwks, algorithms=["ES256"])
             return payload
-        except jwt.ExpiredSignatureError as e:
-            logger.warning(f"Exoired jwt: {str(e)}")
-        except jwt.InvalidTokenError as e:
+        except ExpiredSignatureError as e:
+            logger.warning(f"Expired jwt: {str(e)}")
+        except JWTError as e:
             logger.warning(f"Invalid jwt: {str(e)}")
         except Exception as e:
             logger.error(f"Jwt check error: {str(e)}")
