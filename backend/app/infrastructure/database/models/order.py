@@ -37,7 +37,7 @@ class Order(Base):
     
     comment: Mapped[str | None] = mapped_column(default=None)
     total_amount: Mapped[int]
-    status: Mapped[OrderStatus] = mapped_column(SQLEnum(OrderStatus), default=OrderStatus.PAID)
+    status: Mapped[OrderStatus] = mapped_column(SQLEnum(OrderStatus), default=OrderStatus.PENDING)
     is_active: Mapped[bool] = mapped_column(default=False)
     
     items: Mapped[list["OrderItem"]] = relationship(
