@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
-import { MapPin, Clock } from "lucide-react";
-import { Image } from "@/shared/ui/image/image";
 import { ERouteNames } from "@/shared/lib/routeVariables";
+import { Image } from "@/shared/ui/image/image";
+import { Clock, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -74,6 +74,18 @@ export const Footer = () => {
               Контакты
             </h3>
             <div className="flex flex-col gap-3">
+              <p className="text-white font-sans text-[18px]">
+                Индивидуальный предприниматель Сайкова Татьяна Владимировна
+              </p>
+              <p className="text-white font-sans text-[18px]">
+                ИНН 772703958796
+              </p>
+              <p className="text-white font-sans text-[18px]">
+                ОГРН 324774600482391
+              </p>
+              <p className="text-white font-sans text-[18px]">
+                Юридический адрес: г. Москва, Новочеремушкинская ул., д.17
+              </p>
               <div className="flex items-center gap-2">
                 <a
                   href="mailto:lavka-schastyal@mail.ru"
