@@ -160,7 +160,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[1300px] h-[900px] px-12 gap-0 border-0 rounded-none sm:rounded-lg overflow-hidden flex flex-col"
+        className="max-w-[1300px] w-full h-full lg:h-[900px] lg:max-h-[900px] p-0 lg:px-12 gap-0 border-0 rounded-none overflow-hidden flex flex-col lg:rounded-lg"
         showCloseButton={false}
       >
         <Form {...form}>
@@ -169,58 +169,62 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
             className="flex flex-col h-full"
           >
             <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-6">
-                <h2 className="text-[56px] font-sans text-[#181818]">
+              <div className="flex items-center justify-between p-4 md:p-5 lg:p-6">
+                <h2 className="text-2xl md:text-4xl lg:text-[56px] font-sans text-[#181818]">
                   Корзина
                 </h2>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="text-[#181818] text-xl hover:opacity-70 transition-opacity"
+                  className="text-[#181818] text-2xl md:text-3xl lg:text-xl hover:opacity-70 transition-opacity leading-none"
+                  aria-label="Закрыть"
                 >
                   ×
                 </button>
               </div>
-              <div className="flex px-6">
+              <div className="flex px-4 md:px-5 lg:px-6 overflow-x-auto">
                 <button
                   type="button"
                   onClick={() => setActiveTab("contacts")}
-                  className={`pb-3 font-sans w-full text-start text-xl cursor-pointer text-black relative ${activeTab === "contacts"
+                  className={`pb-2 md:pb-3 font-sans w-full text-start text-base md:text-lg lg:text-xl cursor-pointer text-black relative whitespace-nowrap ${
+                    activeTab === "contacts"
                       ? "border-b-2 border-[#FF6600]"
                       : "border-b border-gray-200"
-                    }`}
+                  }`}
                 >
                   Контакты
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("delivery")}
-                  className={`pb-3 font-sans w-full text-start text-xl cursor-pointer text-black relative ${activeTab === "delivery"
+                  className={`pb-2 md:pb-3 font-sans w-full text-start text-base md:text-lg lg:text-xl cursor-pointer text-black relative whitespace-nowrap ${
+                    activeTab === "delivery"
                       ? "border-b-2 border-[#FF6600]"
                       : "border-b border-gray-200"
-                    }`}
+                  }`}
                 >
                   Получение
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("payment")}
-                  className={`pb-3 font-sans text-start text-xl w-full cursor-pointer text-black relative ${activeTab === "payment"
+                  className={`pb-2 md:pb-3 font-sans text-start text-base md:text-lg lg:text-xl w-full cursor-pointer text-black relative whitespace-nowrap ${
+                    activeTab === "payment"
                       ? "border-b-2 border-[#FF6600]"
                       : "border-b border-gray-200"
-                    }`}
+                  }`}
                 >
                   Оплата
                 </button>
               </div>
 
               <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-                <div className="w-full p-6 overflow-y-auto flex flex-col h-full">
+                <div className="w-full p-4 md:p-5 lg:p-6 overflow-y-auto flex flex-col h-full">
                   {activeTab === "contacts" && (
                     <div className="flex flex-col h-full">
                       <div>
-                        <div className="mb-6">
-                          <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
+                        <div className="mb-4 md:mb-6">
+                          <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                             Заказчик
                           </h3>
                           <div className="space-y-4">
@@ -233,7 +237,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                     <Input
                                       placeholder="Имя"
                                       className={cn(
-                                        "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                        "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                         fieldState.error
                                           ? "border-red-500"
                                           : "border-black"
@@ -255,7 +259,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                         type="tel"
                                         placeholder="+7 (999) 999-99-99"
                                         className={cn(
-                                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                          "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                           fieldState.error
                                             ? "border-red-500"
                                             : "border-black"
@@ -282,7 +286,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                         type="email"
                                         placeholder="Почта"
                                         className={cn(
-                                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                          "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                           fieldState.error
                                             ? "border-red-500"
                                             : "border-black"
@@ -297,11 +301,11 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                           </div>
                         </div>
 
-                        <div className="mb-6">
-                          <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
+                        <div className="mb-4 md:mb-6">
+                          <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                             Получатель
                           </h3>
-                          <div className="flex gap-4 mb-4">
+                          <div className="flex gap-3 md:gap-4 mb-3 md:mb-4 flex-wrap">
                             <FormField
                               control={form.control}
                               name="recipientType"
@@ -348,7 +352,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                       <Input
                                         placeholder="Имя получателя"
                                         className={cn(
-                                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                          "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                           fieldState.error
                                             ? "border-red-500"
                                             : "border-black"
@@ -370,7 +374,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           type="tel"
                                           placeholder="+7 (999) 999-99-99"
                                           className={cn(
-                                            "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                            "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                             fieldState.error
                                               ? "border-red-500"
                                               : "border-black"
@@ -395,7 +399,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                       <FormControl>
                                         <Input
                                           placeholder="Текст открытки"
-                                          className="w-full px-4 h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none"
+                                          className="w-full px-3 md:px-4 h-[48px] md:h-[52px] border border-black rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none"
                                           {...field}
                                         />
                                       </FormControl>
@@ -410,7 +414,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                       <button
                         type="button"
                         onClick={() => handleNextTab("delivery")}
-                        className="w-full bg-[#FF6600] text-white font-sans text-lg font-medium h-[60px] px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
+                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
                       >
                         Далее
                       </button>
@@ -464,16 +468,16 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
 
                         {deliveryType === "delivery" && (
                           <>
-                            <div className="mb-6">
-                              <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
+                            <div className="mb-4 md:mb-6">
+                              <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                                 Дата и время доставки
                               </h3>
-                              <div className="flex gap-4">
+                              <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                                 <FormField
                                   control={form.control}
                                   name="deliveryDate"
                                   render={({ field }) => (
-                                    <FormItem className="flex-1">
+                                    <FormItem className="w-full md:flex-1">
                                       <Select
                                         value={field.value}
                                         onValueChange={(value) => {
@@ -481,7 +485,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                         }}
                                       >
                                         <FormControl>
-                                          <SelectTrigger className="flex-1 px-4 min-h-[52px] h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none bg-white shadow-none w-full py-0">
+                                          <SelectTrigger className="w-full px-3 md:px-4 min-h-[48px] md:min-h-[52px] h-[48px] md:h-[52px] border border-black rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none bg-white shadow-none py-0">
                                             <SelectValue placeholder="Сегодня, 10 ноября" />
                                           </SelectTrigger>
                                         </FormControl>
@@ -514,13 +518,13 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                     const timeSlots = getDeliveryTimeSlots();
                                     const currentSlot = field.value
                                       ? timeSlots.find(
-                                        (slot) =>
-                                          slot.timeFrom === field.value
-                                      )
+                                          (slot) =>
+                                            slot.timeFrom === field.value
+                                        )
                                       : undefined;
 
                                     return (
-                                      <FormItem className="flex-1">
+                                      <FormItem className="w-full md:flex-1">
                                         <Select
                                           value={
                                             currentSlot ? currentSlot.value : ""
@@ -537,7 +541,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           }}
                                         >
                                           <FormControl>
-                                            <SelectTrigger className="flex-1 px-4 min-h-[52px] h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none bg-white shadow-none w-full py-0">
+                                            <SelectTrigger className="w-full px-3 md:px-4 min-h-[48px] md:min-h-[52px] h-[48px] md:h-[52px] border border-black rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none bg-white shadow-none py-0">
                                               <SelectValue placeholder="С 10:00 до 11:00" />
                                             </SelectTrigger>
                                           </FormControl>
@@ -565,8 +569,8 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                               </div>
                             </div>
 
-                            <div className="mb-6">
-                              <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
+                            <div className="mb-4 md:mb-6">
+                              <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                                 Адрес доставки
                               </h3>
                               <div className="space-y-4">
@@ -580,7 +584,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                         onValueChange={field.onChange}
                                       >
                                         <FormControl>
-                                          <SelectTrigger className="w-full px-4 h-[52px] min-h-[52px] border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none bg-white shadow-none">
+                                          <SelectTrigger className="w-full px-3 md:px-4 h-[48px] md:h-[52px] min-h-[48px] md:min-h-[52px] border border-black rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none bg-white shadow-none">
                                             <SelectValue placeholder="Москва" />
                                           </SelectTrigger>
                                         </FormControl>
@@ -613,7 +617,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                         <Input
                                           placeholder="Улица"
                                           className={cn(
-                                            "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                            "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                             fieldState.error
                                               ? "border-red-500"
                                               : "border-black"
@@ -634,7 +638,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           <Input
                                             placeholder="Дом"
                                             className={cn(
-                                              "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                              "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                               fieldState.error
                                                 ? "border-red-500"
                                                 : "border-black"
@@ -654,7 +658,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           <Input
                                             placeholder="Квартира"
                                             className={cn(
-                                              "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                              "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                               fieldState.error
                                                 ? "border-red-500"
                                                 : "border-black"
@@ -674,7 +678,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                           <Input
                                             placeholder="Этаж"
                                             className={cn(
-                                              "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                                              "w-full px-3 md:px-4 h-[48px] md:h-[52px] border rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none",
                                               fieldState.error
                                                 ? "border-red-500"
                                                 : "border-black"
@@ -694,7 +698,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                       <button
                         type="button"
                         onClick={() => handleNextTab("payment")}
-                        className="w-full bg-[#FF6600] text-white font-sans text-lg font-medium h-[60px] px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
+                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
                       >
                         Далее
                       </button>
@@ -704,7 +708,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   {activeTab === "payment" && (
                     <div className="flex flex-col h-full">
                       <div>
-                        <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
+                        <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                           Пожелания
                         </h3>
                         <FormField
@@ -716,7 +720,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                 <Textarea
                                   placeholder="Комментарий к заказу"
                                   rows={4}
-                                  className="w-full px-4 py-2 border border-black rounded-none font-sans text-base text-[#181818] focus:outline-none resize-none"
+                                  className="w-full px-3 md:px-4 py-2 border border-black rounded-none font-sans text-sm md:text-base text-[#181818] focus:outline-none resize-none"
                                   {...field}
                                 />
                               </FormControl>
@@ -740,7 +744,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                       <button
                         type="submit"
                         disabled={isPending || items.length === 0}
-                        className="w-full bg-[#FF6600] text-white font-sans text-lg font-medium h-[60px] px-6 rounded-none hover:opacity-90 transition-opacity mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isPending ? "Обработка..." : "Оплатить"}
                       </button>
@@ -748,13 +752,17 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   )}
                 </div>
 
-                <div className="min-w-[438px] p-6 overflow-y-auto">
-                  <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-6">
+                <div
+                  className={`w-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${
+                    items.length > 0 ? "overflow-y-auto" : "overflow-visible"
+                  }`}
+                >
+                  <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-4 md:mb-6">
                     Ваш заказ
                   </h3>
 
                   {items.length === 0 ? (
-                    <p className="text-base font-sans text-[#181818] text-center py-8">
+                    <p className="text-sm md:text-base font-sans text-[#181818] text-center py-6 md:py-8">
                       Корзина пуста
                     </p>
                   ) : (
@@ -763,9 +771,9 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                         {items.map((item) => (
                           <div
                             key={item.product.id}
-                            className="flex items-center gap-4 bg-white p-4 rounded"
+                            className="flex items-center gap-3 md:gap-4 bg-white p-3 md:p-4 rounded"
                           >
-                            <div className="w-20 h-20 bg-gray-200 rounded flex-shrink-0">
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded flex-shrink-0">
                               {item.product.image ? (
                                 <Image
                                   src={item.product.image}
@@ -776,18 +784,19 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                 <div className="w-full h-full bg-gray-200 rounded" />
                               )}
                             </div>
-                            <div className="flex-1">
-                              <h4 className="font-sans text-base text-[#181818] mb-1">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-sans text-sm md:text-base text-[#181818] mb-1 truncate">
                                 {item.product.name}
                               </h4>
-                              <p className="font-sans text-base font-semibold text-[#FF6600]">
+                              <p className="font-sans text-sm md:text-base font-semibold text-[#FF6600]">
                                 {item.product.price} Р
                               </p>
                             </div>
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(item.product.id)}
-                              className="text-[#181818] hover:opacity-70 transition-opacity text-xl"
+                              className="text-[#181818] hover:opacity-70 transition-opacity text-xl md:text-2xl lg:text-xl flex-shrink-0 leading-none"
+                              aria-label="Удалить"
                             >
                               ×
                             </button>
@@ -795,12 +804,12 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                         ))}
                       </div>
 
-                      <div className="border-t border-gray-300 pt-4">
+                      <div className="border-t border-gray-300 pt-3 md:pt-4">
                         <div className="flex justify-between items-center">
-                          <span className="font-sans text-base text-[#181818]">
+                          <span className="font-sans text-sm md:text-base text-[#181818]">
                             Итоговая сумма:
                           </span>
-                          <span className="font-sans text-lg font-semibold text-[#181818]">
+                          <span className="font-sans text-base md:text-lg font-semibold text-[#181818]">
                             {totalPrice} Р
                           </span>
                         </div>

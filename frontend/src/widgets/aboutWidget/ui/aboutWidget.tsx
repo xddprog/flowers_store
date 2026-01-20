@@ -5,7 +5,7 @@ export const AboutWidget = () => {
     <section className="w-full bg-[#FFFAF6] py-12 px-4">
       <div className="container mx-auto">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-          <div className="w-full lg:w-1/2 flex-shrink-0">
+          <div className="w-full hidden md:block lg:w-1/2 flex-shrink-0">
             <div className="w-full h-full">
               <Image
                 src="/images/flower.png"
@@ -29,7 +29,7 @@ export const AboutWidget = () => {
                 width={413}
                 height={55}
                 loading="lazy"
-                className="w-auto h-auto max-w-full"
+                className=" max-w-[280px] md:w-auto h-auto md:max-w-full"
               />
             </div>
 

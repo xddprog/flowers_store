@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
-    <footer className="w-full bg-[#FF6600] md:min-h-[380px] flex py-8 md:py-14 px-4 md:px-0">
+    <footer className="w-full bg-[#FF6600] h-full lg:min-h-[380px] flex py-8 md:py-14 px-4 md:px-0">
       <div className="container mx-auto w-full">
         <div className="flex flex-col lg:flex-row gap-6 md:gap-8 lg:gap-12 items-start justify-between">
           <div className="flex flex-col gap-4 md:gap-6 w-full lg:w-auto">
@@ -14,11 +14,19 @@ export const Footer = () => {
               className="flex items-center mb-2"
             >
               <Image
+                src="/images/LASCOVO_white-no-BG-hori 1.png"
+                alt="LASCOVO Logo"
+                width={179}
+                height={24}
+                className="block md:hidden w-[140px] h-auto"
+                loading="eager"
+              />
+              <Image
                 src="/images/LASCOVO-big.png"
                 alt="LASCOVO Logo"
                 width={413}
                 height={55}
-                className="w-[280px] h-auto md:w-[350px] lg:w-[413px]"
+                className="hidden md:block w-[350px] lg:w-[413px] h-auto"
                 loading="eager"
               />
             </Link>

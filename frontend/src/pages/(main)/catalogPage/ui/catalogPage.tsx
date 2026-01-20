@@ -45,7 +45,9 @@ const CatalogPage = () => {
     };
   };
 
-  const [filters, setFilters] = useState<CatalogFilters>(() => getInitialFilters());
+  const [filters, setFilters] = useState<CatalogFilters>(() =>
+    getInitialFilters()
+  );
 
   const { data: bouquetTypes } = useBouquetTypes();
   const { data: flowerTypes } = useFlowerTypes();
@@ -61,7 +63,9 @@ const CatalogPage = () => {
   }, [urlSearchParams]);
 
   // Конвертируем значения сортировки из UI в значения API
-  const getSortValue = (sortBy: string): "popular" | "price_asc" | "price_desc" => {
+  const getSortValue = (
+    sortBy: string
+  ): "popular" | "price_asc" | "price_desc" => {
     switch (sortBy) {
       case "price-low":
         return "price_asc";
@@ -96,26 +100,26 @@ const CatalogPage = () => {
   } = useBouquetsSearch(searchParams);
 
   return (
-    <div className="w-full my-12 mt-16">
+    <div className="w-full my-8 md:my-12 mt-12 md:mt-16 px-4 md:px-0">
       <div className="container mx-auto">
-        <div className="mb-10 gap-3 flex flex-col">
+        <div className="mb-6 md:mb-10 gap-3 flex flex-col">
           <Link
             to={ERouteNames.DEFAULT_ROUTE}
-            className="flex items-center gap-2 text-base font-sans text-[#181818] hover:opacity-80 transition-opacity mb-4"
+            className="flex items-center gap-2 text-sm md:text-base font-sans text-[#181818] hover:opacity-80 transition-opacity mb-3 md:mb-4"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={18} className="md:size-5" />
             <span>Главная</span>
           </Link>
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl md:text-[56px] font-sans text-[#181818]">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] font-sans text-[#181818]">
               Каталог
             </h1>
-            <div className="flex items-center gap-1">
-              <span className="text-base font-sans text-[#181818]">
+            <div className="flex items-center gap-1 md:gap-2">
+              <span className="hidden sm:inline text-sm md:text-base font-sans text-[#181818]">
                 Сортировать по
               </span>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="border-0 shadow-none p-0 h-auto w-auto gap-1 focus:ring-0 focus-visible:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent text-base font-sans text-[#181818] [&_svg]:opacity-100 [&_svg]:text-[#181818]">
+                <SelectTrigger className="border-0 shadow-none p-0 h-auto w-auto gap-1 focus:ring-0 focus-visible:ring-0 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent text-sm md:text-base font-sans text-[#181818] [&_svg]:opacity-100 [&_svg]:text-[#181818]">
                   <SelectValue placeholder="По популярности" />
                 </SelectTrigger>
                 <SelectContent
@@ -148,7 +152,7 @@ const CatalogPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8">
           <FiltersSidebar
             filters={filters}
             onFiltersChange={setFilters}
@@ -162,23 +166,23 @@ const CatalogPage = () => {
 
           <div className="flex-1">
             {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="relative w-16 h-16">
+              <div className="flex items-center justify-center py-8 md:py-12">
+                <div className="relative w-12 h-12 md:w-16 md:h-16">
                   <div className="absolute top-0 left-0 w-full h-full border-4 border-[#FF6600]/20 rounded-full"></div>
                   <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-[#FF6600] rounded-full animate-spin"></div>
                 </div>
               </div>
             ) : isError ? (
-              <div className="flex items-center justify-center py-12">
-                <p className="text-base font-sans text-gray-500">
+              <div className="flex items-center justify-center py-8 md:py-12">
+                <p className="text-sm md:text-base font-sans text-gray-500 px-4 text-center">
                   Не удалось загрузить продукты. Попробуйте обновить страницу.
                 </p>
               </div>
             ) : bouquets && bouquets.length > 0 ? (
               <ProductGrid products={bouquets} />
             ) : (
-              <div className="flex items-center justify-center py-12">
-                <p className="text-base font-sans text-gray-500">
+              <div className="flex items-center justify-center py-8 md:py-12">
+                <p className="text-sm md:text-base font-sans text-gray-500 px-4 text-center">
                   Продукты не найдены
                 </p>
               </div>
