@@ -160,7 +160,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[1300px] w-full h-full lg:h-[900px] lg:max-h-[900px] p-0 lg:px-12 gap-0 border-0 rounded-none overflow-hidden flex flex-col lg:rounded-lg"
+        className="max-w-[1300px] w-full h-full lg:h-[900px] lg:max-h-[900px] p-0 lg:px-12 gap-0 border-0 rounded-none lg:overflow-hidden flex flex-col"
         showCloseButton={false}
       >
         <Form {...form}>
@@ -182,7 +182,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   ×
                 </button>
               </div>
-              <div className="flex px-4 md:px-5 lg:px-6 overflow-x-auto">
+              <div className="flex px-4 md:px-5 lg:px-6 overflow-x-auto min-h-[35px]">
                 <button
                   type="button"
                   onClick={() => setActiveTab("contacts")}
@@ -218,8 +218,8 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                 </button>
               </div>
 
-              <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-                <div className="w-full p-4 md:p-5 lg:p-6 overflow-y-auto flex flex-col h-full">
+              <div className="flex flex-col lg:flex-row flex-1 lg:overflow-hidden h-full overflow-auto pb-4">
+                <div className="w-full p-4 md:p-5 lg:p-6 lg:overflow-y-auto flex flex-col h-full">
                   {activeTab === "contacts" && (
                     <div className="flex flex-col h-full">
                       <div>
@@ -751,10 +751,10 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                     </div>
                   )}
                 </div>
-
+{/*  */}
                 <div
                   className={`w-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${
-                    items.length > 0 ? "overflow-y-auto" : "overflow-visible"
+                    items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
                   }`}
                 >
                   <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-4 md:mb-6">

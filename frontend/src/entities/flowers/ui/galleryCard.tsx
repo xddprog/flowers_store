@@ -33,7 +33,7 @@ export const GalleryCard = ({ category, height, bouquetTypeId }: GalleryCardProp
           <div className="w-full h-full bg-gray-200" />
         )}
       </div>
-      <h3 className="text-[32px] font-sans font-medium text-[#181818]">
+      <h3 className="text-xl md:text-2xl mb-2 2xl:text-[32px] font-sans font-medium text-black leading-tight lg:leading-7">
         {category.name}
       </h3>
     </Link>

@@ -43,11 +43,20 @@ export const ProductModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-5xl w-full h-full lg:h-auto lg:max-h-[90vh] p-0 lg:p-12 gap-0 border-0 rounded-none lg:rounded-lg overflow-hidden"
+        className="max-w-5xl w-full rounded-none h-full lg:h-auto lg:max-h-[90vh] p-0 lg:p-12 gap-0 border-0 overflow-hidden"
         showCloseButton={false}
       >
-        <div className="flex flex-col lg:flex-row h-full lg:h-auto">
-          <div className="w-full lg:w-1/2 bg-gray-200 aspect-square lg:aspect-auto min-h-[300px] md:min-h-[400px] lg:min-h-[400px] relative overflow-hidden">
+        {/* Кнопка закрытия вверху для мобильных */}
+        <button
+          onClick={() => onOpenChange(false)}
+          className="lg:hidden fixed top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-lg text-[#181818] hover:opacity-70 transition-opacity text-2xl font-sans leading-none"
+          aria-label="Закрыть"
+        >
+          ×
+        </button>
+
+        <div className="flex flex-col lg:flex-row h-full lg:h-auto p-5 lg:p-0">
+          <div className="w-full lg:w-1/2 bg-gray-200 aspect-square lg:aspect-auto max-h-[500px] min-h-[300px] md:min-h-[400px] lg:min-h-[400px] relative overflow-hidden">
             {isLoading ? (
               <div className="flex items-center justify-center w-full h-full absolute inset-0">
                 <div className="relative w-10 h-10 md:w-12 md:h-12">
@@ -93,14 +102,14 @@ export const ProductModal = ({
             )}
           </div>
 
-          <div className="w-full lg:w-1/2 p-4 md:p-5 lg:p-6 flex flex-col relative bg-white overflow-y-auto">
+          <div className="w-full lg:w-1/2 lg:pl-6 pt-4 pb-6 lg:pt-0 lg:pb-0 flex flex-col relative bg-white overflow-y-auto">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <DialogTitle className="text-xl md:text-2xl font-sans font-medium text-[#181818] pr-3 md:pr-4">
                 {product.name}
               </DialogTitle>
               <button
                 onClick={() => onOpenChange(false)}
-                className="text-[#181818] hover:opacity-70 transition-opacity text-2xl md:text-3xl lg:text-xl font-sans leading-none shrink-0"
+                className="hidden lg:flex text-[#181818] hover:opacity-70 transition-opacity text-xl font-sans leading-none shrink-0"
                 aria-label="Закрыть"
               >
                 ×
@@ -126,7 +135,7 @@ export const ProductModal = ({
               {product.price}₽
             </p>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 pb-4 lg:pb-0">
               <div className="flex items-center bg-[#FF6600] h-[50px] md:h-[60px] w-full sm:w-[197px] justify-center">
                 <button
                   onClick={handleDecrease}

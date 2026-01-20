@@ -32,7 +32,6 @@ const CatalogPage = () => {
   const [urlSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState("popularity");
 
-  // Инициализация фильтров из URL параметров
   const getInitialFilters = (): CatalogFilters => {
     const bouquetTypeId = urlSearchParams.get("bouquet_type_id");
     return {
@@ -53,7 +52,6 @@ const CatalogPage = () => {
   const { data: flowerTypes } = useFlowerTypes();
   const { data: priceRange } = usePriceRange();
 
-  // Обновление фильтров при изменении URL параметров
   useEffect(() => {
     const bouquetTypeId = urlSearchParams.get("bouquet_type_id");
     setFilters((prev) => ({
@@ -62,7 +60,6 @@ const CatalogPage = () => {
     }));
   }, [urlSearchParams]);
 
-  // Конвертируем значения сортировки из UI в значения API
   const getSortValue = (
     sortBy: string
   ): "popular" | "price_asc" | "price_desc" => {
@@ -100,7 +97,7 @@ const CatalogPage = () => {
   } = useBouquetsSearch(searchParams);
 
   return (
-    <div className="w-full my-8 md:my-12 mt-12 md:mt-16 px-4 md:px-0">
+    <div className="w-full my-8 mt-6 md:my-12 md:mt-12 lg:mt-16 px-4 md:px-0">
       <div className="container mx-auto">
         <div className="mb-6 md:mb-10 gap-3 flex flex-col">
           <Link

@@ -28,7 +28,10 @@ export const BouquetCard = ({ bouquet }: BouquetCardProps) => {
         className="flex flex-col cursor-pointer hover:opacity-90 transition-opacity"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="w-full bg-gray-200 aspect-[4/5] mb-4 flex items-center justify-center">
+        <div
+          className="w-full bg-gray-200 mb-4 flex items-center justify-center"
+          style={{ aspectRatio: "0.780051" }}
+        >
           {bouquet.image ? (
             <Image
               src={bouquet.image}
@@ -40,11 +43,11 @@ export const BouquetCard = ({ bouquet }: BouquetCardProps) => {
             <div className="w-full h-full bg-gray-200" />
           )}
         </div>
-        <h3 className="text-base font-sans font-medium text-[32px] text-[#181818]">
+        <h3 className="text-xl md:text-2xl mb-2 2xl:text-[32px] font-sans text-black font-medium leading-tight lg:leading-7">
           {bouquet.name}
         </h3>
-        <p className="text-[#FF6600] font-sans text-[24px] font-semibold">
-          {bouquet.price.toLocaleString("ru-RU")}₽
+        <p className="font-sans text-[#FF6600] text-lg md:text-xl lg:text-[20px] xl:text-[24px] font-medium">
+          {bouquet.price.toLocaleString("ru-RU")} ₽
         </p>
       </div>
       {isModalOpen && (

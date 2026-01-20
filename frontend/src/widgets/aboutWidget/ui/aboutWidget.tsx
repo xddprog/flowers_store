@@ -29,7 +29,7 @@ export const AboutWidget = () => {
                 width={413}
                 height={55}
                 loading="lazy"
-                className=" max-w-[280px] md:w-auto h-auto md:max-w-full"
+                className=" max-w-[280px] max-h-[40px] md:w-auto md:max-h-full md:h-auto md:max-w-full"
               />
             </div>
 
