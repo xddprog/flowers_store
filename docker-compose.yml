@@ -7,9 +7,9 @@ services:
     ports:
       - 5433:5432
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres123
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: postgres123
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d postgres -U postgres -h 127.0.0.1" ]
       interval: 5s
@@ -50,11 +50,11 @@ services:
       dockerfile: Dockerfile
     container_name: app-store
     environment:
-      - DB_NAME=postgres
+      - DB_NAME=postgres123
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASS=postgres
+      - DB_USER=postgres123
+      - DB_PASS=postgres123
 
       - SMTP_PASSWORD=yemiewyefyxruwwj
       - SMTP_USER=maga2007.magomedov@yandex.ru
