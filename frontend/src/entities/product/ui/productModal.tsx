@@ -46,16 +46,15 @@ export const ProductModal = ({
         className="max-w-5xl w-full rounded-none h-full lg:h-auto lg:max-h-[90vh] p-0 lg:p-12 gap-0 border-0 overflow-hidden"
         showCloseButton={false}
       >
-        {/* Кнопка закрытия вверху для мобильных */}
         <button
           onClick={() => onOpenChange(false)}
-          className="lg:hidden fixed top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-lg text-[#181818] hover:opacity-70 transition-opacity text-2xl font-sans leading-none"
+          className="lg:hidden fixed top-4 right-5 cursor-pointer z-50 flex items-center justify-center bg-white rounded-full text-[#181818] hover:opacity-70 transition-opacity text-2xl font-sans leading-none"
           aria-label="Закрыть"
         >
           ×
         </button>
 
-        <div className="flex flex-col lg:flex-row h-full lg:h-auto p-5 lg:p-0">
+        <div className="flex flex-col mt-8 lg:mt-0 lg:flex-row h-full lg:h-auto p-5 lg:p-0">
           <div className="w-full lg:w-1/2 bg-gray-200 aspect-square lg:aspect-auto max-h-[500px] min-h-[300px] md:min-h-[400px] lg:min-h-[400px] relative overflow-hidden">
             {isLoading ? (
               <div className="flex items-center justify-center w-full h-full absolute inset-0">
@@ -79,7 +78,7 @@ export const ProductModal = ({
                     .sort((a, b) => a.order - b.order)
                     .map((image, index) => (
                       <CarouselItem key={image.id} className="pl-0 basis-full">
-                        <div className="relative aspect-square lg:aspect-auto min-h-[300px] md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
+                        <div className="relative aspect-square lg:aspect-auto md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
                           <Image
                             src={image.image_path}
                             alt={`${product.name} - изображение ${index + 1}`}

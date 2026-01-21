@@ -121,7 +121,7 @@ export const FiltersSidebar = ({
   };
 
   return (
-    <aside className="w-full md:w-[295px] flex-shrink-0">
+    <aside className="w-full xl:w-[295px] flex-shrink-0">
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[32px] font-sans font-medium text-[#3F3F3F] leading-[40px]">

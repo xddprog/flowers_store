@@ -97,7 +97,7 @@ const CatalogPage = () => {
   } = useBouquetsSearch(searchParams);
 
   return (
-    <div className="w-full my-8 mt-6 md:my-12 md:mt-12 lg:mt-16 px-4 md:px-0">
+    <div className="w-full my-8 mt-6 md:my-12 md:mt-12 lg:mt-16 container mx-auto px-4 md:px-8">
       <div className="container mx-auto">
         <div className="mb-6 md:mb-10 gap-3 flex flex-col">
           <Link
@@ -149,7 +149,7 @@ const CatalogPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8">
+        <div className="flex flex-col xl:flex-row gap-4 md:gap-6 lg:gap-8">
           <FiltersSidebar
             filters={filters}
             onFiltersChange={setFilters}
