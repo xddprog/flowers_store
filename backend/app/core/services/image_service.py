@@ -29,7 +29,7 @@ class ImageService:
         contents = await file.read()
         await file.seek(0)
         
-        images_dir = Path("/images/static")
+        images_dir = Path("/static/images")
         target_dir = images_dir / subfolder
         target_dir.mkdir(parents=True, exist_ok=True)
         
