@@ -56,8 +56,7 @@ class AppConfig(Config):
     DEBUG: bool = Field(default=False)
     
     BASE_URL: str = Field(default="http://localhost:8000")
-    STATIC_DIR: str = Field(default="static")
-    IMAGES_DIR: str = Field(default="static/images")
+    STATIC_URL: str = Field(default="http://localhost:8000/static/images")
     
     MAX_IMAGE_SIZE_MB: int = Field(default=10)
     WEBP_QUALITY: int = Field(default=85)

@@ -49,12 +49,12 @@ app.add_middleware(
 
 app.add_middleware(LoggingMiddleware)
 
-static_dir = Path(APP_CONFIG.STATIC_DIR)
+static_dir = Path("/static")
 if not static_dir.exists():
     static_dir.mkdir(parents=True, exist_ok=True)
     logger.info("static_directory_created", path=str(static_dir))
 
-app.mount("/static", StaticFiles(directory=APP_CONFIG.STATIC_DIR), name="static")
-logger.info("static_files_mounted", directory=APP_CONFIG.STATIC_DIR)
+app.mount("/static", StaticFiles(directory="/static"), name="static")
+logger.info("static_files_mounted", directory="/static")
 
 app.include_router(api_v1_routers)

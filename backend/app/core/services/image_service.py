@@ -18,7 +18,7 @@ from app.infrastructure.errors.image_errors import (
 
 class ImageService:
     def __init__(self):
-        Path(APP_CONFIG.IMAGES_DIR).mkdir(parents=True, exist_ok=True)
+        Path("/static/images").mkdir(parents=True, exist_ok=True)
     
     async def upload_and_convert(
         self, 
@@ -29,7 +29,7 @@ class ImageService:
         contents = await file.read()
         await file.seek(0)
         
-        images_dir = Path(APP_CONFIG.IMAGES_DIR)
+        images_dir = Path("/static/images")
         target_dir = images_dir / subfolder
         target_dir.mkdir(parents=True, exist_ok=True)
         
@@ -103,7 +103,7 @@ class ImageService:
     
     async def delete_image(self, image_path: str) -> bool:
         try:
-            images_dir = Path(APP_CONFIG.IMAGES_DIR)
+            images_dir = Path("/static/images")
             full_path = images_dir / image_path
             
             await asyncio.to_thread(self._delete_file, full_path)
