@@ -10,7 +10,7 @@ from app.api.v1.routers import api_v1_routers
 from app.infrastructure.database.adapters.pg_connection import DatabaseConnection
 from app.infrastructure.logging.logger import configure_logging, get_logger
 from app.infrastructure.middleware import LoggingMiddleware
-from app.infrastructure.config.config import APP_CONFIG
+from app.infrastructure.config.config import APP_CONFIG, BASE_DIR
 
 
 configure_logging()
@@ -49,12 +49,12 @@ app.add_middleware(
 
 app.add_middleware(LoggingMiddleware)
 
-static_dir = Path("/static")
+static_dir = BASE_DIR / "static"
 if not static_dir.exists():
     static_dir.mkdir(parents=True, exist_ok=True)
     logger.info("static_directory_created", path=str(static_dir))
 
-app.mount("/static", StaticFiles(directory="/static"), name="static")
-logger.info("static_files_mounted", directory="/static")
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+logger.info("static_files_mounted", directory=str(static_dir))
 
 app.include_router(api_v1_routers)

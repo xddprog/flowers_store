@@ -6,7 +6,7 @@ import asyncio
 from PIL import Image
 from fastapi import UploadFile
 
-from app.infrastructure.config.config import APP_CONFIG
+from app.infrastructure.config.config import APP_CONFIG, BASE_DIR
 from app.infrastructure.errors.image_errors import (
     InvalidImageType,
     InvalidImageFormat,
@@ -18,7 +18,9 @@ from app.infrastructure.errors.image_errors import (
 
 class ImageService:
     def __init__(self):
-        Path("/static/images").mkdir(parents=True, exist_ok=True)
+        images_dir = BASE_DIR / "static" / "images"
+        images_dir.mkdir(parents=True, exist_ok=True)
+        self.images_dir = images_dir
     
     async def upload_and_convert(
         self, 
@@ -29,8 +31,7 @@ class ImageService:
         contents = await file.read()
         await file.seek(0)
         
-        images_dir = Path("/static/images")
-        target_dir = images_dir / subfolder
+        target_dir = self.images_dir / subfolder
         target_dir.mkdir(parents=True, exist_ok=True)
         
         filename = f"{uuid.uuid4()}.webp"
@@ -103,8 +104,7 @@ class ImageService:
     
     async def delete_image(self, image_path: str) -> bool:
         try:
-            images_dir = Path("/static/images")
-            full_path = images_dir / image_path
+            full_path = self.images_dir / image_path
             
             await asyncio.to_thread(self._delete_file, full_path)
             return True

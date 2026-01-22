@@ -19,3 +19,5 @@ python-slugify
 starlette_admin
 fastapi_mail
 aiohttp
+beautifulsoup4
+playwright

@@ -186,5 +186,5 @@ export class AxiosClient {
   }
 }
 
-export const axiosNoAuth = new AxiosClient("https://api.lascovo.ru/");
-export const axiosAuth = new AxiosClient("https://api.lascovo.ru/", true);
+export const axiosNoAuth = new AxiosClient("http://localhost:8000");
+export const axiosAuth = new AxiosClient("http://localhost:8000", true);

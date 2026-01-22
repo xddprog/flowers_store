@@ -95,3 +95,6 @@ DB_CONFIG = settings.database
 JWT_CONFIG = settings.jwt
 APP_CONFIG = settings.app
 YANDEX_PAY_CONFIG = settings.yandex_pay
+
+# Экспортируем BASE_DIR для использования в других модулях
+__all__ = ["BASE_DIR", "SMTP_CONFIG", "TELEGRAM_CONFIG", "DB_CONFIG", "JWT_CONFIG", "APP_CONFIG", "YANDEX_PAY_CONFIG"]
