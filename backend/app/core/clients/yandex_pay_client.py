@@ -39,7 +39,7 @@ class YandexPayClient:
                     "onAbort": YANDEX_PAY_CONFIG.ON_ABORT_REDIRECT_URL,
                 }
             }
-
+            logger.info(f"Request yandex client data: {headers} {data}")
             try:
                 async with ClientSession() as session:
                     async with session.post(
@@ -49,7 +49,7 @@ class YandexPayClient:
                     ) as response:
                         response_data = await response.json()
                         if response.status != 200:
-                            logger.error(f"Failed to create order request: {response.status} {response_data} {headers} {data}")
+                            logger.error(f"Failed to create order request: {response.status} {response_data}")
                             if i == YANDEX_PAY_CONFIG.MAX_RETRIES - 1:
                                 raise
                             continue
