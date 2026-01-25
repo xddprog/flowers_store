@@ -84,14 +84,10 @@ class OrderService(BaseDbModelService[Order]):
 
     async def update_order_status_webhook(self, request: Request, background_tasks: BackgroundTasks):
         payload = await self._validate_token(request)
-        webhook_data = YandexPayWebhookDTO(
-            event="ORDER_STATUS_UPDATED",
-            eventTime="",
-            order=OrderInfo(
-                orderId="aea28f2e-e09a-4d51-830c-203dc44e3379",
-                paymentStatus="CAPTURED"
-            )
-        )
+        if not payload:
+            return {"status": "success"}
+
+        webhook_data = YandexPayWebhookDTO.model_validate(payload)
         
         if webhook_data.event != "ORDER_STATUS_UPDATED" or not webhook_data.order:
             return {"status": "success"}
@@ -112,8 +108,9 @@ class OrderService(BaseDbModelService[Order]):
             new_payment_status = PaymentStatus.REFUNDED
         
         if new_payment_status or new_order_status:
+            order_id = UUID(webhook_data.order.id)
             old_order_status, old_payment_status = await self.repository.update_status(
-                webhook_data.order.id,
+                order_id,
                 new_order_status=new_order_status,
                 new_payment_status=new_payment_status
             )
@@ -125,7 +122,7 @@ class OrderService(BaseDbModelService[Order]):
                 logger.warning(f"Process duplicate order: order_id={webhook_data.order.id}, status={webhook_data.order.payment_status}")
                 return
                 
-            order_with_relations = await self.repository.get_order_with_relations(webhook_data.order.id)
+            order_with_relations = await self.repository.get_order_with_relations(order_id)
             if new_order_status == OrderStatus.PAID:
                 background_tasks.add_task(
                     self.telegram_client.send_payment_notification_to_admin,
