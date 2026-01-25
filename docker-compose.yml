@@ -73,7 +73,7 @@ services:
       - DEBUG=true
       - STATIC_URL=https://api.lascovo.ru/static/images
 
-      - API_URL=https://sandbox.pay.yandex.ru
+      - API_URL=https://pay.yandex.ru
       - ON_ERROR_REDIRECT_URL=
       - ON_SUCCESS_REDIRECT_URL=
       - ON_ABORT_REDIRECT_URL=
