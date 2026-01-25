@@ -74,9 +74,9 @@ services:
       - STATIC_URL=https://api.lascovo.ru/static/images
 
       - API_URL=https://pay.yandex.ru
-      - ON_ERROR_REDIRECT_URL=
-      - ON_SUCCESS_REDIRECT_URL=
-      - ON_ABORT_REDIRECT_URL=
+      - ON_ERROR_REDIRECT_URL=https://www.lascovo.ru/
+      - ON_SUCCESS_REDIRECT_URL=https://www.lascovo.ru/
+      - ON_ABORT_REDIRECT_URL=https://www.lascovo.ru/
       - CALLBACK_URL=https://api.lascovo.ru/api/v1/order/callback
       - REQUEST_TIMEOUT=10
       - MAX_RETRIES=3
