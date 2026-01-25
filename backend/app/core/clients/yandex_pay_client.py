@@ -30,7 +30,7 @@ class YandexPayClient:
                 "currencyCode": "RUB",
                 "orderId": str(order_id),
                 "cart": cart.model_dump(mode='json', by_alias=True),
-                "availablePaymentMethods": ["CARD"],
+                "availablePaymentMethods": ["CARD", "SPLIT"],
                 "billingPhone": customer_phone,
                 "fiscalContact": customer_email,
                 "redirectUrls": {
