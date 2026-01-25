@@ -72,14 +72,16 @@ services:
       - APP_NAME=lascovo-api
       - DEBUG=true
       - STATIC_URL=https://api.lascovo.ru/static/images
-      - YANDEX_PAY__API_URL=https://sandbox.pay.yandex.ru
-      - YANDEX_PAY__ON_ERROR_REDIRECT_URL=
-      - YANDEX_PAY__ON_SUCCESS_REDIRECT_URL=
-      - YANDEX_PAY__ON_ABORT_REDIRECT_URL=
-      - YANDEX_PAY__CALLBACK_URL=https://api.lascovo.ru/api/v1/order/callback
-      - YANDEX_PAY__REQUEST_TIMEOUT=10
-      - YANDEX_PAY__MAX_RETRIES=3
-      - YANDEX_PAY__API_KEY=1a89262ed19e418f8049baaad98fbc32.91cNLFx4pDl_HqkQBtB9SDTcEpCItLkr
+
+      - API_URL=https://sandbox.pay.yandex.ru
+      - ON_ERROR_REDIRECT_URL=
+      - ON_SUCCESS_REDIRECT_URL=
+      - ON_ABORT_REDIRECT_URL=
+      - CALLBACK_URL=https://api.lascovo.ru/api/v1/order/callback
+      - REQUEST_TIMEOUT=10
+      - MAX_RETRIES=3
+      - API_KEY=1a89262ed19e418f8049baaad98fbc32.91cNLFx4pDl_HqkQBtB9SDTcEpCItLkr
+
       - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,https://www.lascovo.ru,https://lascovo.ru
       - SITEMAP_PASSWORD=m_8jMpDsZ09yF1AphJnnEOg_zW0UOe4KXM4cvr_BkvY
       
