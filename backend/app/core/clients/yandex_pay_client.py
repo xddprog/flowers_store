@@ -49,7 +49,7 @@ class YandexPayClient:
                     ) as response:
                         response_data = await response.json()
                         if response.status != 200:
-                            logger.error(f"Failed to create order request: {response.status} {response_data} {headers}")
+                            logger.error(f"Failed to create order request: {response.status} {response_data} {headers} {data}")
                             if i == YANDEX_PAY_CONFIG.MAX_RETRIES - 1:
                                 raise
                             continue

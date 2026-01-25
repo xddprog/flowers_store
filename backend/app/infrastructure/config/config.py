@@ -41,7 +41,7 @@ class JWTConfig(Config):
 
 
 class YandexPayConfig(Config):
-    API_URL: str = Field(default="https://sandbox.pay.yandex.ru")
+    API_URL: str = Field(default="https://pay.yandex.ru")
     ON_ERROR_REDIRECT_URL: str = Field(default="")
     ON_SUCCESS_REDIRECT_URL: str = Field(default="")
     ON_ABORT_REDIRECT_URL: str = Field(default="")

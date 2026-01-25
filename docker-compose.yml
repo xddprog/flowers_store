@@ -80,7 +80,7 @@ services:
       - CALLBACK_URL=https://api.lascovo.ru/api/v1/order/callback
       - REQUEST_TIMEOUT=10
       - MAX_RETRIES=3
-      - API_KEY=1a89262ed19e418f8049baaad98fbc32.91cNLFx4pDl_HqkQBtB9SDTcEpCItLkr
+      - API_KEY=1a89262ed19e418f8049baaad98fbc32.nK53EUIhIdahvJZSSOsePcWljFk0rlJD
 
       - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,https://www.lascovo.ru,https://lascovo.ru
       - SITEMAP_PASSWORD=m_8jMpDsZ09yF1AphJnnEOg_zW0UOe4KXM4cvr_BkvY
