@@ -48,7 +48,7 @@ class YandexPayConfig(Config):
     CALLBACK_URL: str = Field(default="http://localhost:8000/api/v1/order/callback")
     REQUEST_TIMEOUT: int = Field(default=10)
     MAX_RETRIES: int = Field(default=3)
-    API_KEY: str = Field(default="Mmgo3pWsvqso7PfoOKVdYw7MDNuP7zHPYTwT7px90vYoXvDlHc5dxRt31oeVvJ2QKzcu1g4dSyPNBiai")
+    API_KEY: str = Field(default="")
     
 
 class AppConfig(Config):

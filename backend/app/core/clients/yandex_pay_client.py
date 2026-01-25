@@ -24,7 +24,7 @@ class YandexPayClient:
                 "X-Request-ID": str(uuid.uuid4()),
                 "X-Request-Timeout": str(YANDEX_PAY_CONFIG.REQUEST_TIMEOUT),
                 "X-Request-Attempt": str(i),
-                "Authorization": f"Api-Key 1a89262e-d19e-418f-8049-baaad98fbc32"
+                "Authorization": f"Api-Key {YANDEX_PAY_CONFIG.API_KEY}"
             }
             data = {
                 "currencyCode": "RUB",
