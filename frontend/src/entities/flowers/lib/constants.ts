@@ -37,16 +37,16 @@ export const GALLERY_CATEGORIES: GalleryCategory[] = [
   {
     id: "1",
     name: "Авторские букеты",
-    image: "/images/gallery-1.jpg",
+    image: "/images/gallery/author-bouquet.jpg",
   },
   {
     id: "2",
     name: "Монобукеты",
-    image: "/images/gallery-2.jpg",
+    image: "/images/gallery/monobouquet.jpg",
   },
   {
     id: "3",
     name: "Композиции",
-    image: "/images/gallery-3.jpg",
+    image: "/images/gallery/composition.jpg",
   },
 ];

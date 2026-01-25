@@ -27,8 +27,8 @@ export const Gallery = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
-          {GALLERY_CATEGORIES.map((category, index) => {
-            const height = index === 1 ? 306 : 465;
+          {GALLERY_CATEGORIES.map((category) => {
+            // const height = index === 1 ? 306 : 465;
             const bouquetType = category.bouquetTypeName
               ? bouquetTypes?.find((type) => type.name === category.bouquetTypeName)
               : undefined;
@@ -37,7 +37,7 @@ export const Gallery = () => {
               <GalleryCard
                 key={category.id}
                 category={category}
-                height={height}
+                height={465}
                 bouquetTypeId={bouquetType?.id}
               />
             );

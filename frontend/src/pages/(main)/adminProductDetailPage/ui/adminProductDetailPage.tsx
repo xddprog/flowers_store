@@ -50,7 +50,7 @@ const AdminProductDetailPage = () => {
       await deleteBouquet.mutateAsync(id);
       queryClient.invalidateQueries({ queryKey: [GET_ADMIN_BOUQUETS_QUERY] });
       navigate(
-        `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`
+        `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`,
       );
     } catch (error) {
       console.error("Ошибка при удалении продукта:", error);
@@ -72,7 +72,7 @@ const AdminProductDetailPage = () => {
         queryKey: ["getAdminBouquetDetail", id],
       });
       navigate(
-        `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`
+        `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`,
       );
     } catch (error) {
       console.error("Ошибка при архивировании продукта:", error);
@@ -82,7 +82,7 @@ const AdminProductDetailPage = () => {
   };
 
   const handleUploadImages = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (!id || !event.target.files || event.target.files.length === 0) {
       return;
@@ -140,7 +140,7 @@ const AdminProductDetailPage = () => {
         <button
           onClick={() =>
             navigate(
-              `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`
+              `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`,
             )
           }
           className="flex items-center cursor-pointer gap-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -189,10 +189,11 @@ const AdminProductDetailPage = () => {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Статус</p>
                   <span
-                    className={`inline-block px-3 py-1 text-sm font-medium rounded ${product.is_active
+                    className={`inline-block px-3 py-1 text-sm font-medium rounded ${
+                      product.is_active
                         ? "bg-green-100 text-green-800"
                         : "bg-gray-100 text-gray-600"
-                      }`}
+                    }`}
                   >
                     {product.is_active ? "Активен" : "Неактивен"}
                   </span>
