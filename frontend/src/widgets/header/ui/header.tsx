@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Menu, X } from "lucide-react";
 import { Image } from "@/shared/ui/image/image";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import { BasketModal } from "@/features/basket";
@@ -57,15 +57,15 @@ export const Header = () => {
             </nav>
 
             <div className="flex items-center gap-3 md:gap-4 lg:gap-6">
-              <button
+              {/* <button
                 className="hidden lg:flex text-white hover:opacity-80 transition-opacity"
                 aria-label="Поиск"
               >
                 <Search size={24} className="md:size-7 lg:size-8" />
-              </button>
+              </button> */}
               <button
                 onClick={handleOpenModal}
-                className="hidden lg:flex text-white hover:opacity-80 transition-opacity relative"
+                className="hidden lg:flex text-white cursor-pointer hover:opacity-80 transition-opacity relative"
                 aria-label="Корзина"
               >
                 <ShoppingBag size={24} className="md:size-7 lg:size-8" />

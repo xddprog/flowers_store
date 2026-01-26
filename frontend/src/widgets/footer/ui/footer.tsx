@@ -58,7 +58,7 @@ export const Footer = () => {
             </h3>
             <nav className="flex flex-col gap-1.5 md:gap-2">
               <Link
-                to="#"
+                to={`/${ERouteNames.DASHBOARD_ROUTE}/${ERouteNames.CATALOG_ROUTE}`}
                 className="text-white font-sans text-[16px] md:text-[18px] hover:opacity-80 transition-opacity"
               >
                 Каталог

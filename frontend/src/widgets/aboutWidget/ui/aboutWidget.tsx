@@ -52,7 +52,7 @@ export const AboutWidget = () => {
 
             <div className="flex items-center gap-4 mt-2">
               <a
-                href="#"
+                href="https://www.instagram.com/lascovo_flowers?igsh=aGZ5eWs4ZWVlN2k5"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity flex-shrink-0"
@@ -68,7 +68,7 @@ export const AboutWidget = () => {
                 />
               </a>
               <a
-                href="#"
+                href="https://t.me/lascovomsk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity flex-shrink-0"
