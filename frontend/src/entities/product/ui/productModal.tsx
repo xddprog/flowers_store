@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Image } from "@/shared/ui/image/image";
-import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
-import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
 import { useBouquetDetail } from "@/entities/flowers/hooks";
+import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/shared/ui/carousel/carousel";
+import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
+import { Image } from "@/shared/ui/image/image";
+import { useState } from "react";
 
 interface ProductModalProps {
   product: BaseBouquet;
@@ -36,7 +36,20 @@ export const ProductModal = ({
   };
 
   const handleAddToCart = () => {
-    onAddToCart(product, quantity);
+    const imageUrl =
+      bouquetDetail?.images && bouquetDetail.images.length > 0
+        ? [...bouquetDetail.images].sort((a, b) => a.order - b.order)[0]
+          ?.image_path
+        : product.main_image?.image_path;
+
+    const basketProduct: Bouquet = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: imageUrl,
+    };
+
+    onAddToCart(basketProduct, quantity);
     onOpenChange(false);
   };
 

@@ -15,7 +15,7 @@ class CustomerService:
         await self.repository.add_item(email=email, phone=phone)
 
     async def unblock_customer(self, email: str) -> None:
-        item = await self.repository.get_item(email=email)
+        item = await self.repository.get_by_filter(email=email)
         if not item:
             raise NotFoundException(f"Пользователь с email {email} не найден")
         await self.repository.delete_item(item)
