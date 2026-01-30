@@ -1,7 +1,8 @@
 from uuid import UUID
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.infrastructure.database.models.base import Base
+from app.utils.enums import AvailabilityStatus
 
 
 class BouquetFlowerType(Base):
@@ -29,6 +30,7 @@ class Bouquet(Base):
     quantity: Mapped[int] = mapped_column(default=0)
     purchase_count: Mapped[int] = mapped_column(default=0)
     view_count: Mapped[int] = mapped_column(default=0)
+    availability_status: Mapped[str] = mapped_column(default=AvailabilityStatus.IN_STOCK)
     is_active: Mapped[bool] = mapped_column(default=False)
     bouquet_type_id: Mapped[UUID] = mapped_column(ForeignKey("bouquet_types.id"))
 

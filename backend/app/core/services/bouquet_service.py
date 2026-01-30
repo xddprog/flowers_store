@@ -15,11 +15,12 @@ from app.core.repositories.bouquet_repository import BouquetRepository
 from app.core.services.base import BaseDbModelService
 from app.core.services.image_service import ImageService
 from app.infrastructure.database.models.bouquet import Bouquet
-from app.infrastructure.errors.base import NotFoundException
+from app.infrastructure.errors.base import NotFoundException, BadRequestException
 from app.core.dto.order import OrderItemCreateSchema
 from app.core.dto.yandex_pay import CartItem, CartItemQuantity
 from app.core.dto.flower import FlowerTypeSchema
 from app.core.dto.bouquet import BouquetTypeSchema
+from app.utils.enums import AvailabilityStatus
 
 
 class BouquetService(BaseDbModelService[Bouquet]):
@@ -92,6 +93,13 @@ class BouquetService(BaseDbModelService[Bouquet]):
         ]
 
     async def create_bouquet(self, data: BouquetCreateSchema) -> BaseBouquetSchema:
+        if (
+            data.availability_status == AvailabilityStatus.IN_STOCK
+            and data.quantity <= 0
+        ):
+            raise BadRequestException(
+                "Нельзя установить статус 'в наличии' при quantity = 0"
+            )
         bouquet_type = await self.repository.get_bouquet_type(data.bouquet_type_id)
         if not bouquet_type:
             raise NotFoundException(f"Тип букета с ID {data.bouquet_type_id} не найден")
@@ -112,10 +120,20 @@ class BouquetService(BaseDbModelService[Bouquet]):
         update_data = data.model_dump(exclude_none=True)
         flower_type_ids = update_data.pop("flower_type_ids", None)
 
-        bouquet = await self.repository.update_item(str(bouquet_id), **update_data)
-
-        if not bouquet:
+        existing_bouquet = await self.repository.get_item(str(bouquet_id))
+        if not existing_bouquet:
             raise NotFoundException(f"Букет с ID {bouquet_id} не найден")
+
+        new_quantity = update_data.get("quantity", existing_bouquet.quantity)
+        new_status = update_data.get(
+            "availability_status", existing_bouquet.availability_status
+        )
+        if new_status == AvailabilityStatus.IN_STOCK and new_quantity <= 0:
+            raise BadRequestException(
+                "Нельзя установить статус 'в наличии' при quantity = 0"
+            )
+
+        bouquet = await self.repository.update_item(str(bouquet_id), **update_data)
 
         # Обновляем связи flower_types если они переданы
         if flower_type_ids is not None:
@@ -195,10 +213,11 @@ class BouquetService(BaseDbModelService[Bouquet]):
 
             if db_bouquet is None:
                 raise NotFoundException(f"Букет {bouquet.title} не найден")
-            if db_bouquet.quantity < bouquet.quantity:
-                raise NotFoundException(
-                    f"Недостаточно {bouquet.title} на складе, уменьшите количество"
-                )
+            if db_bouquet.availability_status == AvailabilityStatus.IN_STOCK:
+                if db_bouquet.quantity < bouquet.quantity:
+                    raise NotFoundException(
+                        f"Недостаточно {bouquet.title} на складе, уменьшите количество"
+                    )
 
             items.append(
                 CartItem(

@@ -37,6 +37,7 @@ class OrderCreateSchema(BaseModel):
     items: list[OrderItemCreateSchema] = Field(min_length=1)
 
     payment_amount: int = Field(ge=0)
+    has_packaging: bool = False
 
 
 class OrderCreateResponseSchema(BaseModel):

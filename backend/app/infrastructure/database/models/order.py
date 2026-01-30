@@ -37,6 +37,7 @@ class Order(Base):
     
     comment: Mapped[str | None] = mapped_column(default=None)
     total_amount: Mapped[int]
+    has_packaging: Mapped[bool] = mapped_column(default=False)
     status: Mapped[OrderStatus] = mapped_column(SQLEnum(OrderStatus), default=OrderStatus.PENDING)
     is_active: Mapped[bool] = mapped_column(default=False)
     

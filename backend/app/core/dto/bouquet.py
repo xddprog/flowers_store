@@ -1,9 +1,9 @@
 from uuid import UUID
 from fastapi import Form, UploadFile
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.utils.url_helper import get_absolute_url
-from app.utils.enums import BouquetSort
+from app.utils.enums import BouquetSort, AvailabilityStatus
 
 
 class BouquetImageSchema(BaseModel):
@@ -37,6 +37,7 @@ class BaseBouquetSchema(BaseModel):
     name: str
     price: int
     main_image: BouquetImageSchema | None = None
+    availability_status: AvailabilityStatus
     is_active: bool
 
 
@@ -47,6 +48,7 @@ class BouquetDetailSchema(BaseModel):
     price: int
     quantity: int
     purchase_count: int
+    availability_status: AvailabilityStatus
     is_active: bool
     view_count: int
     bouquet_type: BouquetTypeSchema
@@ -69,9 +71,19 @@ class BouquetCreateSchema(BaseModel):
     description: str
     price: int
     quantity: int = 0
+    availability_status: AvailabilityStatus = AvailabilityStatus.ON_ORDER
     bouquet_type_id: UUID
     flower_type_ids: list[UUID] | None = None
     images: list[UploadFile] | None = None
+
+    @model_validator(mode="after")
+    def validate_availability(self):
+        if (
+            self.availability_status == AvailabilityStatus.IN_STOCK
+            and self.quantity <= 0
+        ):
+            raise ValueError("Нельзя установить статус 'в наличии' при quantity = 0")
+        return self
 
 
 class BouquetUpdateSchema(BaseModel):
@@ -79,6 +91,7 @@ class BouquetUpdateSchema(BaseModel):
     description: str | None = None
     price: int | None = None
     quantity: int | None = None
+    availability_status: AvailabilityStatus | None = None
     bouquet_type_id: UUID | None = None
     flower_type_ids: list[UUID] | None = None
 

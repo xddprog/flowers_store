@@ -13,11 +13,16 @@ from app.infrastructure.database.models.order import Order
 from app.infrastructure.errors.base import InternalServerError, NotFoundException
 from app.utils.enums import OrderStatus, PaymentStatus
 from app.core.clients import SMTPClients, TelegramClient, YandexPayClient
-from app.core.dto.yandex_pay import Cart, CartItem, CartTotal, OrderInfo, YandexPayWebhookDTO
+from app.core.dto.yandex_pay import Cart, CartItem, CartItemQuantity, CartTotal, OrderInfo, YandexPayWebhookDTO
 from app.infrastructure.logging.logger import get_logger
 
 
 logger = get_logger(__name__)
+
+PACKAGING_TITLE = "Транспортировочная коробка"
+PACKAGING_PRODUCT_ID = "packaging"
+PACKAGING_FREE_THRESHOLD = 8000
+PACKAGING_PRICE = 300
 
 
 class OrderService(BaseDbModelService[Order]):
@@ -54,10 +59,30 @@ class OrderService(BaseDbModelService[Order]):
         cart_items: list[CartItem],
         background_tasks: BackgroundTasks
     ) -> OrderCreateResponseSchema:
-        total_amount = sum(float(item.total) for item in cart_items)
+        bouquet_total = sum(float(item.total) for item in cart_items)
+
+        if bouquet_total >= PACKAGING_FREE_THRESHOLD:
+            order_data.has_packaging = True
+
+        if order_data.has_packaging:
+            cart_items.append(
+                CartItem(
+                    product_id=PACKAGING_PRODUCT_ID,
+                    quantity=CartItemQuantity(count=1, available=1),
+                    title=PACKAGING_TITLE,
+                    total=PACKAGING_PRICE,
+                    description=PACKAGING_TITLE,
+                )
+            )
+
+        total_amount = bouquet_total + (PACKAGING_PRICE if order_data.has_packaging else 0)
+        order_payload = order_data.model_dump(
+            exclude={"items", "payment_amount", "has_packaging"}
+        )
+        order_payload["has_packaging"] = order_data.has_packaging
         
         order = await self.repository.create_order_with_items(
-            order_data.model_dump(exclude={"items", "payment_amount"}), 
+            order_payload,
             cart_items, 
             total_amount
         )
@@ -84,6 +109,7 @@ class OrderService(BaseDbModelService[Order]):
 
     async def update_order_status_webhook(self, request: Request, background_tasks: BackgroundTasks):
         payload = await self._validate_token(request)
+        logger.info("yandex_pay_webhook_received", payload=payload)
         if not payload:
             return {"status": "success"}
 

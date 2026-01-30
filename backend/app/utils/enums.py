@@ -26,3 +26,8 @@ class BouquetSort(str, Enum):
     POPULAR = "popular"
     PRICE_ASC = "price_asc"
     PRICE_DESC = "price_desc"
+
+
+class AvailabilityStatus(str, Enum):
+    IN_STOCK = "in_stock"
+    ON_ORDER = "on_order"
