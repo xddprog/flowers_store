@@ -26,10 +26,19 @@ class OrderRepository(SqlAlchemyRepository[Order]):
         await self.session.flush()
         
         for item_data in items_data:
+            # Пропускаем packaging - это не букет, а дополнительная услуга
+            if item_data.product_id == "packaging":
+                continue
+                
+            try:
+                bouquet_id = UUID(str(item_data.product_id))
+            except (ValueError, AttributeError):
+                continue
+                
             price_per_unit = float(item_data.total) / int(item_data.quantity.count)
             order_item = OrderItem(
                 order_id=order.id,
-                bouquet_id=item_data.product_id,
+                bouquet_id=bouquet_id,
                 quantity=int(item_data.quantity.count),
                 price=int(price_per_unit)
             )
