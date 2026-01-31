@@ -25,7 +25,9 @@ export const ProductModal = ({
   const [quantity, setQuantity] = useState(1);
   const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
   const availabilityStatus =
-    bouquetDetail?.availability_status ?? product.availability_status ?? "in_stock";
+    bouquetDetail?.availability_status ??
+    product.availability_status ??
+    "in_stock";
   const availabilityLabel =
     availabilityStatus === "in_stock" ? "В наличии" : "Под заказ";
 
@@ -43,7 +45,7 @@ export const ProductModal = ({
     const imageUrl =
       bouquetDetail?.images && bouquetDetail.images.length > 0
         ? [...bouquetDetail.images].sort((a, b) => a.order - b.order)[0]
-          ?.image_path
+            ?.image_path
         : product.main_image?.image_path;
 
     const basketProduct: Bouquet = {
@@ -95,7 +97,7 @@ export const ProductModal = ({
                     .sort((a, b) => a.order - b.order)
                     .map((image, index) => (
                       <CarouselItem key={image.id} className="pl-0 basis-full">
-                        <div className="relative aspect-square lg:aspect-auto md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
+                        <div className="relative aspect-square md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
                           <Image
                             src={image.image_path}
                             alt={`${product.name} - изображение ${index + 1}`}
