@@ -25,6 +25,7 @@ export interface CreateOrderDto {
   comment?: string;
   items: OrderItem[];
   payment_amount: number;
+  has_packaging?: boolean;
 }
 
 export interface CreateOrderResponse {

@@ -45,6 +45,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
   const [items, setItems] = useState<BasketItem[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("contacts");
   const [apiError, setApiError] = useState<string>("");
+  const [hasPackaging, setHasPackaging] = useState(false);
 
   const { mutate: createOrder, isPending } = useCreateOrder();
 
@@ -79,6 +80,8 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
       setItems(basketService.getItems());
       setApiError("");
       form.reset();
+      const currentTotal = basketService.getTotalPrice();
+      setHasPackaging(currentTotal >= FREE_PACKAGING_THRESHOLD);
     }
   }, [open, form]);
 
@@ -87,7 +90,13 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
     setItems(basketService.getItems());
   };
 
-  const totalPrice = basketService.getTotalPrice();
+  const PACKAGING_PRICE = 300;
+  const FREE_PACKAGING_THRESHOLD = 8000;
+
+  const bouquetTotal = basketService.getTotalPrice();
+  const isPackagingFree = bouquetTotal >= FREE_PACKAGING_THRESHOLD;
+  const packagingPrice = hasPackaging && !isPackagingFree ? PACKAGING_PRICE : 0;
+  const totalPrice = bouquetTotal + packagingPrice;
 
   const handleNextTab = async (nextTab: TabType) => {
     let fieldsToValidate: (keyof OrderFormData)[];
@@ -125,7 +134,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
       return;
     }
 
-    const orderDto = buildOrderDto(data, items, totalPrice);
+    const orderDto = buildOrderDto(data, items, totalPrice, hasPackaging || isPackagingFree);
 
     createOrder(orderDto, {
       onSuccess: (response) => {
@@ -186,33 +195,30 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                 <button
                   type="button"
                   onClick={() => setActiveTab("contacts")}
-                  className={`pb-2 md:pb-3 font-sans w-full text-start text-base md:text-lg lg:text-xl cursor-pointer text-black relative whitespace-nowrap ${
-                    activeTab === "contacts"
-                      ? "border-b-2 border-[#FF6600]"
-                      : "border-b border-gray-200"
-                  }`}
+                  className={`pb-2 md:pb-3 font-sans w-full text-start text-base md:text-lg lg:text-xl cursor-pointer text-black relative whitespace-nowrap ${activeTab === "contacts"
+                    ? "border-b-2 border-[#FF6600]"
+                    : "border-b border-gray-200"
+                    }`}
                 >
                   Контакты
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("delivery")}
-                  className={`pb-2 md:pb-3 font-sans w-full text-start text-base md:text-lg lg:text-xl cursor-pointer text-black relative whitespace-nowrap ${
-                    activeTab === "delivery"
-                      ? "border-b-2 border-[#FF6600]"
-                      : "border-b border-gray-200"
-                  }`}
+                  className={`pb-2 md:pb-3 font-sans w-full text-start text-base md:text-lg lg:text-xl cursor-pointer text-black relative whitespace-nowrap ${activeTab === "delivery"
+                    ? "border-b-2 border-[#FF6600]"
+                    : "border-b border-gray-200"
+                    }`}
                 >
                   Получение
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("payment")}
-                  className={`pb-2 md:pb-3 font-sans text-start text-base md:text-lg lg:text-xl w-full cursor-pointer text-black relative whitespace-nowrap ${
-                    activeTab === "payment"
-                      ? "border-b-2 border-[#FF6600]"
-                      : "border-b border-gray-200"
-                  }`}
+                  className={`pb-2 md:pb-3 font-sans text-start text-base md:text-lg lg:text-xl w-full cursor-pointer text-black relative whitespace-nowrap ${activeTab === "payment"
+                    ? "border-b-2 border-[#FF6600]"
+                    : "border-b border-gray-200"
+                    }`}
                 >
                   Оплата
                 </button>
@@ -518,9 +524,9 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                     const timeSlots = getDeliveryTimeSlots();
                                     const currentSlot = field.value
                                       ? timeSlots.find(
-                                          (slot) =>
-                                            slot.timeFrom === field.value
-                                        )
+                                        (slot) =>
+                                          slot.timeFrom === field.value
+                                      )
                                       : undefined;
 
                                     return (
@@ -695,10 +701,15 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                           </>
                         )}
                       </div>
+                      {deliveryType === "delivery" && (
+                        <p className="text-sm text-gray-600 font-sans mb-4 mt-auto">
+                          * Для уточнения стоимости доставки с вами свяжется наш менеджер
+                        </p>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleNextTab("payment")}
-                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
+                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity"
                       >
                         Далее
                       </button>
@@ -751,11 +762,10 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                     </div>
                   )}
                 </div>
-{/*  */}
+                {/*  */}
                 <div
-                  className={`w-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${
-                    items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
-                  }`}
+                  className={`w-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
+                    }`}
                 >
                   <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-4 md:mb-6">
                     Ваш заказ
@@ -804,8 +814,35 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                         ))}
                       </div>
 
-                      <div className="border-t border-gray-300 pt-3 md:pt-4">
-                        <div className="flex justify-between items-center">
+                      <div className="border-t border-gray-300 pt-4 space-y-4">
+                        {!isPackagingFree && (
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={hasPackaging}
+                              onChange={(e) => setHasPackaging(e.target.checked)}
+                              className="mt-1 w-4 h-4 text-[#FF6600] focus:ring-[#FF6600] rounded"
+                            />
+                            <div className="flex-1">
+                              <span className="font-sans text-sm md:text-base text-[#181818]">
+                                Добавить транспортировочную коробку
+                              </span>
+                              <span className="block font-sans text-sm text-gray-600 mt-1">
+                                +{PACKAGING_PRICE} ₽
+                              </span>
+                            </div>
+                          </label>
+                        )}
+
+                        {isPackagingFree && (
+                          <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded">
+                            <span className="font-sans text-sm text-green-800">
+                              ✓ Транспортировочная коробка включена бесплатно
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center pt-2">
                           <span className="font-sans text-sm md:text-base text-[#181818]">
                             Итоговая сумма:
                           </span>

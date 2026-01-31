@@ -5,7 +5,8 @@ import type { BasketItem } from "@/entities/product/types/types";
 export const buildOrderDto = (
   formData: OrderFormData,
   items: BasketItem[],
-  totalPrice: number
+  totalPrice: number,
+  hasPackaging: boolean = false
 ): CreateOrderDto => {
   const now = new Date();
   const deliveryDateValue = formData.deliveryDate
@@ -38,6 +39,7 @@ export const buildOrderDto = (
       price: item.product.price,
     })),
     payment_amount: totalPrice,
+    has_packaging: hasPackaging,
   };
 
   if (formData.recipientType === "other") {

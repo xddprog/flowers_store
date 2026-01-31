@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { BouquetCard } from "./popularBouquetCard";
 import { usePopularBouquets } from "../hooks";
 import { Bouquet } from "../types/types";
+import { BouquetCard } from "./popularBouquetCard";
 
 export const PopularBouquets = () => {
   const {
@@ -20,6 +20,7 @@ export const PopularBouquets = () => {
       name: bouquet.name,
       price: bouquet.price,
       image: bouquet.main_image?.image_path,
+      availability_status: bouquet.availability_status,
     }));
   }, [bouquets]);
 

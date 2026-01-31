@@ -24,6 +24,10 @@ export const ProductModal = ({
 }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
   const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
+  const availabilityStatus =
+    bouquetDetail?.availability_status ?? product.availability_status ?? "in_stock";
+  const availabilityLabel =
+    availabilityStatus === "in_stock" ? "В наличии" : "Под заказ";
 
   const handleDecrease = () => {
     if (quantity > 1) {
@@ -143,9 +147,14 @@ export const ProductModal = ({
               )}
             </div>
 
-            <p className="text-xl md:text-2xl font-sans font-semibold text-[#FF6600] mb-4 md:mb-6">
-              {product.price}₽
-            </p>
+            <div className="mb-4 md:mb-6 flex items-center gap-3">
+              <p className="text-xl md:text-2xl font-sans font-semibold text-[#FF6600]">
+                {product.price}₽
+              </p>
+              <span className="inline-block px-3 py-1 text-sm font-medium rounded bg-gray-100 text-gray-700 whitespace-nowrap">
+                {availabilityLabel}
+              </span>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 pb-4 lg:pb-0">
               <div className="flex items-center bg-[#FF6600] h-[50px] md:h-[60px] w-full sm:w-[197px] justify-center">

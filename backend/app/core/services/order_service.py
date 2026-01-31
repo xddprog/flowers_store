@@ -61,21 +61,23 @@ class OrderService(BaseDbModelService[Order]):
     ) -> OrderCreateResponseSchema:
         bouquet_total = sum(float(item.total) for item in cart_items)
 
-        if bouquet_total >= PACKAGING_FREE_THRESHOLD:
+        is_packaging_free = bouquet_total >= PACKAGING_FREE_THRESHOLD
+        if is_packaging_free:
             order_data.has_packaging = True
 
         if order_data.has_packaging:
+            packaging_price = 0 if is_packaging_free else PACKAGING_PRICE
             cart_items.append(
                 CartItem(
                     product_id=PACKAGING_PRODUCT_ID,
                     quantity=CartItemQuantity(count=1, available=1),
                     title=PACKAGING_TITLE,
-                    total=PACKAGING_PRICE,
+                    total=packaging_price,
                     description=PACKAGING_TITLE,
                 )
             )
 
-        total_amount = bouquet_total + (PACKAGING_PRICE if order_data.has_packaging else 0)
+        total_amount = bouquet_total + (0 if is_packaging_free else (PACKAGING_PRICE if order_data.has_packaging else 0))
         order_payload = order_data.model_dump(
             exclude={"items", "payment_amount", "has_packaging"}
         )
@@ -158,7 +160,7 @@ class OrderService(BaseDbModelService[Order]):
                     self.smtp_client.send_order_confirmation,
                     order_with_relations,
                 )
-            else:
+            elif new_order_status != OrderStatus.FAILED:
                 background_tasks.add_task(
                     self.smtp_client.send_order_status_change,
                     order_with_relations,

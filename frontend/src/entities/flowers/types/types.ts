@@ -3,6 +3,7 @@ export interface Bouquet {
   name: string;
   price: number;
   image?: string;
+  availability_status?: string;
 }
 
 export interface GalleryCategory {

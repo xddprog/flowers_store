@@ -20,6 +20,7 @@ export const BouquetCard = ({ bouquet }: BouquetCardProps) => {
     name: bouquet.name,
     price: bouquet.price,
     main_image: bouquet.image ? { id: "", image_path: bouquet.image, order: 0 } : null,
+    availability_status: bouquet.availability_status ?? "in_stock",
   };
 
   return (
@@ -29,7 +30,7 @@ export const BouquetCard = ({ bouquet }: BouquetCardProps) => {
         onClick={() => setIsModalOpen(true)}
       >
         <div
-          className="w-full bg-gray-200 mb-4 flex items-center justify-center"
+          className="w-full bg-gray-200 mb-4 flex items-center justify-center overflow-hidden"
           style={{ aspectRatio: "0.780051" }}
         >
           {bouquet.image ? (

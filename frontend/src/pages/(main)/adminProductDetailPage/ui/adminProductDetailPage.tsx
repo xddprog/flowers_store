@@ -164,9 +164,16 @@ const AdminProductDetailPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Цена</p>
-                  <p className="text-lg font-semibold text-[#FF6600]">
-                    {product.price.toLocaleString("ru-RU")} ₽
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <p className="text-lg font-semibold text-[#FF6600]">
+                      {product.price.toLocaleString("ru-RU")} ₽
+                    </p>
+                    <span className="inline-block px-3 py-1 text-sm font-medium rounded bg-gray-100 text-gray-700 whitespace-nowrap">
+                      {product.availability_status === "in_stock"
+                        ? "В наличии"
+                        : "Под заказ"}
+                    </span>
+                  </div>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Количество</p>
@@ -189,11 +196,10 @@ const AdminProductDetailPage = () => {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Статус</p>
                   <span
-                    className={`inline-block px-3 py-1 text-sm font-medium rounded ${
-                      product.is_active
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
+                    className={`inline-block px-3 py-1 text-sm font-medium rounded ${product.is_active
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-600"
+                      }`}
                   >
                     {product.is_active ? "Активен" : "Неактивен"}
                   </span>

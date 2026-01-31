@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Image } from "@/shared/ui/image/image";
 import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
-import { ProductModal } from "./productModal";
+import { Image } from "@/shared/ui/image/image";
+import { useState } from "react";
 import { basketService } from "../lib/basketService";
+import { ProductModal } from "./productModal";
 
 interface ProductCardProps {
   product: BaseBouquet;
@@ -22,7 +22,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         onClick={() => setIsModalOpen(true)}
       >
         <div
-          className="w-full bg-gray-200 mb-4 flex items-center justify-center"
+          className="w-full bg-gray-200 mb-4 flex items-center justify-center overflow-hidden"
           style={{ aspectRatio: "0.780051" }}
         >
           {product.main_image ? (
