@@ -164,16 +164,9 @@ const AdminProductDetailPage = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Цена</p>
-                  <div className="flex items-center gap-3">
-                    <p className="text-lg font-semibold text-[#FF6600]">
-                      {product.price.toLocaleString("ru-RU")} ₽
-                    </p>
-                    <span className="inline-block px-3 py-1 text-sm font-medium rounded bg-gray-100 text-gray-700 whitespace-nowrap">
-                      {product.availability_status === "in_stock"
-                        ? "В наличии"
-                        : "Под заказ"}
-                    </span>
-                  </div>
+                  <p className="text-lg font-semibold text-[#FF6600]">
+                    {product.price.toLocaleString("ru-RU")} ₽
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Количество</p>
@@ -192,6 +185,14 @@ const AdminProductDetailPage = () => {
                   <p className="text-lg font-semibold text-gray-800">
                     {product.purchase_count}
                   </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Наличие</p>
+                  <span className="inline-block px-3 py-1 text-sm font-medium rounded bg-gray-100 text-gray-700">
+                    {product.availability_status === "in_stock"
+                      ? "В наличии"
+                      : "Под заказ"}
+                  </span>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Статус</p>
