@@ -9,6 +9,7 @@ export const updateBouquetSchema = z.object({
   flower_type_ids: z
     .array(z.string().uuid())
     .min(1, "Выберите хотя бы один тип цветов"),
+  availability_status: z.enum(["in_stock", "on_order"]),
 });
 
 export type UpdateBouquetFormData = z.infer<typeof updateBouquetSchema>;

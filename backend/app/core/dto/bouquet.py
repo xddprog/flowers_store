@@ -92,6 +92,7 @@ class BouquetUpdateSchema(BaseModel):
     price: int | None = None
     quantity: int | None = None
     availability_status: AvailabilityStatus | None = None
+    is_active: bool | None = None
     bouquet_type_id: UUID | None = None
     flower_type_ids: list[UUID] | None = None
 

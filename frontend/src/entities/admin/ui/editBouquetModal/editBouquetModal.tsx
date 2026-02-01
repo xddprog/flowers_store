@@ -75,6 +75,7 @@ export const EditBouquetModal = ({
       quantity: product.quantity,
       bouquet_type_id: product.bouquet_type.id,
       flower_type_ids: product.flower_types.map((ft) => ft.id),
+      availability_status: product.availability_status as "in_stock" | "on_order",
     },
   });
 
@@ -94,6 +95,7 @@ export const EditBouquetModal = ({
         quantity: product.quantity,
         bouquet_type_id: product.bouquet_type.id,
         flower_type_ids: product.flower_types.map((ft) => ft.id),
+        availability_status: product.availability_status as "in_stock" | "on_order",
       });
       setImages([...product.images].sort((a, b) => a.order - b.order));
     }
@@ -274,6 +276,56 @@ export const EditBouquetModal = ({
                         )}
                         disabled={isSubmitting}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="availability_status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      Статус наличия
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isSubmitting}
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full min-h-[52px] px-4 border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                            errors.availability_status
+                              ? "border-red-500"
+                              : "border-black"
+                          )}
+                        >
+                          <SelectValue placeholder="Выберите статус наличия" />
+                        </SelectTrigger>
+                        <SelectContent
+                          side="bottom"
+                          align="end"
+                          position="popper"
+                          className="border border-black rounded-none"
+                        >
+                          <SelectItem
+                            value="in_stock"
+                            className="rounded-none cursor-pointer"
+                          >
+                            В наличии
+                          </SelectItem>
+                          <SelectItem
+                            value="on_order"
+                            className="rounded-none cursor-pointer"
+                          >
+                            Под заказ
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
