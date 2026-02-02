@@ -4,18 +4,15 @@ import { Bouquet } from "../types/types";
 import { BouquetCard } from "./popularBouquetCard";
 
 export const PopularBouquets = () => {
-  const {
-    data: bouquets,
-    isLoading,
-    isError,
-  } = usePopularBouquets({
-    limit: 4,
-  });
+  const { data: bouquets, isLoading, isError } = usePopularBouquets();
 
   const displayedBouquets = useMemo<Bouquet[]>(() => {
     if (!bouquets) return [];
+    const inStock = bouquets.filter(
+      (b) => b.availability_status === "in_stock"
+    );
 
-    return bouquets.map((bouquet) => ({
+    return inStock.slice(0, 4).map((bouquet) => ({
       id: bouquet.id,
       name: bouquet.name,
       price: bouquet.price,
@@ -24,7 +21,7 @@ export const PopularBouquets = () => {
     }));
   }, [bouquets]);
 
-  const totalCount = bouquets?.length ?? 0;
+  const totalCount = displayedBouquets.length;
 
   if (isError) {
     return (
@@ -43,7 +40,7 @@ export const PopularBouquets = () => {
       <div className="container mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl md:text-3xl font-sans font-semibold">
-            Популярные букеты
+            Сегодня на нашей витрине
           </h2>
           {!isLoading && (
             <p className="text-gray-400 text-sm font-sans">
@@ -68,8 +65,9 @@ export const PopularBouquets = () => {
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-500">
-            Популярные букеты не найдены
+          <p className="text-center text-gray-500 font-sans">
+            На витрине пока пусто. Загляните в каталог — там можно выбрать букет
+            или оформить букет под заказ.
           </p>
         )}
       </div>
