@@ -19,6 +19,11 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
     def __init__(self, session: AsyncSession):
         super().__init__(session, Bouquet)
 
+    async def get_item_with_images(self, bouquet_id: str):
+        query = select(Bouquet).where(Bouquet.id == bouquet_id).options(selectinload(Bouquet.images))
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
     async def get_bouquet_types_with_bouquet_count(
         self,
     ) -> list[tuple[BouquetType, int]]:

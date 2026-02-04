@@ -1,6 +1,6 @@
 from uuid import UUID
 from fastapi import Form, UploadFile
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.utils.url_helper import get_absolute_url
 from app.utils.enums import BouquetSort, AvailabilityStatus
@@ -75,16 +75,6 @@ class BouquetCreateSchema(BaseModel):
     bouquet_type_id: UUID
     flower_type_ids: list[UUID] | None = None
     images: list[UploadFile] | None = None
-
-    @model_validator(mode="after")
-    def validate_availability(self):
-        if (
-            self.availability_status == AvailabilityStatus.IN_STOCK
-            and self.quantity <= 0
-        ):
-            raise ValueError("Нельзя установить статус 'в наличии' при quantity = 0")
-        return self
-
 
 class BouquetUpdateSchema(BaseModel):
     name: str | None = None
