@@ -9,9 +9,15 @@ interface GalleryCardProps {
   bouquetTypeId?: string;
 }
 
-export const GalleryCard = ({ category, height, bouquetTypeId }: GalleryCardProps) => {
-  const basePath = `/${ERouteNames.DASHBOARD_ROUTE}/${ERouteNames.CATALOG_ROUTE}`;
-  const to = bouquetTypeId ? `${basePath}?bouquet_type_id=${bouquetTypeId}` : basePath;
+export const GalleryCard = ({
+  category,
+  height,
+  bouquetTypeId,
+}: GalleryCardProps) => {
+  const basePath = `/${ERouteNames.CATALOG_ROUTE}`;
+  const to = bouquetTypeId
+    ? `${basePath}?bouquet_type_id=${bouquetTypeId}`
+    : basePath;
 
   return (
     <Link

@@ -43,7 +43,7 @@ export const Header = () => {
                 Главная
               </Link>
               <Link
-                to={`/${ERouteNames.DASHBOARD_ROUTE}/${ERouteNames.CATALOG_ROUTE}`}
+                to={`/${ERouteNames.CATALOG_ROUTE}`}
                 className="text-white font-sans text-xl hover:opacity-80 transition-opacity"
               >
                 Каталог
@@ -57,12 +57,6 @@ export const Header = () => {
             </nav>
 
             <div className="flex items-center gap-3 md:gap-4 lg:gap-6">
-              {/* <button
-                className="hidden lg:flex text-white hover:opacity-80 transition-opacity"
-                aria-label="Поиск"
-              >
-                <Search size={24} className="md:size-7 lg:size-8" />
-              </button> */}
               <button
                 onClick={handleOpenModal}
                 className="hidden lg:flex text-white cursor-pointer hover:opacity-80 transition-opacity relative"
@@ -101,7 +95,7 @@ export const Header = () => {
                 Главная
               </Link>
               <Link
-                to={`/${ERouteNames.DASHBOARD_ROUTE}/${ERouteNames.CATALOG_ROUTE}`}
+                to={`/${ERouteNames.CATALOG_ROUTE}`}
                 onClick={handleCloseMobileMenu}
                 className="text-white font-sans text-lg md:text-xl hover:opacity-80 transition-opacity py-2"
               >

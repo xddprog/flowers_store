@@ -29,28 +29,12 @@ export const routes = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: ERouteNames.EMPTY_ROUTE,
-        element: <Outlet />,
-        children: [
-          {
-            path: ERouteNames.EMPTY_ROUTE,
-            element: <Navigate to={ERouteNames.DASHBOARD_ROUTE} replace />,
-          },
-          {
-            path: ERouteNames.DASHBOARD_ROUTE,
-            element: <Outlet />,
-            children: [
-              {
-                path: ERouteNames.EMPTY_ROUTE,
-                element: <DashboardPage />,
-              },
-              {
-                path: ERouteNames.CATALOG_ROUTE,
-                element: <CatalogPage />,
-              },
-            ],
-          },
-        ],
+        index: true,
+        element: <DashboardPage />,
+      },
+      {
+        path: ERouteNames.CATALOG_ROUTE,
+        element: <CatalogPage />,
       },
     ],
   },
