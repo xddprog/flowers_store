@@ -39,6 +39,7 @@ services:
       - ./static:/var/www/static
     ports:
       - "443:443"
+      - "80:80"
     depends_on:
       - app
     networks:
