@@ -132,6 +132,13 @@ class LascovoParser:
     """Парсер для сайта lascovo.ru"""
     
     BASE_URL = "https://lascovo.ru"
+    # Прямой переход на /shop отдаёт админку; каталог открывается только после редиректа с корня
+    CATALOG_URL = f"{BASE_URL}/?type=bouquets"
+    CATALOG_CARD_SELECTOR = (
+        '[data-testid="catalog-grid"] shop-teaser-card, '
+        '[data-testid="catalog-grid"] .teaser-card, '
+        'shop-teaser-card, .teaser-card, .ps-teaser-card, .ps-teaser__item'
+    )
     
     def __init__(self, session: AsyncSession, use_playwright: bool = False):
         self.session = session
@@ -167,21 +174,60 @@ class LascovoParser:
         if self.playwright:
             await self.playwright.stop()
     
-    async def fetch_page(self, url: str, wait_for_selector: Optional[str] = None) -> Optional[str]:
+    def _is_catalog_url(self, url: str) -> bool:
+        path = url.split("?", 1)[0].rstrip("/").removeprefix(self.BASE_URL).rstrip("/") or "/"
+        return path in ("/", "/shop", "/catalog", "/bouquets")
+
+    async def _fetch_catalog_with_playwright(self, page: Page) -> str:
+        """Открыть корень магазина, дождаться редиректа в каталог, вернуть HTML."""
+        print("   → Открываем корень сайта и ждём редирект в каталог...")
+        await page.goto(self.BASE_URL, wait_until="domcontentloaded", timeout=60000)
+
+        await page.wait_for_function(
+            """() => {
+                const href = window.location.href;
+                const onCatalog = href.includes('type=bouquets') || href.includes('/shop');
+                const hasCards = document.querySelector(
+                    '[data-testid="catalog-grid"] .teaser-card, shop-teaser-card, .ps-teaser-card'
+                );
+                const shopReady = document.querySelector('shop-root') && !document.querySelector('#fuse-splash-screen');
+                return (onCatalog || hasCards) && shopReady;
+            }""",
+            timeout=60000,
+        )
+
+        try:
+            await page.wait_for_selector(self.CATALOG_CARD_SELECTOR, timeout=30000)
+        except Exception:
+            await page.wait_for_timeout(3000)
+
+        print(f"   → Каталог загружен: {page.url}")
+        return await page.content()
+
+    async def fetch_page(
+        self,
+        url: str,
+        wait_for_selector: Optional[str] = None,
+        catalog_mode: bool = False,
+    ) -> Optional[str]:
         """Получить HTML страницы"""
         try:
             if self.use_playwright:
-                # Используем Playwright для рендеринга JavaScript
                 page = await self.browser.new_page()
                 try:
-                    await page.goto(url, wait_until="networkidle", timeout=30000)
-                    # Ждем загрузки контента
-                    if wait_for_selector:
-                        await page.wait_for_selector(wait_for_selector, timeout=10000)
+                    if catalog_mode or self._is_catalog_url(url):
+                        html = await self._fetch_catalog_with_playwright(page)
                     else:
-                        # Ждем появления любого контента (не только спиннера)
-                        await page.wait_for_selector("app:not(:has(.app-loading))", timeout=10000, state="attached")
-                    html = await page.content()
+                        await page.goto(url, wait_until="networkidle", timeout=30000)
+                        if wait_for_selector:
+                            await page.wait_for_selector(wait_for_selector, timeout=10000)
+                        else:
+                            await page.wait_for_selector(
+                                "shop-root, app:not(:has(.app-loading))",
+                                timeout=10000,
+                                state="attached",
+                            )
+                        html = await page.content()
                     return html
                 finally:
                     await page.close()
@@ -268,7 +314,7 @@ class LascovoParser:
             # Название букета - пробуем разные варианты
             name = None
             name_elem = (
-                card_element.find(class_=re.compile("ps-teaser-card__title", re.I)) or
+                card_element.find(class_=re.compile("teaser-card__title|ps-teaser-card__title", re.I)) or
                 card_element.find("h1") or
                 card_element.find("h2") or
                 card_element.find("h3") or
@@ -305,7 +351,7 @@ class LascovoParser:
             price = None
             # Сначала ищем по классу ps-teaser-card__price
             price_elem = (
-                card_element.find(class_=re.compile("ps-teaser-card__price", re.I)) or
+                card_element.find(class_=re.compile("teaser-card__price|ps-teaser-card__price", re.I)) or
                 card_element.find(class_=re.compile("price|cost|amount|sum", re.I)) or
                 card_element.find(attrs={"data-price": True}) or
                 card_element.find(string=re.compile(r"\d+\s*[₽руб]|цена", re.I))
@@ -341,8 +387,11 @@ class LascovoParser:
             # Изображения - ищем все изображения в карточке
             images = []
             
-            # Сначала ищем div с классом ps-img-adapt (изображения в background-image)
-            ps_img_divs = card_element.find_all("div", class_=lambda x: x and "ps-img-adapt" in " ".join(x).lower() if isinstance(x, list) else "ps-img-adapt" in str(x).lower() if x else False)
+            # Изображения в background-image (новый и старый формат)
+            ps_img_divs = card_element.find_all("div", class_=lambda x: x and any(
+                cls in " ".join(x).lower() if isinstance(x, list) else str(x).lower()
+                for cls in ("teaser-card__img-bg", "ps-img-adapt")
+            ) if x else False)
             for div in ps_img_divs:
                 style = div.get("style", "")
                 bg_match = re.search(r"background-image:\s*url\(['\"]?([^'\"]+)['\"]?\)", style)
@@ -560,8 +609,7 @@ class LascovoParser:
     
     async def parse_catalog_page(self, url: str, debug: bool = False) -> list[dict]:
         """Парсинг страницы каталога"""
-        # Для Angular приложений ждем загрузки контента
-        html = await self.fetch_page(url, wait_for_selector="app")
+        html = await self.fetch_page(url, catalog_mode=True)
         if not html:
             return []
         
@@ -579,8 +627,10 @@ class LascovoParser:
         
         # Вариант 1: По классам (более агрессивный поиск)
         selectors = [
-            ("teaser-card", {"class": re.compile("ps-teaser__item", re.I)}),  # Специфичный селектор для lascovo.ru
-            ("div", {"class": re.compile("ps-teaser-card", re.I)}),  # Карточки товаров
+            ("shop-teaser-card", {}),
+            ("div", {"class": re.compile(r"\bteaser-card\b", re.I)}),
+            ("teaser-card", {"class": re.compile("ps-teaser__item", re.I)}),
+            ("div", {"class": re.compile("ps-teaser-card", re.I)}),
             ("div", {"class": re.compile("product|bouquet|card|item|goods|tovar|товар", re.I)}),
             ("article", {"class": re.compile("product|bouquet|card|item", re.I)}),
             ("div", {"class": re.compile("catalog|shop|store|магазин", re.I)}),
@@ -667,11 +717,13 @@ class LascovoParser:
             print(f"   📊 Всего найдено уникальных карточек: {len(unique_cards)}")
         
         # Предпочитаем карточки, в которых есть изображение
-        image_cards = [
-            card for card in unique_cards
-            if card.find("div", class_=lambda x: x and "ps-img-adapt" in " ".join(x).lower()
-                         if isinstance(x, list) else "ps-img-adapt" in str(x).lower() if x else False)
-        ]
+        def _has_card_image(card) -> bool:
+            return bool(card.find("div", class_=lambda x: x and any(
+                cls in " ".join(x).lower() if isinstance(x, list) else str(x).lower()
+                for cls in ("teaser-card__img-bg", "ps-img-adapt")
+            ) if x else False))
+
+        image_cards = [card for card in unique_cards if _has_card_image(card)]
         cards_to_parse = image_cards if image_cards else unique_cards
 
         # Парсим каждую карточку
@@ -859,11 +911,7 @@ async def main(catalog_url: Optional[str] = None, debug: bool = False, use_playw
             if catalog_url:
                 catalog_urls = [catalog_url]
             else:
-                catalog_urls = [
-                    f"{parser.BASE_URL}/",  # Базовый URL - каталог находится здесь
-                    f"{parser.BASE_URL}/catalog",  # На случай, если есть отдельная страница каталога
-                    f"{parser.BASE_URL}/bouquets",
-                ]
+                catalog_urls = [parser.CATALOG_URL]
             
             all_bouquets = []
             for url in catalog_urls:
@@ -882,7 +930,7 @@ async def main(catalog_url: Optional[str] = None, debug: bool = False, use_playw
             if not all_bouquets:
                 print("\n⚠️  Букеты не найдены. Возможно, структура сайта изменилась.")
                 print("   Попробуйте:")
-                print("   1. Указать конкретный URL: python -m scripts.parse_lascovo --url https://lascovo.ru/catalog")
+                print("   1. Указать URL каталога: python -m scripts.parse_lascovo --url https://lascovo.ru/shop?type=bouquets")
                 print("   2. Обновить селекторы в методе parse_catalog_page()")
                 return
             
@@ -910,7 +958,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--url",
         type=str,
-        help="URL страницы каталога для парсинга (например: https://lascovo.ru/catalog)"
+        help="URL каталога (например: https://lascovo.ru/shop?type=bouquets). Прямой переход не используется — парсер откроет корень и дождётся редиректа"
     )
     parser.add_argument(
         "--debug",
@@ -925,4 +973,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     asyncio.run(main(catalog_url=args.url, debug=args.debug, use_playwright=not args.no_playwright))
-
