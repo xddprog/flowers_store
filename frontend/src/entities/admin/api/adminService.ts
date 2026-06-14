@@ -1,22 +1,26 @@
-import {
+import type {
   BaseBouquet,
   BouquetDetail,
   BouquetImage,
 } from "@/entities/flowers/types/apiTypes";
 import { axiosAuth, axiosNoAuth } from "@/shared/api/baseQueryInstance";
 import queryString from "query-string";
-import {
+import type {
+  AdminListParams,
   AdminBouquetListParams,
   AdminCustomer,
   AdminCustomerListParams,
   AdminOrder,
   AdminOrderListParams,
+  AdminUser,
+  CreateAdminDto,
   CreateBouquetDto,
   CurrentUserResponse,
   LoginDto,
   LoginResponse,
   RefreshTokenDto,
   RefreshTokenResponse,
+  UpdateAdminDto,
   UpdateBouquetDto,
   UpdateImageOrderDto,
   UpdateOrderStatusDto,
@@ -46,6 +50,46 @@ class AdminService {
       refreshTokenData as unknown as Record<string, unknown>
     );
     return data;
+  }
+
+  public async getAdmins(params?: AdminListParams): Promise<AdminUser[]> {
+    const queryParams = queryString.stringify(
+      {
+        limit: params?.limit ?? 100,
+        offset: params?.offset ?? 0,
+      },
+      {
+        skipNull: true,
+        skipEmptyString: true,
+      }
+    );
+
+    const url = `/admin/admins/${queryParams ? `?${queryParams}` : ""}`;
+    const { data } = await axiosAuth.get<AdminUser[]>(url);
+    return data;
+  }
+
+  public async createAdmin(adminData: CreateAdminDto): Promise<AdminUser> {
+    const { data } = await axiosAuth.post<AdminUser>(
+      "/admin/admins/",
+      adminData as unknown as Record<string, unknown>
+    );
+    return data;
+  }
+
+  public async updateAdmin(
+    adminId: string,
+    adminData: UpdateAdminDto
+  ): Promise<AdminUser> {
+    const { data } = await axiosAuth.put<AdminUser>(
+      `/admin/admins/${adminId}`,
+      adminData as unknown as Record<string, unknown>
+    );
+    return data;
+  }
+
+  public async deleteAdmin(adminId: string): Promise<void> {
+    await axiosAuth.delete(`/admin/admins/${adminId}`);
   }
 
   public async getBouquets(

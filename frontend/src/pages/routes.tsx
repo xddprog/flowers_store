@@ -18,6 +18,7 @@ const AdminProductsPage = lazy(
   () => import("@/pages/(main)/adminProductsPage")
 );
 const AdminUsersPage = lazy(() => import("@/pages/(main)/adminUsersPage"));
+const AdminAdminsPage = lazy(() => import("@/pages/(main)/adminAdminsPage"));
 const AdminProductDetailPage = lazy(
   () => import("@/pages/(main)/adminProductDetailPage")
 );
@@ -84,6 +85,10 @@ export const routes = createBrowserRouter([
         {
           path: ERouteNames.ADMIN_USERS_ROUTE,
           element: <AdminUsersPage />,
+        },
+        {
+          path: ERouteNames.ADMIN_ADMINS_ROUTE,
+          element: <AdminAdminsPage />,
         },
       ]),
     ],
