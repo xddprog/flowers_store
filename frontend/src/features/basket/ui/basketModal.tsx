@@ -169,16 +169,16 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[1300px] w-full h-full lg:h-[900px] lg:max-h-[900px] p-0 lg:px-12 gap-0 border-0 rounded-none lg:overflow-hidden flex flex-col"
+        className="max-w-[1300px] w-full h-[100dvh] max-h-[100dvh] p-0 gap-0 border-0 rounded-none overflow-hidden flex flex-col lg:h-[min(900px,calc(100dvh-2rem))] lg:max-h-[calc(100dvh-2rem)] lg:px-12"
         showCloseButton={false}
       >
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col h-full"
+            className="flex flex-col h-full min-h-0"
           >
-            <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-4 md:p-5 lg:p-6">
+            <div className="flex flex-col h-full min-h-0">
+              <div className="flex shrink-0 items-center justify-between p-4 md:p-5 lg:p-6">
                 <h2 className="text-2xl md:text-4xl lg:text-[56px] font-sans text-[#181818]">
                   Корзина
                 </h2>
@@ -191,7 +191,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   ×
                 </button>
               </div>
-              <div className="flex px-4 md:px-5 lg:px-6 overflow-x-auto min-h-[35px]">
+              <div className="flex shrink-0 px-4 md:px-5 lg:px-6 overflow-x-auto min-h-[35px]">
                 <button
                   type="button"
                   onClick={() => setActiveTab("contacts")}
@@ -224,10 +224,10 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                 </button>
               </div>
 
-              <div className="flex flex-col lg:flex-row flex-1 lg:overflow-hidden h-full overflow-auto pb-4">
-                <div className="w-full p-4 md:p-5 lg:p-6 lg:overflow-y-auto flex flex-col h-full">
+              <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-auto lg:overflow-hidden pb-4 lg:pb-0">
+                <div className="w-full min-w-0 flex-1 p-4 md:p-5 lg:p-6 lg:overflow-y-auto flex flex-col min-h-0 lg:h-full">
                   {activeTab === "contacts" && (
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full min-h-0">
                       <div>
                         <div className="mb-4 md:mb-6">
                           <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
@@ -254,7 +254,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                 </FormItem>
                               )}
                             />
-                            <div className="flex gap-4">
+                            <div className="flex flex-col md:flex-row gap-4">
                               <FormField
                                 control={form.control}
                                 name="customerPhone"
@@ -369,7 +369,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                   </FormItem>
                                 )}
                               />
-                              <div className="flex gap-4">
+                              <div className="flex flex-col md:flex-row gap-4">
                                 <FormField
                                   control={form.control}
                                   name="recipientPhone"
@@ -420,7 +420,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                       <button
                         type="button"
                         onClick={() => handleNextTab("delivery")}
-                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
+                        className="w-full shrink-0 bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto"
                       >
                         Далее
                       </button>
@@ -428,13 +428,13 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   )}
 
                   {activeTab === "delivery" && (
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full min-h-0">
                       <div>
                         <div className="mb-6">
                           <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
                             Способ получения
                           </h3>
-                          <div className="flex gap-4">
+                          <div className="flex flex-col md:flex-row gap-4">
                             <FormField
                               control={form.control}
                               name="deliveryType"
@@ -634,7 +634,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                                     </FormItem>
                                   )}
                                 />
-                                <div className="flex gap-4">
+                                <div className="flex flex-col md:flex-row gap-4">
                                   <FormField
                                     control={form.control}
                                     name="deliveryHouse"
@@ -702,14 +702,14 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                         )}
                       </div>
                       {deliveryType === "delivery" && (
-                        <p className="text-sm text-gray-600 font-sans mb-4 mt-auto">
+                        <p className="text-sm text-gray-600 font-sans mb-4 mt-auto shrink-0">
                           * Для уточнения стоимости доставки с вами свяжется наш менеджер
                         </p>
                       )}
                       <button
                         type="button"
                         onClick={() => handleNextTab("payment")}
-                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity"
+                        className="w-full shrink-0 bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity"
                       >
                         Далее
                       </button>
@@ -717,7 +717,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   )}
 
                   {activeTab === "payment" && (
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full min-h-0">
                       <div>
                         <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                           Пожелания
@@ -755,16 +755,15 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                       <button
                         type="submit"
                         disabled={isPending || items.length === 0}
-                        className="w-full bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full shrink-0 bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isPending ? "Обработка..." : "Оплатить"}
                       </button>
                     </div>
                   )}
                 </div>
-                {/*  */}
                 <div
-                  className={`w-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
+                  className={`w-full min-h-0 lg:h-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
                     }`}
                 >
                   <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-4 md:mb-6">
