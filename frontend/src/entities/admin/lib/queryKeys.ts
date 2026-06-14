@@ -1,6 +1,10 @@
 export const LOGIN_MUTATION = "adminLogin";
 export const GET_CURRENT_USER_QUERY = "getCurrentUser";
 export const REFRESH_TOKEN_MUTATION = "refreshToken";
+export const GET_ADMINS_QUERY = "getAdmins";
+export const CREATE_ADMIN_MUTATION = "createAdmin";
+export const UPDATE_ADMIN_MUTATION = "updateAdmin";
+export const DELETE_ADMIN_MUTATION = "deleteAdmin";
 export const GET_ADMIN_BOUQUETS_QUERY = "getAdminBouquets";
 export const GET_ADMIN_BOUQUET_DETAIL_QUERY = "getAdminBouquetDetail";
 export const CREATE_BOUQUET_MUTATION = "createBouquet";

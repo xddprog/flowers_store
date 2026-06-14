@@ -13,6 +13,26 @@ export interface CurrentUserResponse {
   username: string;
 }
 
+export interface AdminUser {
+  id: string;
+  username: string;
+}
+
+export interface AdminListParams {
+  limit?: number;
+  offset?: number;
+}
+
+export interface CreateAdminDto {
+  username: string;
+  password: string;
+}
+
+export interface UpdateAdminDto {
+  username?: string;
+  password?: string;
+}
+
 export interface RefreshTokenDto {
   refresh_token: string;
 }

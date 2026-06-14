@@ -2,10 +2,11 @@ from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from app.core.dto.auth import LoginSchema, TokenSchema
-from app.core.dto.admin import BaseAdminSchema
+from app.core.dto.admin import AdminCreateSchema, AdminUpdateSchema, BaseAdminSchema
 from app.core.repositories.admin_repository import AdminRepository
 from app.infrastructure.database.models.admin import Admin
 from app.infrastructure.errors.auth_errors import ForbiddenException, InvalidCredentials
+from app.infrastructure.errors.base import BadRequestException, NotFoundException
 from app.infrastructure.config.config import JWT_CONFIG
 
 import jwt
@@ -65,6 +66,67 @@ class AuthService:
         if not admin:
             raise ForbiddenException()
         return BaseAdminSchema.model_validate(admin, from_attributes=True)
+
+    async def get_all_admins(self, limit: int, offset: int) -> list[BaseAdminSchema]:
+        admins = await self.repository.get_all_items(limit, offset)
+        return [
+            BaseAdminSchema.model_validate(admin, from_attributes=True)
+            for admin in admins
+        ]
+
+    async def create_admin(self, data: AdminCreateSchema) -> BaseAdminSchema:
+        existing_admin = await self.repository.get_by_filter(
+            one_or_none=True,
+            username=data.username,
+        )
+        if existing_admin:
+            raise BadRequestException("Администратор с таким логином уже существует")
+
+        admin = await self.repository.add_item(
+            username=data.username,
+            password_hash=self._hash_password(data.password),
+        )
+        return BaseAdminSchema.model_validate(admin, from_attributes=True)
+
+    async def update_admin(
+        self,
+        admin_id: UUID,
+        data: AdminUpdateSchema,
+    ) -> BaseAdminSchema:
+        admin = await self.repository.get_item(str(admin_id))
+        if not admin:
+            raise NotFoundException(f"Администратор с ID {admin_id} не найден")
+
+        update_data = data.model_dump(exclude_unset=True, exclude_none=True)
+
+        username = update_data.get("username")
+        if username and username != admin.username:
+            existing_admin = await self.repository.get_by_filter(
+                one_or_none=True,
+                username=username,
+            )
+            if existing_admin:
+                raise BadRequestException("Администратор с таким логином уже существует")
+
+        password = update_data.pop("password", None)
+        if password:
+            update_data["password_hash"] = self._hash_password(password)
+
+        if not update_data:
+            return BaseAdminSchema.model_validate(admin, from_attributes=True)
+
+        updated_admin = await self.repository.update_item(str(admin_id), **update_data)
+        return BaseAdminSchema.model_validate(updated_admin, from_attributes=True)
+
+    async def delete_admin(self, admin_id: UUID, current_admin_id: UUID) -> None:
+        if admin_id == current_admin_id:
+            raise BadRequestException("Нельзя удалить текущего администратора")
+
+        admin = await self.repository.get_item(str(admin_id))
+        if not admin:
+            raise NotFoundException(f"Администратор с ID {admin_id} не найден")
+
+        await self.repository.delete_item(admin)
 
     async def refresh_token(self, refresh_token: str) -> TokenSchema:
         try:
