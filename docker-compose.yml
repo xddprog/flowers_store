@@ -21,6 +21,8 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_URL: https://api.lascovo.ru
     container_name: frontend-store
     ports:
       - "5173:80"

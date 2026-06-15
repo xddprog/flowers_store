@@ -186,5 +186,7 @@ export class AxiosClient {
   }
 }
 
-export const axiosNoAuth = new AxiosClient("http://localhost:8000");
-export const axiosAuth = new AxiosClient("http://localhost:8000", true);
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+
+export const axiosNoAuth = new AxiosClient(API_URL);
+export const axiosAuth = new AxiosClient(API_URL, true);
