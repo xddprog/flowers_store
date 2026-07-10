@@ -9,6 +9,9 @@ import { routesWithHoc } from "@/shared/lib/routesWithHoc";
 
 const DashboardPage = lazy(() => import("@/pages/(main)/dashboardPage"));
 const CatalogPage = lazy(() => import("@/pages/(main)/catalogPage"));
+const ReturnExchangePage = lazy(
+  () => import("@/pages/(main)/returnExchangePage")
+);
 const LoginPage = lazy(() => import("@/pages/(auth)/loginPage"));
 const AdminDashboardPage = lazy(
   () => import("@/pages/(main)/adminDashboardPage")
@@ -36,6 +39,10 @@ export const routes = createBrowserRouter([
       {
         path: ERouteNames.CATALOG_ROUTE,
         element: <CatalogPage />,
+      },
+      {
+        path: ERouteNames.RETURN_EXCHANGE_ROUTE,
+        element: <ReturnExchangePage />,
       },
     ],
   },

@@ -30,7 +30,7 @@ async def get_all_bouquet_types(
 @router.get("/popular")
 async def get_popular_bouquets(
     bouquet_service: Annotated[BouquetService, Depends(get_bouquet_service)],
-    limit: int = 10,
+    limit: int | None = None,
     offset: int = 0,
 ) -> list[BaseBouquetSchema]:
     return await bouquet_service.get_popular_bouquets(limit, offset)

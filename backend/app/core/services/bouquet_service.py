@@ -42,7 +42,7 @@ class BouquetService(BaseDbModelService[Bouquet]):
         ]
 
     async def get_popular_bouquets(
-        self, limit: int, offset: int
+        self, limit: int | None, offset: int
     ) -> list[BaseBouquetSchema]:
         bouquets = await self.repository.get_popular_bouquets(limit, offset)
 
@@ -79,7 +79,7 @@ class BouquetService(BaseDbModelService[Bouquet]):
         ]
 
     async def get_all_bouquets(
-        self, limit: int, offset: int
+        self, limit: int | None, offset: int
     ) -> list[BaseBouquetSchema]:
         bouquets = await self.repository.search_bouquets(limit=limit, offset=offset)
 

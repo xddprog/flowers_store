@@ -83,7 +83,7 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         await self.session.refresh(bouquet)
         return bouquet
 
-    async def get_popular_bouquets(self, limit: int, offset: int) -> list[Bouquet]:
+    async def get_popular_bouquets(self, limit: int | None, offset: int) -> list[Bouquet]:
         query = (
             select(Bouquet)
             .where(Bouquet.is_active == True)
@@ -123,7 +123,7 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
         flower_type_ids: list[UUID] | None = None,
         price_min: int | None = None,
         price_max: int | None = None,
-        limit: int = 20,
+        limit: int | None = None,
         offset: int = 0,
         sort: BouquetSort = BouquetSort.POPULAR,
     ) -> list[Bouquet]:

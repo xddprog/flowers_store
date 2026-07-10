@@ -7,7 +7,9 @@ import {
 } from "@/shared/ui/carousel/carousel";
 import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
 import { Image } from "@/shared/ui/image/image";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface ProductModalProps {
   product: BaseBouquet;
@@ -23,7 +25,49 @@ export const ProductModal = ({
   onAddToCart,
 }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
+
+  const galleryImages = useMemo(() => {
+    if (bouquetDetail?.images && bouquetDetail.images.length > 0) {
+      return [...bouquetDetail.images].sort((a, b) => a.order - b.order);
+    }
+    return product.main_image ? [product.main_image] : [];
+  }, [bouquetDetail?.images, product.main_image]);
+
+  const showPrevImage = () =>
+    setLightboxIndex((prev) =>
+      prev === null
+        ? prev
+        : (prev - 1 + galleryImages.length) % galleryImages.length
+    );
+
+  const showNextImage = () =>
+    setLightboxIndex((prev) =>
+      prev === null ? prev : (prev + 1) % galleryImages.length
+    );
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        setLightboxIndex((prev) =>
+          prev === null
+            ? prev
+            : (prev - 1 + galleryImages.length) % galleryImages.length
+        );
+      } else if (event.key === "ArrowRight") {
+        setLightboxIndex((prev) =>
+          prev === null ? prev : (prev + 1) % galleryImages.length
+        );
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxIndex, galleryImages.length]);
+
   const availabilityStatus =
     bouquetDetail?.availability_status ??
     product.availability_status ??
@@ -41,6 +85,13 @@ export const ProductModal = ({
     setQuantity(quantity + 1);
   };
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setLightboxIndex(null);
+    }
+    onOpenChange(nextOpen);
+  };
+
   const handleAddToCart = () => {
     const imageUrl =
       bouquetDetail?.images && bouquetDetail.images.length > 0
@@ -56,17 +107,31 @@ export const ProductModal = ({
     };
 
     onAddToCart(basketProduct, quantity);
-    onOpenChange(false);
+    handleOpenChange(false);
   };
 
+  const lightboxImage =
+    lightboxIndex !== null ? galleryImages[lightboxIndex] : null;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className="max-w-5xl w-full rounded-none h-full lg:h-auto lg:max-h-[90vh] p-0 lg:p-12 gap-0 border-0 overflow-hidden"
         showCloseButton={false}
+        onEscapeKeyDown={(event) => {
+          if (lightboxIndex !== null) {
+            event.preventDefault();
+            setLightboxIndex(null);
+          }
+        }}
+        onInteractOutside={(event) => {
+          if (lightboxIndex !== null) {
+            event.preventDefault();
+          }
+        }}
       >
         <button
-          onClick={() => onOpenChange(false)}
+          onClick={() => handleOpenChange(false)}
           className="lg:hidden fixed top-4 right-5 cursor-pointer z-50 flex items-center justify-center bg-white rounded-full text-[#181818] hover:opacity-70 transition-opacity text-2xl font-sans leading-none"
           aria-label="Закрыть"
         >
@@ -82,39 +147,30 @@ export const ProductModal = ({
                   <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-[#FF6600] rounded-full animate-spin"></div>
                 </div>
               </div>
-            ) : bouquetDetail &&
-              bouquetDetail.images &&
-              bouquetDetail.images.length > 0 ? (
+            ) : galleryImages.length > 0 ? (
               <Carousel
                 className="w-full h-full"
                 opts={{
                   align: "start",
-                  loop: bouquetDetail.images.length > 1,
+                  loop: galleryImages.length > 1,
                 }}
               >
                 <CarouselContent className="-ml-0">
-                  {[...bouquetDetail.images]
-                    .sort((a, b) => a.order - b.order)
-                    .map((image, index) => (
-                      <CarouselItem key={image.id} className="pl-0 basis-full">
-                        <div className="relative aspect-square md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
-                          <Image
-                            src={image.image_path}
-                            alt={`${product.name} - изображение ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            loading={index === 0 ? "eager" : "lazy"}
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
+                  {galleryImages.map((image, index) => (
+                    <CarouselItem key={image.id} className="pl-0 basis-full">
+                      <div className="relative aspect-square md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
+                        <Image
+                          src={image.image_path}
+                          alt={`${product.name} - изображение ${index + 1}`}
+                          className="w-full h-full object-cover cursor-zoom-in"
+                          loading={index === 0 ? "eager" : "lazy"}
+                          onClick={() => setLightboxIndex(index)}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
                 </CarouselContent>
               </Carousel>
-            ) : product.main_image ? (
-              <Image
-                src={product.main_image.image_path}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
             ) : (
               <div className="w-full h-full bg-gray-200" />
             )}
@@ -126,7 +182,7 @@ export const ProductModal = ({
                 {product.name}
               </DialogTitle>
               <button
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleOpenChange(false)}
                 className="hidden lg:flex text-[#181818] hover:opacity-70 transition-opacity text-xl font-sans leading-none shrink-0"
                 aria-label="Закрыть"
               >
@@ -188,6 +244,62 @@ export const ProductModal = ({
           </div>
         </div>
       </DialogContent>
+
+      {open &&
+        lightboxImage &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 pointer-events-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${product.name} — просмотр изображения в полном размере`}
+            onClick={() => setLightboxIndex(null)}
+          >
+            <button
+              onClick={() => setLightboxIndex(null)}
+              className="absolute top-4 right-5 z-[110] cursor-pointer text-white text-4xl font-sans leading-none hover:opacity-70 transition-opacity"
+              aria-label="Закрыть просмотр"
+            >
+              ×
+            </button>
+
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    showPrevImage();
+                  }}
+                  className="absolute left-2 md:left-6 z-[110] cursor-pointer text-white p-2 hover:opacity-70 transition-opacity"
+                  aria-label="Предыдущее изображение"
+                >
+                  <ChevronLeft className="size-8 md:size-10" />
+                </button>
+                <button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    showNextImage();
+                  }}
+                  className="absolute right-2 md:right-6 z-[110] cursor-pointer text-white p-2 hover:opacity-70 transition-opacity"
+                  aria-label="Следующее изображение"
+                >
+                  <ChevronRight className="size-8 md:size-10" />
+                </button>
+                <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white font-sans text-sm md:text-base">
+                  {(lightboxIndex ?? 0) + 1} / {galleryImages.length}
+                </span>
+              </>
+            )}
+
+            <Image
+              src={lightboxImage.image_path}
+              alt={product.name}
+              className="max-w-[92vw] max-h-[92vh] object-contain cursor-zoom-out"
+              loading="eager"
+            />
+          </div>,
+          document.body
+        )}
     </Dialog>
   );
 };

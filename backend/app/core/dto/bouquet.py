@@ -61,7 +61,7 @@ class BouquetFilterSchema(BaseModel):
     flower_type_ids: list[UUID] | None = Field(default=None, description="Список ID типов цветов")
     price_min: int | None = Field(default=None, ge=0, description="Минимальная цена")
     price_max: int | None = Field(default=None, ge=0, description="Максимальная цена")
-    limit: int = Field(default=20, ge=1, le=100, description="Количество результатов")
+    limit: int | None = Field(default=None, ge=1, description="Количество результатов (по умолчанию — без ограничения)")
     offset: int = Field(default=0, ge=0, description="Смещение для пагинации")
     sort: BouquetSort = Field(default=BouquetSort.POPULAR, description="Сортировка: popular - по популярности, price_asc - по возрастанию цены, price_desc - по убыванию цены")
 

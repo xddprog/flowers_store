@@ -70,7 +70,7 @@ export const Footer = () => {
                 Политика
               </Link>
               <Link
-                to="#"
+                to={`/${ERouteNames.RETURN_EXCHANGE_ROUTE}`}
                 className="text-white font-sans text-[16px] md:text-[18px] hover:opacity-80 transition-opacity"
               >
                 Возврат и обмен

@@ -6,7 +6,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { GET_ADMIN_BOUQUETS_QUERY } from "@/entities/admin/lib/queryKeys";
 
 const AdminProductsPage = () => {
-  const limit = 20;
   const queryClient = useQueryClient();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -14,10 +13,7 @@ const AdminProductsPage = () => {
     data: products,
     isLoading,
     error,
-  } = useGetAdminBouquets({
-    limit,
-    offset: 0,
-  });
+  } = useGetAdminBouquets();
 
   const handleCreateSuccess = () => {
     queryClient.invalidateQueries({ queryKey: [GET_ADMIN_BOUQUETS_QUERY] });

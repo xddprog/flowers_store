@@ -39,7 +39,7 @@ async def get_all_bouquet_types(
 @router.get("/")
 async def get_all_bouquets(
     service: Annotated[BouquetService, Depends(get_bouquet_service)],
-    limit: int = 10,
+    limit: int | None = None,
     offset: int = 0,
 ) -> list[BaseBouquetSchema]:
     return await service.get_all_bouquets(limit, offset)

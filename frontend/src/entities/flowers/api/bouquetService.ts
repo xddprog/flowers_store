@@ -20,7 +20,7 @@ class BouquetService {
         price_min: params.price_min,
         price_max: params.price_max,
         sort: params.sort ?? "popular",
-        limit: params.limit ?? 20,
+        limit: params.limit ?? null,
         offset: params.offset ?? 0,
       },
       {
@@ -39,7 +39,7 @@ class BouquetService {
   ): Promise<BaseBouquet[]> {
     const queryParams = queryString.stringify(
       {
-        limit: params?.limit ?? 10,
+        limit: params?.limit ?? null,
         offset: params?.offset ?? 0,
       },
       {

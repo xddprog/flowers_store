@@ -97,7 +97,7 @@ class AdminService {
   ): Promise<BaseBouquet[]> {
     const queryParams = queryString.stringify(
       {
-        limit: params?.limit ?? 10,
+        limit: params?.limit ?? null,
         offset: params?.offset ?? 0,
       },
       {
