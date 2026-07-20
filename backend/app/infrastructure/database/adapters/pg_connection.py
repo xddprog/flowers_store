@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.infrastructure.config.config import DB_CONFIG
@@ -5,6 +6,13 @@ from app.infrastructure.database.models.base import Base
 from app.utils.test_db import init_test_db
 
 import app.infrastructure.database.events.is_active
+
+
+# create_all не изменяет уже существующие таблицы, поэтому новые колонки
+# добавляем идемпотентными ALTER'ами при старте приложения
+SCHEMA_MIGRATIONS = [
+    "ALTER TABLE bouquets ADD COLUMN IF NOT EXISTS price_to INTEGER",
+]
 
 
 class DatabaseConnection:
@@ -19,6 +27,8 @@ class DatabaseConnection:
     async def init_test_db(self):
         async with self._engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            for migration in SCHEMA_MIGRATIONS:
+                await conn.execute(text(migration))
         async with await self.get_session() as session:
             await init_test_db(session)
         

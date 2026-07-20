@@ -1,4 +1,5 @@
 import { BaseBouquet } from "@/entities/flowers/types/apiTypes";
+import { formatPrice } from "@/shared/lib/formatPrice";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import { Image } from "@/shared/ui/image/image";
 import { Link } from "react-router-dom";
@@ -31,7 +32,7 @@ export const AdminProductCard = ({ product }: AdminProductCardProps) => {
         {product.name}
       </h3>
       <p className="font-sans text-[#FF6600] text-lg font-medium">
-        {product.price.toLocaleString("ru-RU")} ₽
+        {formatPrice(product.price, product.price_to)}
       </p>
     </Link>
   );

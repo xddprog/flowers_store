@@ -109,7 +109,9 @@ class BouquetService(BaseDbModelService[Bouquet]):
     async def update_bouquet(
         self, bouquet_id: UUID, data: BouquetUpdateSchema
     ) -> BaseBouquetSchema:
-        update_data = data.model_dump(exclude_none=True)
+        # exclude_unset (а не exclude_none): явно переданный null должен
+        # попадать в обновление — так админка может очистить price_to
+        update_data = data.model_dump(exclude_unset=True)
         flower_type_ids = update_data.pop("flower_type_ids", None)
 
         existing_bouquet = await self.repository.get_item(str(bouquet_id))

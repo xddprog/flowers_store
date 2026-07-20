@@ -62,6 +62,7 @@ export const CreateBouquetModal = ({
       name: "",
       description: "",
       price: 0,
+      price_to: null,
       quantity: 0,
       bouquet_type_id: "",
       flower_type_ids: [],
@@ -174,7 +175,7 @@ export const CreateBouquetModal = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-gray-700">
-                      Цена
+                      Цена от
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -190,6 +191,37 @@ export const CreateBouquetModal = ({
                         className={cn(
                           "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
                           errors.price ? "border-red-500" : "border-black"
+                        )}
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="price_to"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-gray-700">
+                      Цена до (необязательно)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        placeholder="Оставьте пустым для точной цены"
+                        value={field.value ?? ""}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === "" ? null : Number(e.target.value)
+                          )
+                        }
+                        className={cn(
+                          "w-full px-4 h-[52px] border rounded-none font-sans text-base text-[#181818] focus:outline-none",
+                          errors.price_to ? "border-red-500" : "border-black"
                         )}
                         disabled={isSubmitting}
                       />

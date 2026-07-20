@@ -1,4 +1,5 @@
 import { BaseBouquet, Bouquet } from "@/entities/flowers/types/types";
+import { formatPrice } from "@/shared/lib/formatPrice";
 import { Image } from "@/shared/ui/image/image";
 import { useState } from "react";
 import { basketService } from "../lib/basketService";
@@ -40,7 +41,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {product.name}
         </h3>
         <p className="font-sans text-[#FF6600] text-lg md:text-xl lg:text-[20px] xl:text-[24px] font-medium">
-          {product.price.toLocaleString("ru-RU")} ₽
+          {formatPrice(product.price, product.price_to)}
         </p>
       </div>
       {isModalOpen && (

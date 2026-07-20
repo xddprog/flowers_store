@@ -61,6 +61,7 @@ async def create_bouquet(
     name: str = Form(),
     description: str = Form(),
     price: int = Form(),
+    price_to: int | None = Form(None),
     quantity: int = Form(0),
     bouquet_type_id: UUID = Form(),
     flower_type_ids: str | None = Form(None),
@@ -68,12 +69,13 @@ async def create_bouquet(
 ) -> BaseBouquetSchema:
     if flower_type_ids and flower_type_ids.strip():
         flower_type_ids = [UUID(id) for id in json.loads(flower_type_ids)]
-    
+
     await flower_service.validate_flower_types(flower_type_ids)
     data = BouquetCreateSchema(
         name=name,
         description=description,
         price=price,
+        price_to=price_to,
         quantity=quantity,
         bouquet_type_id=bouquet_type_id,
         flower_type_ids=flower_type_ids,

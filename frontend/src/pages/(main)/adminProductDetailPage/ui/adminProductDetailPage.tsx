@@ -6,6 +6,7 @@ import {
 } from "@/entities/admin/hooks";
 import { GET_ADMIN_BOUQUETS_QUERY } from "@/entities/admin/lib/queryKeys";
 import { EditBouquetModal } from "@/entities/admin/ui/editBouquetModal";
+import { formatPrice } from "@/shared/lib/formatPrice";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import {
   Carousel,
@@ -165,7 +166,7 @@ const AdminProductDetailPage = () => {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Цена</p>
                   <p className="text-lg font-semibold text-[#FF6600]">
-                    {product.price.toLocaleString("ru-RU")} ₽
+                    {formatPrice(product.price, product.price_to)}
                   </p>
                 </div>
                 <div>

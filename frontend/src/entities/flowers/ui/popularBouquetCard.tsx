@@ -1,5 +1,6 @@
 import { basketService } from "@/entities/product/lib/basketService";
 import { ProductModal } from "@/entities/product/ui/productModal";
+import { formatPrice } from "@/shared/lib/formatPrice";
 import { Image } from "@/shared/ui/image/image";
 import { useState } from "react";
 import { BaseBouquet, Bouquet } from "../types/types";
@@ -19,6 +20,7 @@ export const BouquetCard = ({ bouquet }: BouquetCardProps) => {
     id: bouquet.id,
     name: bouquet.name,
     price: bouquet.price,
+    price_to: bouquet.price_to,
     main_image: bouquet.image ? { id: "", image_path: bouquet.image, order: 0 } : null,
     availability_status: bouquet.availability_status ?? "in_stock",
   };
@@ -48,7 +50,7 @@ export const BouquetCard = ({ bouquet }: BouquetCardProps) => {
           {bouquet.name}
         </h3>
         <p className="font-sans text-[#FF6600] text-lg md:text-xl lg:text-[20px] xl:text-[24px] font-medium">
-          {bouquet.price.toLocaleString("ru-RU")} ₽
+          {formatPrice(bouquet.price, bouquet.price_to)}
         </p>
       </div>
       {isModalOpen && (

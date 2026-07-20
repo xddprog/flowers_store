@@ -8,6 +8,7 @@ export interface BaseBouquet {
   id: string;
   name: string;
   price: number;
+  price_to?: number | null;
   main_image: BouquetImage | null;
   availability_status: string;
 }
@@ -27,6 +28,7 @@ export interface BouquetDetail {
   name: string;
   description: string;
   price: number;
+  price_to?: number | null;
   quantity: number;
   purchase_count: number;
   availability_status: string;

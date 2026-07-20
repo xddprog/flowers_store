@@ -6,6 +6,7 @@ import {
   CarouselItem,
 } from "@/shared/ui/carousel/carousel";
 import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
+import { formatPrice } from "@/shared/lib/formatPrice";
 import { Image } from "@/shared/ui/image/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -207,7 +208,10 @@ export const ProductModal = ({
 
             <div className="mb-4 md:mb-6 flex items-center gap-3">
               <p className="text-xl md:text-2xl font-sans font-semibold text-[#FF6600]">
-                {product.price}₽
+                {formatPrice(
+                  bouquetDetail?.price ?? product.price,
+                  bouquetDetail?.price_to ?? product.price_to
+                )}
               </p>
               <span className="inline-block px-3 py-1 text-sm font-medium rounded bg-gray-100 text-gray-700 whitespace-nowrap">
                 {availabilityLabel}

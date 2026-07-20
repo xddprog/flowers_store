@@ -51,6 +51,7 @@ export interface CreateBouquetDto {
   name: string;
   description: string;
   price: number;
+  price_to?: number | null;
   quantity: number;
   bouquet_type_id: string;
   flower_type_ids: string[];
@@ -60,6 +61,7 @@ export interface UpdateBouquetDto {
   name: string;
   description: string;
   price: number;
+  price_to?: number | null;
   quantity: number;
   bouquet_type_id: string;
   flower_type_ids: string[];

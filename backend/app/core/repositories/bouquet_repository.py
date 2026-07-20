@@ -321,7 +321,7 @@ class BouquetRepository(SqlAlchemyRepository[Bouquet]):
     async def get_price_range(self) -> dict[str, int | None]:
         query = select(
             func.min(Bouquet.price).label("min_price"),
-            func.max(Bouquet.price).label("max_price"),
+            func.max(func.coalesce(Bouquet.price_to, Bouquet.price)).label("max_price"),
         ).where(Bouquet.is_active == True)
 
         result = await self.session.execute(query)

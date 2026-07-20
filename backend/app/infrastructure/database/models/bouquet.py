@@ -27,6 +27,7 @@ class Bouquet(Base):
     name: Mapped[str]
     description: Mapped[str]
     price: Mapped[int]
+    price_to: Mapped[int | None] = mapped_column(default=None)
     quantity: Mapped[int] = mapped_column(default=0)
     purchase_count: Mapped[int] = mapped_column(default=0)
     view_count: Mapped[int] = mapped_column(default=0)

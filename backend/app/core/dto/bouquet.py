@@ -1,6 +1,6 @@
 from uuid import UUID
 from fastapi import Form, UploadFile
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.utils.url_helper import get_absolute_url
 from app.utils.enums import BouquetSort, AvailabilityStatus
@@ -36,6 +36,7 @@ class BaseBouquetSchema(BaseModel):
     id: UUID
     name: str
     price: int
+    price_to: int | None = None
     main_image: BouquetImageSchema | None = None
     availability_status: AvailabilityStatus
     is_active: bool
@@ -46,6 +47,7 @@ class BouquetDetailSchema(BaseModel):
     name: str
     description: str
     price: int
+    price_to: int | None = None
     quantity: int
     purchase_count: int
     availability_status: AvailabilityStatus
@@ -70,21 +72,40 @@ class BouquetCreateSchema(BaseModel):
     name: str
     description: str
     price: int
+    price_to: int | None = None
     quantity: int = 0
     availability_status: AvailabilityStatus = AvailabilityStatus.ON_ORDER
     bouquet_type_id: UUID
     flower_type_ids: list[UUID] | None = None
     images: list[UploadFile] | None = None
 
+    @model_validator(mode="after")
+    def validate_price_interval(self):
+        if self.price_to is not None and self.price_to < self.price:
+            raise ValueError("Цена «до» не может быть меньше цены «от»")
+        return self
+
+
 class BouquetUpdateSchema(BaseModel):
     name: str | None = None
     description: str | None = None
     price: int | None = None
+    price_to: int | None = None
     quantity: int | None = None
     availability_status: AvailabilityStatus | None = None
     is_active: bool | None = None
     bouquet_type_id: UUID | None = None
     flower_type_ids: list[UUID] | None = None
+
+    @model_validator(mode="after")
+    def validate_price_interval(self):
+        if (
+            self.price is not None
+            and self.price_to is not None
+            and self.price_to < self.price
+        ):
+            raise ValueError("Цена «до» не может быть меньше цены «от»")
+        return self
 
 
 class ImageOrderUpdateSchema(BaseModel):

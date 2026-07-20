@@ -2,6 +2,7 @@ export interface Bouquet {
   id: string;
   name: string;
   price: number;
+  price_to?: number | null;
   image?: string;
   availability_status?: string;
 }

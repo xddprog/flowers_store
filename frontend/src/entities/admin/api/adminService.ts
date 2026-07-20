@@ -126,6 +126,9 @@ class AdminService {
     formData.append("name", bouquetData.name);
     formData.append("description", bouquetData.description);
     formData.append("price", bouquetData.price.toString());
+    if (bouquetData.price_to != null) {
+      formData.append("price_to", bouquetData.price_to.toString());
+    }
     formData.append("quantity", bouquetData.quantity.toString());
     formData.append("bouquet_type_id", bouquetData.bouquet_type_id);
 

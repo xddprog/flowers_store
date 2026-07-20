@@ -16,6 +16,7 @@ export const PopularBouquets = () => {
       id: bouquet.id,
       name: bouquet.name,
       price: bouquet.price,
+      price_to: bouquet.price_to,
       image: bouquet.main_image?.image_path,
       availability_status: bouquet.availability_status,
     }));
