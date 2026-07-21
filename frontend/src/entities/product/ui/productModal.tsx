@@ -117,7 +117,7 @@ export const ProductModal = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="max-w-5xl w-full rounded-none h-full lg:h-auto lg:max-h-[90vh] p-0 lg:p-12 gap-0 border-0 overflow-hidden"
+        className="flex flex-col w-[calc(100%-2rem)] max-w-5xl h-[calc(100dvh-2rem)] lg:h-auto lg:max-h-[90vh] rounded-none p-0 lg:p-12 gap-0 border-0 overflow-hidden"
         showCloseButton={false}
         onEscapeKeyDown={(event) => {
           if (lightboxIndex !== null) {
@@ -139,10 +139,10 @@ export const ProductModal = ({
           ×
         </button>
 
-        <div className="flex flex-col mt-8 lg:mt-0 lg:flex-row h-full lg:h-auto p-5 lg:p-0">
-          <div className="w-full lg:w-1/2 bg-gray-200 aspect-square lg:aspect-auto max-h-[500px] min-h-[300px] md:min-h-[400px] lg:min-h-[400px] relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row mt-8 lg:mt-0 h-full lg:max-h-[calc(90vh-6rem)] min-h-0 min-w-0 p-5 lg:p-0 overflow-y-auto lg:overflow-hidden">
+          <div className="w-full min-w-0 lg:w-1/2 bg-gray-200 relative overflow-hidden">
             {isLoading ? (
-              <div className="flex items-center justify-center w-full h-full absolute inset-0">
+              <div className="flex items-center justify-center w-full min-h-[300px] md:min-h-[400px]">
                 <div className="relative w-10 h-10 md:w-12 md:h-12">
                   <div className="absolute top-0 left-0 w-full h-full border-4 border-[#FF6600]/20 rounded-full"></div>
                   <div className="absolute top-0 left-0 w-full h-full border-4 border-transparent border-t-[#FF6600] rounded-full animate-spin"></div>
@@ -159,11 +159,11 @@ export const ProductModal = ({
                 <CarouselContent className="-ml-0">
                   {galleryImages.map((image, index) => (
                     <CarouselItem key={image.id} className="pl-0 basis-full">
-                      <div className="relative aspect-square md:min-h-[400px] lg:min-h-[400px] overflow-hidden bg-gray-200">
+                      <div className="relative overflow-hidden bg-gray-200">
                         <Image
                           src={image.image_path}
                           alt={`${product.name} - изображение ${index + 1}`}
-                          className="w-full h-full object-cover cursor-zoom-in"
+                          className="block w-full max-w-full h-auto cursor-zoom-in"
                           loading={index === 0 ? "eager" : "lazy"}
                           onClick={() => setLightboxIndex(index)}
                         />
@@ -173,13 +173,13 @@ export const ProductModal = ({
                 </CarouselContent>
               </Carousel>
             ) : (
-              <div className="w-full h-full bg-gray-200" />
+              <div className="w-full min-h-[300px] md:min-h-[400px] bg-gray-200" />
             )}
           </div>
 
-          <div className="w-full lg:w-1/2 lg:pl-6 pt-4 pb-6 lg:pt-0 lg:pb-0 flex flex-col relative bg-white overflow-y-auto">
+          <div className="w-full min-w-0 lg:w-1/2 lg:pl-6 pt-4 pb-6 lg:pt-0 lg:pb-0 flex flex-col relative bg-white lg:overflow-y-auto">
             <div className="flex items-start justify-between mb-3 md:mb-4">
-              <DialogTitle className="text-xl md:text-2xl font-sans font-medium text-[#181818] pr-3 md:pr-4">
+              <DialogTitle className="text-xl md:text-xl font-sans font-medium text-[#181818] pr-3 md:pr-4">
                 {product.name}
               </DialogTitle>
               <button
