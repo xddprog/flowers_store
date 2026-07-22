@@ -224,10 +224,10 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                 </button>
               </div>
 
-              <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-auto lg:overflow-hidden pb-4 lg:pb-0">
-                <div className="w-full min-w-0 flex-1 p-4 md:p-5 lg:p-6 lg:overflow-y-auto flex flex-col min-h-0 lg:h-full">
+              <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-y-auto overflow-x-hidden lg:overflow-hidden pb-4 lg:pb-0">
+                <div className="w-full min-w-0 shrink-0 p-4 md:p-5 lg:p-6 flex flex-col lg:flex-1 lg:min-h-0 lg:h-full lg:overflow-y-auto">
                   {activeTab === "contacts" && (
-                    <div className="flex flex-col h-full min-h-0">
+                    <div className="flex flex-col lg:h-full lg:min-h-0">
                       <div>
                         <div className="mb-4 md:mb-6">
                           <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
@@ -428,7 +428,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   )}
 
                   {activeTab === "delivery" && (
-                    <div className="flex flex-col h-full min-h-0">
+                    <div className="flex flex-col lg:h-full lg:min-h-0">
                       <div>
                         <div className="mb-6">
                           <h3 className="text-[32px] font-sans font-medium text-[#181818] mb-4">
@@ -717,7 +717,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   )}
 
                   {activeTab === "payment" && (
-                    <div className="flex flex-col h-full min-h-0">
+                    <div className="flex flex-col lg:h-full lg:min-h-0">
                       <div>
                         <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-3 md:mb-4">
                           Пожелания
@@ -763,7 +763,7 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                   )}
                 </div>
                 <div
-                  className={`w-full min-h-0 lg:h-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
+                  className={`w-full shrink-0 lg:min-h-0 lg:h-full lg:min-w-[438px] lg:max-w-[438px] p-4 md:p-5 lg:p-6 border-t lg:border-t-0 border-gray-200 ${items.length > 0 ? "lg:overflow-y-auto" : "overflow-visible"
                     }`}
                 >
                   <h3 className="text-xl md:text-2xl lg:text-[32px] font-sans font-medium text-[#181818] mb-4 md:mb-6">

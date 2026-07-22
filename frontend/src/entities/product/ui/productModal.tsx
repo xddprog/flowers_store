@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog/dialog";
 import { formatPrice } from "@/shared/lib/formatPrice";
 import { Image } from "@/shared/ui/image/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface ProductModalProps {
@@ -27,11 +27,6 @@ export const ProductModal = ({
 }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [desktopImageFit, setDesktopImageFit] = useState<
-    Record<string, "width" | "height">
-  >({});
-  const mediaRef = useRef<HTMLDivElement>(null);
-  const imageRefs = useRef<Record<string, HTMLImageElement | null>>({});
   const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
 
   const galleryImages = useMemo(() => {
@@ -73,64 +68,6 @@ export const ProductModal = ({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [lightboxIndex, galleryImages.length]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const updateDesktopImageFit = () => {
-      const media = mediaRef.current;
-      if (!media) return;
-
-      const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
-      const mediaWidth = media.clientWidth;
-      const mediaHeight = media.clientHeight;
-
-      setDesktopImageFit((prev) => {
-        const next: Record<string, "width" | "height"> = {};
-
-        galleryImages.forEach((image) => {
-          const img = imageRefs.current[image.id];
-          if (
-            !isDesktop ||
-            !img ||
-            !img.naturalWidth ||
-            !img.naturalHeight ||
-            !mediaWidth ||
-            !mediaHeight
-          ) {
-            next[image.id] = "width";
-            return;
-          }
-
-          const heightWhenScaledToWidth =
-            (mediaWidth * img.naturalHeight) / img.naturalWidth;
-          next[image.id] =
-            heightWhenScaledToWidth < mediaHeight ? "height" : "width";
-        });
-
-        if (
-          galleryImages.every((image) => prev[image.id] === next[image.id])
-        ) {
-          return prev;
-        }
-
-        return next;
-      });
-    };
-
-    updateDesktopImageFit();
-    window.addEventListener("resize", updateDesktopImageFit);
-
-    const resizeObserver = new ResizeObserver(updateDesktopImageFit);
-    if (mediaRef.current) {
-      resizeObserver.observe(mediaRef.current);
-    }
-
-    return () => {
-      window.removeEventListener("resize", updateDesktopImageFit);
-      resizeObserver.disconnect();
-    };
-  }, [galleryImages, open]);
 
   const availabilityStatus =
     bouquetDetail?.availability_status ??
@@ -180,7 +117,7 @@ export const ProductModal = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="flex flex-col w-[calc(100%-2rem)] max-w-5xl h-[calc(100dvh-2rem)] lg:h-auto lg:max-h-[90vh] rounded-none p-0 lg:p-12 gap-0 border-0 overflow-hidden"
+        className="flex flex-col w-[calc(100%-2rem)] max-w-5xl h-[calc(100dvh-2rem)] lg:h-auto lg:max-h-[80dvh] rounded-none p-0 lg:p-12 gap-0 border-0 overflow-hidden"
         showCloseButton={false}
         onEscapeKeyDown={(event) => {
           if (lightboxIndex !== null) {
@@ -202,11 +139,8 @@ export const ProductModal = ({
           ×
         </button>
 
-        <div className="flex flex-col lg:flex-row mt-8 lg:mt-0 h-full lg:max-h-[calc(90vh-6rem)] min-h-0 min-w-0 p-5 lg:p-0 overflow-y-auto lg:overflow-hidden">
-          <div
-            ref={mediaRef}
-            className="w-full min-w-0 lg:w-1/2 bg-gray-200 relative overflow-hidden"
-          >
+        <div className="flex flex-col lg:flex-row mt-8 lg:mt-0 h-full lg:h-[calc(80dvh-6rem)] lg:max-h-[calc(80dvh-6rem)] min-h-0 min-w-0 p-5 lg:p-0 overflow-y-auto lg:overflow-hidden">
+          <div className="w-full min-w-0 shrink-0 h-[min(58dvh,520px)] lg:h-full lg:shrink lg:w-1/2 bg-gray-200 relative overflow-hidden">
             {isLoading ? (
               <div className="flex items-center justify-center w-full min-h-[300px] md:min-h-[400px]">
                 <div className="relative w-10 h-10 md:w-12 md:h-12">
@@ -216,7 +150,7 @@ export const ProductModal = ({
               </div>
             ) : galleryImages.length > 0 ? (
               <Carousel
-                className="w-full lg:h-full [&>[data-slot=carousel-content]]:lg:h-full [&>[data-slot=carousel-content]>div]:lg:h-full"
+                className="w-full h-full [&>[data-slot=carousel-content]]:h-full [&>[data-slot=carousel-content]>div]:h-full"
                 opts={{
                   align: "start",
                   loop: galleryImages.length > 1,
@@ -226,40 +160,15 @@ export const ProductModal = ({
                   {galleryImages.map((image, index) => (
                     <CarouselItem
                       key={image.id}
-                      className="pl-0 basis-full lg:h-full"
+                      className="pl-0 basis-full h-full"
                     >
-                      <div className="relative overflow-hidden bg-gray-200 lg:flex lg:h-full lg:items-center lg:justify-center">
+                      <div className="relative flex h-full items-center justify-center bg-gray-200 overflow-hidden">
                         <img
-                          ref={(node) => {
-                            imageRefs.current[image.id] = node;
-                          }}
                           src={image.image_path}
                           alt={`${product.name} - изображение ${index + 1}`}
-                          className={`block w-full max-w-full h-auto cursor-zoom-in ${
-                            desktopImageFit[image.id] === "height"
-                              ? "lg:h-full lg:w-auto lg:object-contain"
-                              : ""
-                          }`}
+                          className="block h-full w-full object-cover cursor-zoom-in"
                           loading={index === 0 ? "eager" : "lazy"}
                           decoding="async"
-                          onLoad={() => {
-                            const img = imageRefs.current[image.id];
-                            if (!img || !mediaRef.current) return;
-
-                            const mediaWidth = mediaRef.current.clientWidth;
-                            const mediaHeight = mediaRef.current.clientHeight;
-                            const heightWhenScaledToWidth =
-                              (mediaWidth * img.naturalHeight) /
-                              img.naturalWidth;
-
-                            setDesktopImageFit((prev) => ({
-                              ...prev,
-                              [image.id]:
-                                heightWhenScaledToWidth < mediaHeight
-                                  ? "height"
-                                  : "width",
-                            }));
-                          }}
                           onClick={() => setLightboxIndex(index)}
                         />
                       </div>
@@ -272,7 +181,7 @@ export const ProductModal = ({
             )}
           </div>
 
-          <div className="w-full min-w-0 lg:w-1/2 lg:pl-6 pt-4 pb-6 lg:pt-0 lg:pb-0 flex flex-col relative bg-white lg:overflow-y-auto">
+          <div className="w-full min-w-0 shrink-0 lg:shrink lg:w-1/2 lg:h-full lg:pl-6 pt-4 pb-6 lg:pt-0 lg:pb-0 flex flex-col relative bg-white lg:overflow-y-auto">
             <div className="flex items-start justify-between mb-3 md:mb-4">
               <DialogTitle className="text-xl md:text-xl font-sans font-medium text-[#181818] pr-3 md:pr-4">
                 {product.name}
