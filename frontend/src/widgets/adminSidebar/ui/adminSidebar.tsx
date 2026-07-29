@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft, Box, Users, ShoppingCart, ShieldCheck } from "lucide-react";
+import { ChevronLeft, Box, Users, ShoppingCart, ShieldCheck, Images } from "lucide-react";
 import { Image } from "@/shared/ui/image/image";
 import { cn } from "@/shared/lib/mergeClass";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 
 interface AdminSidebarProps {
-  activeSection?: "orders" | "products" | "users" | "admins";
+  activeSection?: "orders" | "products" | "users" | "media" | "admins";
   isCollapsed?: boolean;
   onCollapseChange?: (collapsed: boolean) => void;
 }
@@ -49,6 +49,12 @@ export const AdminSidebar = ({
       label: "Пользователи",
       icon: Users,
       path: `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_USERS_ROUTE}`,
+    },
+    {
+      id: "media" as const,
+      label: "Медиа",
+      icon: Images,
+      path: `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_MEDIA_ROUTE}`,
     },
     {
       id: "admins" as const,

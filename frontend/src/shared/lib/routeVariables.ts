@@ -10,6 +10,7 @@ export const enum ERouteNames {
   ADMIN_ORDERS_ROUTE = "orders",
   ADMIN_PRODUCTS_ROUTE = "products",
   ADMIN_PRODUCT_DETAIL_ROUTE = ":id",
+  ADMIN_MEDIA_ROUTE = "media",
   ADMIN_USERS_ROUTE = "users",
   ADMIN_ADMINS_ROUTE = "admins",
 }

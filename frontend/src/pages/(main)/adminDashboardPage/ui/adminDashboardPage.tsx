@@ -10,12 +10,15 @@ const AdminDashboardPage = () => {
   useGetCurrentUser();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  const getActiveSection = (): "orders" | "products" | "users" | "admins" => {
+  const getActiveSection = (): "orders" | "products" | "users" | "media" | "admins" => {
     if (location.pathname.includes(ERouteNames.ADMIN_PRODUCTS_ROUTE)) {
       return "products";
     }
     if (location.pathname.includes(ERouteNames.ADMIN_USERS_ROUTE)) {
       return "users";
+    }
+    if (location.pathname.includes(ERouteNames.ADMIN_MEDIA_ROUTE)) {
+      return "media";
     }
     if (location.pathname.includes(ERouteNames.ADMIN_ADMINS_ROUTE)) {
       return "admins";

@@ -56,6 +56,20 @@ class OrderRepository(SqlAlchemyRepository[Order]):
         
         return order
 
+    async def get_all_orders_with_relations(self, limit: int, offset: int) -> list[Order]:
+        query = (
+            select(Order)
+            .options(selectinload(Order.items).selectinload(OrderItem.bouquet))
+            .order_by(Order.created_at.desc())
+        )
+        if limit:
+            query = query.limit(limit)
+        if offset:
+            query = query.offset(offset)
+
+        result = await self.session.execute(query)
+        return result.scalars().all()
+
     async def get_order_with_relations(self, order_id: UUID) -> Order | None:
         query = (
             select(Order)

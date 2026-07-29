@@ -1,11 +1,13 @@
 import { GALLERY_CATEGORIES } from "@/entities/flowers/lib/constants";
 import { ERouteNames } from "@/shared/lib/routeVariables";
 import { Link } from "react-router-dom";
+import { useSiteAssets } from "@/entities/siteAssets";
 import { useBouquetTypes } from "../hooks";
 import { GalleryCard } from "./galleryCard";
 
 export const Gallery = () => {
   const { data: bouquetTypes } = useBouquetTypes();
+  const { getAssetUrl } = useSiteAssets();
   return (
     <section className="w-full bg-[#FFFAF6] py-12 px-4">
       <div className="container mx-auto">
@@ -37,6 +39,9 @@ export const Gallery = () => {
               <GalleryCard
                 key={category.id}
                 category={category}
+                imageSrc={
+                  category.assetKey ? getAssetUrl(category.assetKey) : category.image
+                }
                 height={465}
                 bouquetTypeId={bouquetType?.id}
               />

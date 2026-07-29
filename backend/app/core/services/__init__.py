@@ -4,3 +4,4 @@ from app.core.services.customer_service import CustomerService
 from app.core.services.auth_service import AuthService
 from app.core.services.image_service import ImageService
 from app.core.services.flower_service import FlowerService
+from app.core.services.site_asset_service import SiteAssetService

@@ -4,6 +4,14 @@ from pydantic import BaseModel, Field
 from app.utils.enums import DeliveryMethod, OrderStatus
 
 
+class OrderAdminItemSchema(BaseModel):
+    id: UUID
+    bouquet_id: UUID
+    bouquet_name: str
+    quantity: int
+    price: int
+
+
 class OrderItemCreateSchema(BaseModel):
     bouquet_id: UUID
     title: str
@@ -63,6 +71,13 @@ class OrderAdminSchema(BaseModel):
     delivery_house: str | None = None
     delivery_apartment: str | None = None
     delivery_floor: str | None = None
+    delivery_method: DeliveryMethod
+    delivery_date: datetime
+    delivery_time_from: datetime
+    delivery_time_to: datetime
+    comment: str | None = None
+    greeting_card_text: str | None = None
+    items: list[OrderAdminItemSchema]
     total_amount: int
     status: str
     is_active: bool

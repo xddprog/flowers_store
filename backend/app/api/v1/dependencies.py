@@ -40,6 +40,10 @@ async def get_image_service() -> services.ImageService:
     return services.ImageService()
 
 
+async def get_site_asset_service() -> services.SiteAssetService:
+    return services.SiteAssetService()
+
+
 async def get_bouquet_service(
     session=Depends(get_db_session),
     image_service: services.ImageService = Depends(get_image_service)

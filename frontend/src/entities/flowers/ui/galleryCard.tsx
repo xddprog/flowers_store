@@ -5,12 +5,14 @@ import { GalleryCategory } from "../types/types";
 
 interface GalleryCardProps {
   category: GalleryCategory;
+  imageSrc?: string;
   height?: number;
   bouquetTypeId?: string;
 }
 
 export const GalleryCard = ({
   category,
+  imageSrc,
   height,
   bouquetTypeId,
 }: GalleryCardProps) => {
@@ -28,9 +30,9 @@ export const GalleryCard = ({
         className="w-full bg-gray-200 mb-4 flex items-center justify-center"
         style={{ height: height ? `${height}px` : undefined }}
       >
-        {category.image ? (
+        {imageSrc || category.image ? (
           <Image
-            src={category.image}
+            src={imageSrc || category.image || ""}
             alt={category.name}
             className="w-full h-full object-cover"
             loading="lazy"

@@ -11,6 +11,7 @@ export interface GalleryCategory {
   id: string;
   name: string;
   image?: string;
+  assetKey?: string;
   bouquetTypeName?: string; // Название типа букета для сопоставления
 }
 

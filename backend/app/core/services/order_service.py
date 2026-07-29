@@ -5,7 +5,7 @@ from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
 
 
-from app.core.dto.order import OrderCreateResponseSchema, OrderCreateSchema, OrderResponseSchema
+from app.core.dto.order import OrderAdminItemSchema, OrderCreateResponseSchema, OrderCreateSchema, OrderResponseSchema
 from app.core.dto.order import OrderAdminSchema, OrderStatusUpdateSchema
 from app.core.repositories.order_repository import OrderRepository
 from app.core.services.base import BaseDbModelService
@@ -106,8 +106,8 @@ class OrderService(BaseDbModelService[Order]):
         return OrderCreateResponseSchema(payment_url=payment_url_or_exc)
 
     async def get_all_orders(self, limit: int, offset: int) -> list[OrderAdminSchema]:
-        orders = await self.repository.get_all_items(limit, offset)
-        return [OrderAdminSchema.model_validate(o, from_attributes=True) for o in orders]
+        orders = await self.repository.get_all_orders_with_relations(limit, offset)
+        return [self._to_admin_schema(order) for order in orders]
 
     async def update_order_status_webhook(self, request: Request, background_tasks: BackgroundTasks):
         payload = await self._validate_token(request)
@@ -203,7 +203,8 @@ class OrderService(BaseDbModelService[Order]):
                 old_status
             )
         
-        return OrderAdminSchema.model_validate(order, from_attributes=True)
+        order_with_relations = await self.repository.get_order_with_relations(order.id)
+        return self._to_admin_schema(order_with_relations or order)
 
     async def delete_order(self, order_id: UUID) -> None:
         order = await self.repository.get_item(str(order_id))
@@ -215,5 +216,39 @@ class OrderService(BaseDbModelService[Order]):
         order = await self.repository.update_item(order_id, is_active=True)
         if not order:
             raise NotFoundException(f"Заказ с ID {order_id} не найден")
-        return OrderAdminSchema.model_validate(order, from_attributes=True)
+        order_with_relations = await self.repository.get_order_with_relations(order.id)
+        return self._to_admin_schema(order_with_relations or order)
 
+    def _to_admin_schema(self, order: Order) -> OrderAdminSchema:
+        return OrderAdminSchema(
+            id=order.id,
+            customer_email=order.customer_email,
+            customer_phone=order.customer_phone,
+            recipient_name=order.recipient_name,
+            recipient_phone=order.recipient_phone,
+            delivery_city=order.delivery_city,
+            delivery_street=order.delivery_street,
+            delivery_house=order.delivery_house,
+            delivery_apartment=order.delivery_apartment,
+            delivery_floor=order.delivery_floor,
+            delivery_method=order.delivery_method,
+            delivery_date=order.delivery_date,
+            delivery_time_from=order.delivery_time_from,
+            delivery_time_to=order.delivery_time_to,
+            comment=order.comment,
+            greeting_card_text=order.greeting_card_text,
+            items=[
+                OrderAdminItemSchema(
+                    id=item.id,
+                    bouquet_id=item.bouquet_id,
+                    bouquet_name=item.bouquet.name if item.bouquet else "Позиция удалена",
+                    quantity=item.quantity,
+                    price=item.price,
+                )
+                for item in order.items
+            ],
+            total_amount=order.total_amount,
+            status=order.status.value,
+            is_active=order.is_active,
+            created_at=order.created_at,
+        )

@@ -1,3 +1,4 @@
+import { DEFAULT_SITE_ASSETS, SITE_ASSET_KEYS } from "@/entities/siteAssets";
 import { Bouquet, GalleryCategory } from "../types/types";
 
 export const POPULAR_BOUQUETS: Bouquet[] = [
@@ -37,16 +38,19 @@ export const GALLERY_CATEGORIES: GalleryCategory[] = [
   {
     id: "1",
     name: "Авторские букеты",
-    image: "/images/gallery/author-bouquet.jpg",
+    image: DEFAULT_SITE_ASSETS[SITE_ASSET_KEYS.galleryAuthor],
+    assetKey: SITE_ASSET_KEYS.galleryAuthor,
   },
   {
     id: "2",
     name: "Монобукеты",
-    image: "/images/gallery/monobouquet.jpg",
+    image: DEFAULT_SITE_ASSETS[SITE_ASSET_KEYS.galleryMono],
+    assetKey: SITE_ASSET_KEYS.galleryMono,
   },
   {
     id: "3",
     name: "Композиции",
-    image: "/images/gallery/composition.jpg",
+    image: DEFAULT_SITE_ASSETS[SITE_ASSET_KEYS.galleryComposition],
+    assetKey: SITE_ASSET_KEYS.galleryComposition,
   },
 ];

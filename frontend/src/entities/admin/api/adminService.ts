@@ -20,6 +20,8 @@ import type {
   LoginResponse,
   RefreshTokenDto,
   RefreshTokenResponse,
+  SiteAsset,
+  SiteAssetList,
   UpdateAdminDto,
   UpdateBouquetDto,
   UpdateImageOrderDto,
@@ -250,6 +252,22 @@ class AdminService {
   public async archiveOrder(orderId: string): Promise<AdminOrder> {
     const { data } = await axiosAuth.post<AdminOrder>(
       `/admin/order/${orderId}/archive`
+    );
+    return data;
+  }
+
+  public async getSiteAssets(): Promise<SiteAssetList> {
+    const { data } = await axiosAuth.get<SiteAssetList>("/admin/site-assets/");
+    return data;
+  }
+
+  public async uploadSiteAsset(key: string, file: File): Promise<SiteAsset> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data } = await axiosAuth.post<SiteAsset>(
+      `/admin/site-assets/${key}`,
+      formData as unknown as Record<string, unknown>
     );
     return data;
   }

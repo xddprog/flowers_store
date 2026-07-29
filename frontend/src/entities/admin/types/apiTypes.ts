@@ -76,6 +76,14 @@ export interface AdminOrderListParams {
   offset?: number;
 }
 
+export interface AdminOrderItem {
+  id: string;
+  bouquet_id: string;
+  bouquet_name: string;
+  quantity: number;
+  price: number;
+}
+
 export interface AdminOrder {
   id: string;
   customer_email: string;
@@ -87,6 +95,13 @@ export interface AdminOrder {
   delivery_house: string;
   delivery_apartment: string;
   delivery_floor: string;
+  delivery_method: string;
+  delivery_date: string;
+  delivery_time_from: string;
+  delivery_time_to: string;
+  comment?: string | null;
+  greeting_card_text?: string | null;
+  items: AdminOrderItem[];
   total_amount: number;
   status: string;
   is_active: boolean;
@@ -95,6 +110,16 @@ export interface AdminOrder {
 
 export interface UpdateOrderStatusDto {
   status: string;
+}
+
+export interface SiteAsset {
+  key: string;
+  label: string;
+  url: string;
+}
+
+export interface SiteAssetList {
+  assets: SiteAsset[];
 }
 
 export interface AdminCustomerListParams {
@@ -108,4 +133,3 @@ export interface AdminCustomer {
   name: string;
   is_blocked: boolean;
 }
-

@@ -15,17 +15,26 @@ interface OrderDetailModalProps {
 }
 
 const statusLabels: Record<string, string> = {
+  pending: "Ожидает оплаты",
   paid: "Оплачен",
+  failed: "Ошибка оплаты",
   processing: "Обрабатывается",
   completed: "Выполнен",
   cancelled: "Отменен",
 };
 
 const statusColors: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-800",
   paid: "bg-blue-100 text-blue-800",
+  failed: "bg-red-100 text-red-800",
   processing: "bg-[#FF6600]/10 text-[#FF6600]",
   completed: "bg-green-100 text-green-800",
   cancelled: "bg-gray-100 text-gray-800",
+};
+
+const deliveryMethodLabels: Record<string, string> = {
+  delivery: "Доставка",
+  pickup: "Самовывоз",
 };
 
 export const OrderDetailModal = ({
@@ -52,6 +61,31 @@ export const OrderDetailModal = ({
 
   const formatAmount = (amount: number) => {
     return amount.toLocaleString("ru-RU");
+  };
+
+  const formatDateOnly = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("ru-RU", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }).format(date);
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatTimeOnly = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date);
+    } catch {
+      return dateString;
+    }
   };
 
   return (
@@ -107,6 +141,47 @@ export const OrderDetailModal = ({
                       {order.is_active ? "Да" : "Нет"}
                     </span>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">
+                      Способ получения:
+                    </span>
+                    <span className="text-sm font-medium text-gray-800">
+                      {deliveryMethodLabels[order.delivery_method] ||
+                        order.delivery_method}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 mb-3">
+                  Состав заказа
+                </h3>
+                <div className="space-y-3 bg-gray-50 rounded-lg p-4">
+                  {order.items?.length ? (
+                    order.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-start justify-between gap-4 border-b border-gray-200 last:border-b-0 pb-3 last:pb-0"
+                      >
+                        <div>
+                          <span className="text-sm font-medium text-gray-800 block">
+                            {item.bouquet_name}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {item.quantity} шт. × {formatAmount(item.price)} ₽
+                          </span>
+                        </div>
+                        <span className="text-sm font-semibold text-gray-800 whitespace-nowrap">
+                          {formatAmount(item.price * item.quantity)} ₽
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-400">
+                      Позиции заказа не указаны
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -162,9 +237,28 @@ export const OrderDetailModal = ({
 
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-3">
-                  Адрес доставки
+                  Доставка
                 </h3>
-                <div className="bg-gray-50 rounded-lg p-4">
+                <div className="space-y-4 bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <span className="text-xs text-gray-500 block mb-1">
+                        Дата доставки
+                      </span>
+                      <span className="text-sm font-medium text-gray-800">
+                        {formatDateOnly(order.delivery_date)}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-500 block mb-1">
+                        Время доставки
+                      </span>
+                      <span className="text-sm font-medium text-gray-800">
+                        {formatTimeOnly(order.delivery_time_from)} —{" "}
+                        {formatTimeOnly(order.delivery_time_to)}
+                      </span>
+                    </div>
+                  </div>
                   {order.delivery_city ||
                   order.delivery_street ||
                   order.delivery_house ? (
@@ -213,6 +307,30 @@ export const OrderDetailModal = ({
                     </span>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-gray-500 mb-3">
+              Комментарии клиента
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <span className="text-xs text-gray-500 block mb-1">
+                  Комментарий к заказу
+                </span>
+                <p className="text-sm font-medium text-gray-800 whitespace-pre-wrap">
+                  {order.comment || "Не указан"}
+                </p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <span className="text-xs text-gray-500 block mb-1">
+                  Текст открытки
+                </span>
+                <p className="text-sm font-medium text-gray-800 whitespace-pre-wrap">
+                  {order.greeting_card_text || "Не указан"}
+                </p>
               </div>
             </div>
           </div>

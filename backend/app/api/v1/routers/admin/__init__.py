@@ -6,6 +6,7 @@ from app.api.v1.routers.admin.flower import router as flower_router
 from app.api.v1.routers.admin.order import router as order_router
 from app.api.v1.routers.admin.customer import router as customer_router
 from app.api.v1.routers.admin.admin import router as admin_router
+from app.api.v1.routers.admin.site_asset import router as site_asset_router
 from app.api.v1.dependencies import get_current_user
 
 
@@ -19,3 +20,4 @@ api_v1_routers.include_router(order_router, prefix="/order", tags=["admin-order"
 api_v1_routers.include_router(customer_router, prefix="/customer", tags=["admin-customer"], dependencies=[PROTECTED])
 api_v1_routers.include_router(flower_router, prefix="/flower", tags=["admin-flower"], dependencies=[PROTECTED])
 api_v1_routers.include_router(admin_router, prefix="/admins", tags=["admin-admin"], dependencies=[PROTECTED])
+api_v1_routers.include_router(site_asset_router, prefix="/site-assets", tags=["admin-site-assets"], dependencies=[PROTECTED])

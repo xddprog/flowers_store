@@ -1,6 +1,10 @@
 import { Image } from "@/shared/ui/image/image";
+import { SITE_ASSET_KEYS, useSiteAssets } from "@/entities/siteAssets";
 
 export const AboutWidget = () => {
+  const { getAssetUrl } = useSiteAssets();
+  const aboutImageUrl = getAssetUrl(SITE_ASSET_KEYS.about);
+
   return (
     <section className="w-full bg-[#FFFAF6] py-12 px-4">
       <div className="container mx-auto">
@@ -8,7 +12,7 @@ export const AboutWidget = () => {
           <div className="w-full hidden md:block lg:w-1/2 flex-shrink-0">
             <div className="w-full h-full">
               <Image
-                src="/images/flower.png"
+                src={aboutImageUrl}
                 alt="Букет цветов"
                 className="w-full h-full object-cover"
                 loading="lazy"
@@ -35,7 +39,7 @@ export const AboutWidget = () => {
 
             <div className="flex-shrink-0 overflow-hidden">
               <Image
-                src="/images/flower.png"
+                src={aboutImageUrl}
                 alt="Букет цветов"
                 className="w-full h-full object-cover"
                 loading="lazy"

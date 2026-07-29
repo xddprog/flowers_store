@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
 import { Image } from "@/shared/ui/image/image";
 import { ERouteNames } from "@/shared/lib/routeVariables";
+import { SITE_ASSET_KEYS, useSiteAssets } from "@/entities/siteAssets";
 
 export const HeroBlock = () => {
+  const { getAssetUrl } = useSiteAssets();
+
   return (
     <section
       className="relative w-full flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] lg:min-h-[calc(100vh-98px)]"
       style={{
         height: "calc(100vh - 64px)",
         minHeight: "400px",
-        backgroundImage: "url('/images/bg-dashboard.png')",
+        backgroundImage: `url('${getAssetUrl(SITE_ASSET_KEYS.hero)}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

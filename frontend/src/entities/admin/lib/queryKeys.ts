@@ -21,4 +21,5 @@ export const ARCHIVE_ORDER_MUTATION = "archiveOrder";
 export const GET_ADMIN_CUSTOMERS_QUERY = "getAdminCustomers";
 export const BLOCK_CUSTOMER_MUTATION = "blockCustomer";
 export const UNBLOCK_CUSTOMER_MUTATION = "unblockCustomer";
-
+export const GET_ADMIN_SITE_ASSETS_QUERY = "getAdminSiteAssets";
+export const UPLOAD_SITE_ASSET_MUTATION = "uploadSiteAsset";
