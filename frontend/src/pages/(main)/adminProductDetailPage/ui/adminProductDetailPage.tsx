@@ -2,9 +2,13 @@ import {
   useArchiveBouquet,
   useDeleteBouquet,
   useGetAdminBouquetDetail,
+  useGetImageStorageUsage,
   useUploadBouquetImages,
 } from "@/entities/admin/hooks";
-import { GET_ADMIN_BOUQUETS_QUERY } from "@/entities/admin/lib/queryKeys";
+import {
+  GET_ADMIN_BOUQUETS_QUERY,
+  GET_IMAGE_STORAGE_USAGE_QUERY,
+} from "@/entities/admin/lib/queryKeys";
 import { EditBouquetModal } from "@/entities/admin/ui/editBouquetModal";
 import { formatPrice } from "@/shared/lib/formatPrice";
 import { ERouteNames } from "@/shared/lib/routeVariables";
@@ -35,6 +39,7 @@ const AdminProductDetailPage = () => {
   const deleteBouquet = useDeleteBouquet();
   const archiveBouquet = useArchiveBouquet();
   const uploadImages = useUploadBouquetImages();
+  const { data: storageUsage } = useGetImageStorageUsage();
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
@@ -50,6 +55,9 @@ const AdminProductDetailPage = () => {
     try {
       await deleteBouquet.mutateAsync(id);
       queryClient.invalidateQueries({ queryKey: [GET_ADMIN_BOUQUETS_QUERY] });
+      queryClient.invalidateQueries({
+        queryKey: [GET_IMAGE_STORAGE_USAGE_QUERY],
+      });
       navigate(
         `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`,
       );
@@ -71,6 +79,9 @@ const AdminProductDetailPage = () => {
       queryClient.invalidateQueries({ queryKey: [GET_ADMIN_BOUQUETS_QUERY] });
       queryClient.invalidateQueries({
         queryKey: ["getAdminBouquetDetail", id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [GET_IMAGE_STORAGE_USAGE_QUERY],
       });
       navigate(
         `/${ERouteNames.ADMIN_DASHBOARD_ROUTE}/${ERouteNames.ADMIN_PRODUCTS_ROUTE}`,
@@ -111,6 +122,19 @@ const AdminProductDetailPage = () => {
     queryClient.invalidateQueries({
       queryKey: ["getAdminBouquetDetail", id],
     });
+    queryClient.invalidateQueries({
+      queryKey: [GET_IMAGE_STORAGE_USAGE_QUERY],
+    });
+  };
+
+  const formatBytes = (bytes: number) => {
+    if (bytes >= 1024 * 1024 * 1024) {
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} ГБ`;
+    }
+    if (bytes >= 1024 * 1024) {
+      return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`;
+    }
+    return `${Math.round(bytes / 1024)} КБ`;
   };
 
   if (isLoading) {
@@ -278,7 +302,7 @@ const AdminProductDetailPage = () => {
           ref={fileInputRef}
           type="file"
           multiple
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           onChange={handleUploadImages}
           className="hidden"
         />
@@ -303,6 +327,29 @@ const AdminProductDetailPage = () => {
           {isDeleting ? "Удаление..." : "Удалить"}
         </button>
       </div>
+
+      {storageUsage && (
+        <div className="bg-white border border-gray-200 p-4 space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-700">
+            <span>
+              Фотографии занимают {formatBytes(storageUsage.image_files_size)}
+            </span>
+            <span>
+              Диск заполнен на {storageUsage.disk_used_percent}%:{" "}
+              {formatBytes(storageUsage.disk_used)} из{" "}
+              {formatBytes(storageUsage.disk_total)}
+            </span>
+          </div>
+          <div className="h-2 w-full bg-gray-100 overflow-hidden">
+            <div
+              className="h-full bg-[#FF6600]"
+              style={{
+                width: `${Math.min(storageUsage.disk_used_percent, 100)}%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {product && (
         <EditBouquetModal

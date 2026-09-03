@@ -23,3 +23,4 @@ export const BLOCK_CUSTOMER_MUTATION = "blockCustomer";
 export const UNBLOCK_CUSTOMER_MUTATION = "unblockCustomer";
 export const GET_ADMIN_SITE_ASSETS_QUERY = "getAdminSiteAssets";
 export const UPLOAD_SITE_ASSET_MUTATION = "uploadSiteAsset";
+export const GET_IMAGE_STORAGE_USAGE_QUERY = "getImageStorageUsage";

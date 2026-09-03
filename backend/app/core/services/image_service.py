@@ -1,19 +1,22 @@
 import io
 import uuid
+import shutil
 from pathlib import Path
 import asyncio
 
 from PIL import Image
+from pillow_heif import register_heif_opener
 from fastapi import UploadFile
 
 from app.infrastructure.config.config import APP_CONFIG, BASE_DIR
 from app.infrastructure.errors.image_errors import (
     InvalidImageType,
     InvalidImageFormat,
-    ImageTooLarge,
     EmptyImageFile,
     ImageProcessingError
 )
+
+register_heif_opener()
 
 
 class ImageService:
@@ -44,6 +47,28 @@ class ImageService:
         )
         
         return f"{subfolder}/{filename}"
+
+    async def get_storage_usage(self) -> dict[str, int | float]:
+        return await asyncio.to_thread(self._get_storage_usage)
+
+    def _get_storage_usage(self) -> dict[str, int | float]:
+        image_files_size = sum(
+            path.stat().st_size
+            for path in self.images_dir.rglob("*")
+            if path.is_file()
+        )
+        disk_usage = shutil.disk_usage(self.images_dir)
+        return {
+            "image_files_size": image_files_size,
+            "disk_total": disk_usage.total,
+            "disk_used": disk_usage.used,
+            "disk_free": disk_usage.free,
+            "disk_used_percent": round(
+                (disk_usage.used / disk_usage.total) * 100, 2
+            )
+            if disk_usage.total
+            else 0,
+        }
     
     def _convert_and_save(self, contents: bytes, filepath: Path) -> None:
         try:
@@ -82,29 +107,43 @@ class ImageService:
         return image
     
     async def _validate_file(self, file: UploadFile) -> None:
-        if not file.content_type or not file.content_type.startswith("image/"):
-            raise InvalidImageType()
-        
+        allowed_extensions = {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".bmp",
+            ".webp",
+            ".heic",
+            ".heif",
+        }
+        file_ext = Path(file.filename or "").suffix.lower()
+
         if file.filename:
-            allowed_extensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"}
-            file_ext = Path(file.filename).suffix.lower()
             if file_ext not in allowed_extensions:
                 raise InvalidImageFormat(', '.join(allowed_extensions))
+        elif not file.content_type or not file.content_type.startswith("image/"):
+            raise InvalidImageType()
+
+        if (
+            file.content_type
+            and not file.content_type.startswith("image/")
+            and file_ext not in allowed_extensions
+        ):
+            raise InvalidImageType()
         
         file.file.seek(0, 2)
         size = file.file.tell()
         file.file.seek(0)
-        
-        max_bytes = APP_CONFIG.MAX_IMAGE_SIZE_MB * 1024 * 1024
-        if size > max_bytes:
-            raise ImageTooLarge(APP_CONFIG.MAX_IMAGE_SIZE_MB)
         
         if size == 0:
             raise EmptyImageFile()
     
     async def delete_image(self, image_path: str) -> bool:
         try:
-            full_path = self.images_dir / image_path
+            full_path = (self.images_dir / image_path).resolve()
+            if not full_path.is_relative_to(self.images_dir.resolve()):
+                return False
             
             await asyncio.to_thread(self._delete_file, full_path)
             return True

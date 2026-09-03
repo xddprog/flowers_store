@@ -1,14 +1,19 @@
 import { ChangeEvent, useRef, useState } from "react";
 import { Upload } from "lucide-react";
-import { useGetSiteAssets, useUploadSiteAsset } from "@/entities/admin/hooks";
+import {
+  useGetImageStorageUsage,
+  useGetSiteAssets,
+  useUploadSiteAsset,
+} from "@/entities/admin/hooks";
 import type { SiteAsset } from "@/entities/admin/types/apiTypes";
 import { Button } from "@/shared/ui/button/button";
 import { cn } from "@/shared/lib/mergeClass";
 
-const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png";
+const ACCEPTED_IMAGE_TYPES = "image/*,.heic,.heif";
 
 const AdminMediaPage = () => {
   const { data, isLoading, isError } = useGetSiteAssets();
+  const { data: storageUsage } = useGetImageStorageUsage();
   const uploadAsset = useUploadSiteAsset();
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -33,9 +38,32 @@ const AdminMediaPage = () => {
           Медиа сайта
         </h1>
         <p className="text-gray-500">
-          JPG и PNG, до 10 МБ. Новое изображение сразу заменяет текущее на сайте.
+          JPG, PNG, WebP и HEIC. Новое изображение сразу заменяет текущее на сайте.
         </p>
       </div>
+
+      {storageUsage && (
+        <div className="bg-white border border-gray-200 p-4 space-y-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-700">
+            <span>
+              Фотографии занимают {formatBytes(storageUsage.image_files_size)}
+            </span>
+            <span>
+              Диск заполнен на {storageUsage.disk_used_percent}%:{" "}
+              {formatBytes(storageUsage.disk_used)} из{" "}
+              {formatBytes(storageUsage.disk_total)}
+            </span>
+          </div>
+          <div className="h-2 w-full bg-gray-100 overflow-hidden">
+            <div
+              className="h-full bg-[#FF6600]"
+              style={{
+                width: `${Math.min(storageUsage.disk_used_percent, 100)}%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <input
         ref={inputRef}
@@ -113,6 +141,16 @@ const MediaAssetCard = ({
       </div>
     </section>
   );
+};
+
+const formatBytes = (bytes: number) => {
+  if (bytes >= 1024 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} ГБ`;
+  }
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} МБ`;
+  }
+  return `${Math.round(bytes / 1024)} КБ`;
 };
 
 export default AdminMediaPage;

@@ -13,12 +13,12 @@ from app.core.dto.bouquet import (
     ImageOrderUpdateSchema,
     BouquetImageSchema
 )
+from app.core.dto.image import ImageStorageUsageSchema
 from app.core.services.bouquet_service import BouquetService
 from app.infrastructure.errors.base import NotFoundException
 from app.infrastructure.errors.image_errors import (
     InvalidImageType,
     InvalidImageFormat,
-    ImageTooLarge,
     EmptyImageFile,
     ImageProcessingError
 )
@@ -50,7 +50,6 @@ async def get_all_bouquets(
     responses={
         **error_response(InvalidImageType),
         **error_response(InvalidImageFormat),
-        **error_response(ImageTooLarge),
         **error_response(EmptyImageFile),
         **error_response(ImageProcessingError),
     }
@@ -117,13 +116,21 @@ async def archive_bouquet(
     return await service.archive_bouquet(bouquet_id)
 
 
+@router.get("/images/storage", response_model=ImageStorageUsageSchema)
+async def get_image_storage_usage(
+    service: Annotated[BouquetService, Depends(get_bouquet_service)]
+) -> ImageStorageUsageSchema:
+    return ImageStorageUsageSchema(
+        **await service.image_service.get_storage_usage()
+    )
+
+
 @router.post(
     "/{bouquet_id}/images",
     responses={
         **error_response(NotFoundException),
         **error_response(InvalidImageType),
         **error_response(InvalidImageFormat),
-        **error_response(ImageTooLarge),
         **error_response(EmptyImageFile),
         **error_response(ImageProcessingError),
     }

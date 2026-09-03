@@ -42,6 +42,8 @@ interface BasketModalProps {
 type TabType = "contacts" | "delivery" | "payment";
 
 export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
+  const storePhone = "8 (800) 600-69-29";
+  const storePhoneHref = "tel:88006006929";
   const [items, setItems] = useState<BasketItem[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("contacts");
   const [apiError, setApiError] = useState<string>("");
@@ -97,6 +99,9 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
   const isPackagingFree = bouquetTotal >= FREE_PACKAGING_THRESHOLD;
   const packagingPrice = hasPackaging && !isPackagingFree ? PACKAGING_PRICE : 0;
   const totalPrice = bouquetTotal + packagingPrice;
+  const hasOnOrderItems = items.some(
+    (item) => item.product.availability_status === "on_order"
+  );
 
   const handleNextTab = async (nextTab: TabType) => {
     let fieldsToValidate: (keyof OrderFormData)[];
@@ -131,6 +136,13 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
     if (items.length === 0) {
       setApiError("Корзина пуста");
       setActiveTab("contacts");
+      return;
+    }
+    if (hasOnOrderItems) {
+      setApiError(
+        `В корзине есть позиции под заказ. Для оформления свяжитесь с магазином: ${storePhone}`
+      );
+      setActiveTab("payment");
       return;
     }
 
@@ -744,6 +756,20 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                             Корзина пуста
                           </p>
                         )}
+                        {hasOnOrderItems && (
+                          <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded">
+                            <p className="text-orange-800 text-sm font-medium">
+                              В корзине есть позиции под заказ. Оплата для них
+                              недоступна.
+                            </p>
+                            <a
+                              href={storePhoneHref}
+                              className="mt-2 inline-block text-[#FF6600] text-sm font-semibold hover:opacity-80"
+                            >
+                              Позвонить {storePhone}
+                            </a>
+                          </div>
+                        )}
                         {apiError && (
                           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded">
                             <p className="text-red-700 text-sm font-medium">
@@ -754,7 +780,9 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                       </div>
                       <button
                         type="submit"
-                        disabled={isPending || items.length === 0}
+                        disabled={
+                          isPending || items.length === 0 || hasOnOrderItems
+                        }
                         className="w-full shrink-0 bg-[#FF6600] text-white font-sans text-base md:text-lg font-medium h-[52px] md:h-[60px] px-4 md:px-6 rounded-none hover:opacity-90 transition-opacity mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isPending ? "Обработка..." : "Оплатить"}
@@ -800,6 +828,11 @@ export const BasketModal = ({ open, onOpenChange }: BasketModalProps) => {
                               <p className="font-sans text-sm md:text-base font-semibold text-[#FF6600]">
                                 {item.product.price} Р
                               </p>
+                              {item.product.availability_status === "on_order" && (
+                                <p className="font-sans text-xs text-orange-700 mt-1">
+                                  Под заказ
+                                </p>
+                              )}
                             </div>
                             <button
                               type="button"

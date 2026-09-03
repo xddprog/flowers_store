@@ -14,6 +14,7 @@ export { useGetAdminBouquets } from "./useGetAdminBouquets";
 export { useGetAdminCustomers } from "./useGetAdminCustomers";
 export { useGetAdminOrders } from "./useGetAdminOrders";
 export { useGetCurrentUser } from "./useGetCurrentUser";
+export { useGetImageStorageUsage } from "./useGetImageStorageUsage";
 export { useGetSiteAssets } from "./useGetSiteAssets";
 export { useRefreshToken } from "./useRefreshToken";
 export { useUnblockCustomer } from "./useUnblockCustomer";

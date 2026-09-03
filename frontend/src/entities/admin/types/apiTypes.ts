@@ -122,6 +122,14 @@ export interface SiteAssetList {
   assets: SiteAsset[];
 }
 
+export interface ImageStorageUsage {
+  image_files_size: number;
+  disk_total: number;
+  disk_used: number;
+  disk_free: number;
+  disk_used_percent: number;
+}
+
 export interface AdminCustomerListParams {
   limit?: number;
   offset?: number;

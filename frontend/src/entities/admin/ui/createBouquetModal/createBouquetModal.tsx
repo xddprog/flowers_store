@@ -387,7 +387,7 @@ export const CreateBouquetModal = ({
                             {...field}
                             ref={fileInputRef}
                             type="file"
-                            accept="image/*"
+                            accept="image/*,.heic,.heif"
                             multiple
                             onChange={(e) => {
                               const newFiles = Array.from(e.target.files || []);

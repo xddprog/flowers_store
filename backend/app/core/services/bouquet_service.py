@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile, status
 
 from app.core.dto.bouquet import (
     BaseBouquetSchema,
@@ -20,6 +20,7 @@ from app.core.dto.order import OrderItemCreateSchema
 from app.core.dto.yandex_pay import CartItem, CartItemQuantity
 from app.core.dto.flower import FlowerTypeSchema
 from app.core.dto.bouquet import BouquetTypeSchema
+from app.utils.enums import AvailabilityStatus
 
 
 class BouquetService(BaseDbModelService[Bouquet]):
@@ -198,6 +199,14 @@ class BouquetService(BaseDbModelService[Bouquet]):
 
             if db_bouquet is None:
                 raise NotFoundException(f"Букет {bouquet.title} не найден")
+            if db_bouquet.availability_status == AvailabilityStatus.ON_ORDER:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        f"Букет «{db_bouquet.name}» доступен только под заказ. "
+                        "Для оформления свяжитесь с магазином."
+                    ),
+                )
             items.append(
                 CartItem(
                     product_id=str(db_bouquet.id),

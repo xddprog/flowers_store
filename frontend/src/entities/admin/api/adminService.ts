@@ -18,6 +18,7 @@ import type {
   CurrentUserResponse,
   LoginDto,
   LoginResponse,
+  ImageStorageUsage,
   RefreshTokenDto,
   RefreshTokenResponse,
   SiteAsset,
@@ -193,6 +194,13 @@ class AdminService {
     const { data } = await axiosAuth.post<BouquetImage[]>(
       `/admin/bouquet/${bouquetId}/images`,
       formData as unknown as Record<string, unknown>
+    );
+    return data;
+  }
+
+  public async getImageStorageUsage(): Promise<ImageStorageUsage> {
+    const { data } = await axiosAuth.get<ImageStorageUsage>(
+      "/admin/bouquet/images/storage"
     );
     return data;
   }

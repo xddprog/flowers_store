@@ -7,6 +7,7 @@ import {
   UpdateBouquetFormData,
   updateBouquetSchema,
 } from "@/entities/admin/lib/updateBouquetSchema";
+import { GET_IMAGE_STORAGE_USAGE_QUERY } from "@/entities/admin/lib/queryKeys";
 import { useBouquetTypes } from "@/entities/flowers/hooks/useBouquetTypes";
 import { useFlowerTypes } from "@/entities/flowers/hooks/useFlowerTypes";
 import { BouquetDetail, BouquetImage } from "@/entities/flowers/types/apiTypes";
@@ -145,6 +146,9 @@ export const EditBouquetModal = ({
       setImages(images.filter((img) => img.id !== imageId));
       queryClient.invalidateQueries({
         queryKey: ["getAdminBouquetDetail", product.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [GET_IMAGE_STORAGE_USAGE_QUERY],
       });
     } catch (error) {
       console.error("Ошибка при удалении изображения:", error);

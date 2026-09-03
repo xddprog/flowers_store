@@ -25,6 +25,8 @@ export const ProductModal = ({
   onOpenChange,
   onAddToCart,
 }: ProductModalProps) => {
+  const storePhone = "8 (800) 600-69-29";
+  const storePhoneHref = "tel:88006006929";
   const [quantity, setQuantity] = useState(1);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
@@ -75,6 +77,7 @@ export const ProductModal = ({
     "in_stock";
   const availabilityLabel =
     availabilityStatus === "in_stock" ? "В наличии" : "Под заказ";
+  const isOnOrder = availabilityStatus === "on_order";
 
   const handleDecrease = () => {
     if (quantity > 1) {
@@ -104,7 +107,9 @@ export const ProductModal = ({
       id: product.id,
       name: product.name,
       price: product.price,
+      price_to: product.price_to,
       image: imageUrl,
+      availability_status: availabilityStatus,
     };
 
     onAddToCart(basketProduct, quantity);
@@ -222,33 +227,47 @@ export const ProductModal = ({
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 pb-4 lg:pb-0">
-              <div className="flex items-center bg-[#FF6600] h-[50px] md:h-[60px] w-full sm:w-[197px] justify-center">
-                <button
-                  onClick={handleDecrease}
-                  className="px-3 md:px-4 h-full text-white cursor-pointer font-sans text-base md:text-lg hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={quantity <= 1}
+            {isOnOrder ? (
+              <div className="pb-4 lg:pb-0 space-y-3">
+                <p className="text-sm md:text-base font-sans text-[#181818]">
+                  Эта позиция оформляется только через магазин.
+                </p>
+                <a
+                  href={storePhoneHref}
+                  className="flex w-full items-center justify-center bg-[#FF6600] text-white cursor-pointer font-sans text-base md:text-lg font-medium h-[50px] md:h-[60px] px-4 md:px-6 hover:opacity-90 transition-opacity"
                 >
-                  −
-                </button>
-                <span className="px-3 md:px-4 h-full flex items-center text-white font-sans text-base md:text-lg min-w-[2.5rem] md:min-w-[3rem] text-center">
-                  {quantity}
-                </span>
+                  Позвонить {storePhone}
+                </a>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 pb-4 lg:pb-0">
+                <div className="flex items-center bg-[#FF6600] h-[50px] md:h-[60px] w-full sm:w-[197px] justify-center">
+                  <button
+                    onClick={handleDecrease}
+                    className="px-3 md:px-4 h-full text-white cursor-pointer font-sans text-base md:text-lg hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={quantity <= 1}
+                  >
+                    −
+                  </button>
+                  <span className="px-3 md:px-4 h-full flex items-center text-white font-sans text-base md:text-lg min-w-[2.5rem] md:min-w-[3rem] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={handleIncrease}
+                    className="px-3 md:px-4 h-full text-white cursor-pointer font-sans text-base md:text-lg hover:opacity-80 transition-opacity"
+                  >
+                    +
+                  </button>
+                </div>
+
                 <button
-                  onClick={handleIncrease}
-                  className="px-3 md:px-4 h-full text-white cursor-pointer font-sans text-base md:text-lg hover:opacity-80 transition-opacity"
+                  onClick={handleAddToCart}
+                  className="w-full sm:flex-1 bg-[#FF6600] text-white cursor-pointer sm:min-w-[209px] font-sans text-base md:text-lg font-medium h-[50px] md:h-[60px] px-4 md:px-6 hover:opacity-90 transition-opacity"
                 >
-                  +
+                  В корзину
                 </button>
               </div>
-
-              <button
-                onClick={handleAddToCart}
-                className="w-full sm:flex-1 bg-[#FF6600] text-white cursor-pointer sm:min-w-[209px] font-sans text-base md:text-lg font-medium h-[50px] md:h-[60px] px-4 md:px-6 hover:opacity-90 transition-opacity"
-              >
-                В корзину
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </DialogContent>

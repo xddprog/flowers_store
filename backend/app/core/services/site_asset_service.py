@@ -1,11 +1,15 @@
 import asyncio
+import io
 from pathlib import Path
 
 from fastapi import HTTPException, UploadFile, status
+from PIL import Image
+from pillow_heif import register_heif_opener
 
 from app.core.dto.site_asset import SiteAssetListSchema, SiteAssetSchema
 from app.infrastructure.config.config import APP_CONFIG, BASE_DIR
 
+register_heif_opener()
 
 SITE_ASSET_SLOTS = {
     "hero": {
@@ -35,8 +39,7 @@ SITE_ASSET_SLOTS = {
     },
 }
 
-ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
-ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png"}
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"}
 
 
 class SiteAssetService:
@@ -58,7 +61,7 @@ class SiteAssetService:
 
     async def upload_asset(self, key: str, file: UploadFile) -> SiteAssetSchema:
         config = self._get_slot_config(key)
-        suffix = self._validate_file(file)
+        self._validate_file(file)
         contents = await file.read()
         if not contents:
             raise HTTPException(
@@ -66,16 +69,9 @@ class SiteAssetService:
                 detail="Файл изображения пустой",
             )
 
-        max_bytes = APP_CONFIG.MAX_IMAGE_SIZE_MB * 1024 * 1024
-        if len(contents) > max_bytes:
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail=f"Размер изображения не должен превышать {APP_CONFIG.MAX_IMAGE_SIZE_MB} МБ",
-            )
-
-        target_path = self.asset_dir / f"{config['basename']}{suffix}"
+        target_path = self.asset_dir / f"{config['basename']}.webp"
         await asyncio.to_thread(
-            self._replace_file,
+            self._convert_and_replace_file,
             config["basename"],
             target_path,
             contents,
@@ -89,7 +85,7 @@ class SiteAssetService:
 
     def _get_asset_url(self, key: str) -> str:
         config = self._get_slot_config(key)
-        for extension in ALLOWED_EXTENSIONS:
+        for extension in [".webp", ".jpg", ".jpeg", ".png"]:
             path = self.asset_dir / f"{config['basename']}{extension}"
             if path.exists():
                 return self._build_static_url(path)
@@ -109,28 +105,54 @@ class SiteAssetService:
             )
         return config
 
-    def _validate_file(self, file: UploadFile) -> str:
-        if file.content_type not in ALLOWED_CONTENT_TYPES:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Поддерживаются только JPG и PNG",
-            )
-
+    def _validate_file(self, file: UploadFile) -> None:
         suffix = Path(file.filename or "").suffix.lower()
-        if suffix == ".jpeg":
-            suffix = ".jpg"
-
         if suffix not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Поддерживаются только файлы .jpg, .jpeg и .png",
+                detail="Поддерживаются JPG, PNG, WebP и HEIC",
             )
-        return suffix
+        if file.content_type and not file.content_type.startswith("image/"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Файл должен быть изображением",
+            )
 
-    def _replace_file(self, basename: str, target_path: Path, contents: bytes) -> None:
+    def _convert_and_replace_file(
+        self, basename: str, target_path: Path, contents: bytes
+    ) -> None:
         target_path.parent.mkdir(parents=True, exist_ok=True)
         for extension in ALLOWED_EXTENSIONS:
             old_path = target_path.parent / f"{basename}{extension}"
             if old_path.exists() and old_path != target_path:
                 old_path.unlink()
-        target_path.write_bytes(contents)
+
+        with Image.open(io.BytesIO(contents)) as image:
+            image = self._convert_to_rgb(image)
+            image.save(
+                target_path,
+                "WEBP",
+                quality=APP_CONFIG.WEBP_QUALITY,
+                method=6,
+                optimize=True,
+            )
+
+    @staticmethod
+    def _convert_to_rgb(image: Image.Image) -> Image.Image:
+        if image.mode in ("RGBA", "LA", "P"):
+            background = Image.new("RGB", image.size, (255, 255, 255))
+
+            if image.mode == "P":
+                image = image.convert("RGBA")
+
+            if image.mode in ("RGBA", "LA"):
+                background.paste(image, mask=image.split()[-1])
+            else:
+                background.paste(image)
+
+            return background
+
+        if image.mode != "RGB":
+            return image.convert("RGB")
+
+        return image
