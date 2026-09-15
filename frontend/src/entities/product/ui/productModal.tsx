@@ -25,8 +25,8 @@ export const ProductModal = ({
   onOpenChange,
   onAddToCart,
 }: ProductModalProps) => {
-  const storePhone = "8 (800) 600-69-29";
-  const storePhoneHref = "tel:88006006929";
+  const storePhone = "+7 (989) 107-07-03";
+  const storePhoneHref = "tel:+79891070703";
   const [quantity, setQuantity] = useState(1);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { data: bouquetDetail, isLoading } = useBouquetDetail(product.id);
